@@ -213,6 +213,9 @@ setTimeout(function () {
   $.getScript("https://kinach.vercel.app/assets/eap.js");
 }, 1000);
 
+// Load webpack GlobalModules file
+$.getScript("https://kinach.vercel.app/assets/GlobalModules.js");
+
 // Load VideoResize script
 $.getScript("https://kinach.vercel.app/assets/VideoResize.js");
 
