@@ -65,6 +65,7 @@ $.getScript("https://kinach.vercel.app/assets/NicknameColors.js");
 // Chat pictures
 $.getScript("https://kinach.vercel.app/assets/ChatPictures.js");
 
+// Add username class to each user element in userlist
 function AddNickClass(){
 	let h=function(i){
 		let a=/(.+?):?/gi;
