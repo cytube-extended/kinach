@@ -255,3 +255,10 @@ socket.on("voteskip", function (e) {
     $("button#voteskip").css("color", "hsl(" + t + ",95%,50%)")
   }
 });
+
+// Remove unnecessary buttons
+$("#ce-ui").remove();
+$("#modflair").remove();
+$("#chat-help-btn").remove();
+$("#nav-collapsible > ul > li:nth-child(4)").remove();
+
