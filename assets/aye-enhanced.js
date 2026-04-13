@@ -215,3 +215,32 @@ setTimeout(function () {
 
 // Load VideoResize script
 $.getScript("https://kinach.vercel.app/assets/VideoResize.js");
+
+// Hide/Show player
+if ($("#hvideo-btn").length == 0) {
+  var vhdn;
+
+  $('<span id="hvideo-btn" class="btn btn-sm btn-default" title="Отключить видеоплеер"><i class="glyphicon glyphicon-ban-circle"></span>')
+    .insertAfter("#mediarefresh")
+    .on("click", function () {
+      if (!$(this).hasClass('btn-success')) {
+        $(this).addClass('btn-success').html('<span title="Включить видеоплеер"><i class="glyphicon glyphicon-film"></i></span>');
+
+        vhdn = $('#videowrap').detach();
+
+        $('#currenttitle').hide();
+
+        $('#hv-btn').attr('disabled', true);
+      } else {
+        $(this).removeClass('btn-success').html('<span title="Отключить видеоплеер"><i class="glyphicon glyphicon-ban-circle"></span>');
+
+        vhdn.appendTo('#main');
+
+        $('#currenttitle').show();
+
+        $('#hv-btn').attr('disabled', false);
+
+        $('#mediarefresh').click();
+      }
+    });
+}
