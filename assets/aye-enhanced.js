@@ -58,3 +58,6 @@ $.getScript("https://kinach.vercel.app/assets/NewSendButton.js");
 
 // Playlist playback
 $.getScript("https://kinach.vercel.app/assets/PlaylistPlayback.js");
+
+// Username colors
+$.getScript("https://kinach.vercel.app/assets/NicknameColors.js");
