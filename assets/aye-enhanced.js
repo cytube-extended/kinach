@@ -244,3 +244,14 @@ if ($("#hvideo-btn").length == 0) {
       }
     });
 }
+
+// Skip button color status
+socket.on("voteskip", function (e) {
+  if (0 == e.count) {
+    $("button#voteskip").css("color","white")
+  } else {
+    var t = (e.need - 1 - e.count) / (e.need - 1) * 120;
+    
+    $("button#voteskip").css("color", "hsl(" + t + ",95%,50%)")
+  }
+});
