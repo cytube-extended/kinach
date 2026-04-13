@@ -205,3 +205,6 @@ if ($("#minismiles-btn").length == 0)
 	}, 200);
 }
 
+// Remove default emote popup search
+$("#emotelistbtn").unbind('click');
+
