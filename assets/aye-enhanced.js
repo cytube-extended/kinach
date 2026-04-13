@@ -52,3 +52,6 @@ $.getScript("https://kinach.vercel.app/assets/MOTDstate.js");
 
 // Poll sound
 $.getScript("https://kinach.vercel.app/assets/PollSound.js");
+
+// New send button
+$.getScript("https://kinach.vercel.app/assets/NewSendButton.js");
