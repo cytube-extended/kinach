@@ -49,3 +49,6 @@ function randomByte() {
 
 // MOTD state
 $.getScript("https://kinach.vercel.app/assets/MOTDstate.js");
+
+// Poll sound
+$.getScript("https://kinach.vercel.app/assets/PollSound.js");
