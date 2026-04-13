@@ -56,7 +56,7 @@
       __webpack_require__(6);
       __webpack_require__(7);
       __webpack_require__(10);
-      ////__webpack_require__(11);
+      __webpack_require__(11);
       ////__webpack_require__(16);
       ////__webpack_require__(17);
       ////__webpack_require__(18);
@@ -18909,6 +18909,1023 @@
         window.cytubeEnhancedSettings
           ? window.cytubeEnhancedSettings.modulesExtends || {}
           : {},
+      );
+
+      /***/
+    },
+    /* 11 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule(
+        'additionalChatCommands',
+        function (app, settings) {
+          'use strict';
+          var that = this;
+
+          var defaultSettings = {
+            permittedCommands: ['*'],
+          };
+          
+          settings = $.extend({}, defaultSettings, settings);
+          settings.permittedCommands = _.isArray(settings.permittedCommands)
+            ? settings.permittedCommands
+            : [];
+          settings.permittedCommands = _.map(
+            settings.permittedCommands,
+            function (value) {
+              return _.toLower(value);
+            },
+          );
+
+          this.$chatline = $('#chatline');
+
+          this.isCommandPermitted = function (commandName) {
+            if (that.commandsList[commandName]) {
+              if (that.commandsList[commandName].canBeOmitted) {
+                return (
+                  settings.permittedCommands.indexOf('*') !== -1 ||
+                  settings.permittedCommands.indexOf(commandName) !== -1
+                );
+              } else {
+                return true;
+              }
+            } else {
+              return false;
+            }
+          };
+
+          this.askAnswers = [
+            '100%',
+            app.t('qCommands[.]of course'),
+            app.t('qCommands[.]yes'),
+            app.t('qCommands[.]maybe'),
+            app.t('qCommands[.]impossible'),
+            app.t('qCommands[.]no way'),
+            app.t("qCommands[.]don't think so"),
+            app.t('qCommands[.]no'),
+            '50/50',
+            app.t('qCommands[.]cirno is busy'),
+            app.t('qCommands[.]I regret to inform you'),
+          ];
+
+          var Stat = {
+            default: '',
+            caucas: '',
+            quotes: '',
+          };
+
+          $.getJSON(
+            'https://kinach.vercel.app/resources/text/caucas.txt',
+            function (e) {
+              Stat.caucas = e;
+            },
+          );
+
+          $.getJSON(
+            'https://kinach.vercel.app/resources/text/status.txt',
+            function (e) {
+              Stat.default = e;
+            },
+          );
+
+          $.getJSON('https://kinach.vercel.app/resources/text/quotes.txt', function (e) {
+            Stat.quotes = e;
+          });
+
+          /**
+           * Quotes for !q command
+           * @type {Array}
+           */
+          this.randomQuotes = [];
+
+          this.dices = [
+            'https://i.imgur.com/GvBChl2.png',
+            'https://i.imgur.com/KqvO605.png',
+            'https://i.imgur.com/ynHLA6n.png',
+            'https://i.imgur.com/CQetKN5.png',
+            'https://i.imgur.com/MFXv2aS.png',
+            'https://i.imgur.com/ohez1Nf.png',
+          ];
+
+          var dice_sound = new Audio('https://kinach.vercel.app/resources/audio/dice_sound.mp3');
+          dice_sound.volume = 0.6;
+
+          this.movieActors = [];
+
+          this.ytVideoComments = [];
+          this.maxYtComments = 500;
+
+          this.requestComments = (videoID, nextPageToken) => {
+            const tokenString =
+              typeof nextPageToken === 'undefined'
+                ? ''
+                : `&pageToken=${nextPageToken}`;
+
+            $.ajax({
+              dataType: 'jsonp',
+              type: 'GET',
+              url: `https://www.googleapis.com/youtube/v3/commentThreads
+						?key=${atob('QUl6YVN5QUNDdDVBWXd2S1NCYmNtbUE4X21BQnBmM1E5TE5PRFow')}
+						&textFormat=plainText
+						&part=snippet
+						&maxResults=100
+						&videoId=${videoID}
+						${tokenString}
+					`,
+              success: result => {
+                // Get token
+                const token = result.nextPageToken;
+
+                // Return if exceeds max array size
+                if (that.ytVideoComments.length > that.maxYtComments) {
+                  return;
+                }
+
+                // Push requested items to the array
+                for (let i = 0; i < result.items.length; i++) {
+                  const item = result.items[i];
+                  that.ytVideoComments.push(item);
+                }
+
+                // Return if token is undefined
+                if (typeof token != 'undefined') {
+                  that.requestComments(videoID, token);
+                }
+              },
+              error: err => {
+                console.log(
+                  'Error occured while fetching comments from YouTube video',
+                );
+                console.log(err);
+
+                that.ytVideoComments = [];
+                that.ytVideoComments[0] = 'Не удалось загрузить комментарии.';
+              },
+            });
+          };
+
+          socket.on('changeMedia', data => {
+            if (data.type != 'yt') {
+              that.ytVideoComments = [];
+              that.ytVideoComments[0] = 'Видео не из ютуба.';
+            } else {
+              that.ytVideoComments = [];
+              that.requestComments(data.id, undefined);
+            }
+          });
+
+          window.cytubeEnhanced.getModule('additionalChatCommands').done(m => {
+            if (PLAYER.mediaType == 'yt') {
+              m.ytVideoComments = [];
+              m.requestComments(PLAYER.yt.getVideoData().video_id, undefined);
+            } else {
+              m.ytVideoComments = [];
+              m.ytVideoComments[0] = 'Видео не из ютуба.';
+            }
+          });
+
+          this.wikiRes = undefined;
+
+          this.pic = undefined;
+
+          this.randomPic = undefined;
+          String.prototype.hashCode = function () {
+            var hash = 0,
+              i,
+              chr;
+            if (this.length === 0) return hash;
+            for (i = 0; i < this.length; i++) {
+              chr = this.charCodeAt(i);
+              hash = (hash << 5) - hash + chr;
+              hash |= 0; // Convert to 32bit integer
+            }
+            return hash;
+          };
+
+          /**
+           * List of commands
+           *
+           * Every command must have method value(message) which returns command's message.
+           * Commands can also have description property for chatCommandsHelp module and isAvailable method which returns false if command is not permitted (by default returns true)
+           *
+           * @type {object}
+           */
+          this.commandsList = {
+            '!pick': {
+              description: app.t(
+                'chatCommands[.]random option from the list of options (!pick option1, option2, option3)',
+              ),
+              value: function (msg) {
+                var formattedMsg = _.trim(msg.replace('!pick', ''));
+
+                if (formattedMsg === '') {
+                  return app.t('chatCommands[.]Use !pick variant1, variant2');
+                } else {
+                  var variants = formattedMsg.split(',');
+                  return _.trim(
+                    variants[Math.floor(Math.random() * variants.length)],
+                  );
+                }
+              },
+              canBeOmitted: true,
+            },
+            '!time': {
+              description: app.t('chatCommands[.]show the current time'),
+              value: function () {
+                var h = new Date().getHours();
+                if (h < 10) {
+                  h = '0' + h;
+                }
+
+                var m = new Date().getMinutes();
+                if (m < 10) {
+                  m = '0' + m;
+                }
+
+                return (
+                  app.t('chatCommands[.]current time') + ': ' + h + ':' + m
+                );
+              },
+              canBeOmitted: true,
+            },
+            '!ask': {
+              description: app.t(
+                'chatCommands[.]asking a question with yes/no/... type answer (e.g. <i>!ask Will i be rich?</i>)',
+              ),
+              value: function () {
+                return that.askAnswers[
+                  Math.floor(Math.random() * that.askAnswers.length)
+                ];
+              },
+              canBeOmitted: true,
+            },
+            '!who': {
+              description: app.t(
+                'chatCommands[.]Выбрать случайного пользователя',
+              ),
+              value: function (msg) {
+                let users = document.querySelectorAll(
+                  '.userlist_item div strong',
+                );
+                msg =
+                  users[Math.floor(Math.random() * Math.floor(users.length))]
+                    .innerText;
+                return msg;
+              },
+              canBeOmitted: true,
+            },
+            '!roll': {
+              description: app.t(
+                'chatCommands[.]random number between 0 and 99',
+              ),
+              value: function () {
+                var randomNumber = Math.floor(1e2 * Math.random());
+                return (
+                  randomNumber < 100
+                    ? (randomNumber = '0' + randomNumber)
+                    : randomNumber < 10 && (randomNumber = '00' + randomNumber),
+                  randomNumber
+                );
+              },
+              canBeOmitted: !0,
+            },
+            '!sm': {
+              description: app.t('chatCommands[.]show random emote'),
+              value: function () {
+                var smilesArray = window.CHANNEL.emotes.map(function (smile) {
+                  return smile.name;
+                });
+
+                return (
+                  smilesArray[Math.floor(Math.random() * smilesArray.length)] +
+                  ' '
+                );
+              },
+              canBeOmitted: true,
+            },
+            '!ауф': {
+              description: app.t('chatCommands[.]show random quote'),
+              value: function (msg) {
+                if (Stat.quotes.length === 0) {
+                  msg = app.t("chatCommands[.]no quotes found.");
+                } else {
+                  msg =
+                    Stat.quotes[
+                      Math.floor(Math.random() * (Stat.quotes.length - 1))
+                    ];
+                }
+
+                return msg;
+              },
+              canBeOmitted: true,
+            },
+            'кто я': {
+              description: app.t('chatCommands[.]Ответить кто вы.'),
+              value: function (msg) {
+                if (Stat.default.length === 0) {
+                  msg = app.t('chatCommands[.]Вы никто.');
+                } else {
+                  msg =
+                    'Вы: ' +
+                    Stat.default[
+                      Math.floor(Math.random() * (Stat.default.length - 1))
+                    ];
+                }
+                return msg;
+              },
+              canBeOmitted: true,
+            },
+            'жи есть': {
+              description: app.t('chatCommands[.]Ответить кто вы на кавказе.'),
+              value: function (msg) {
+                if (Stat.caucas.length === 0) {
+                  msg = app.t('chatCommands[.]Вы не кавказец.');
+                } else {
+                  msg =
+                    'Вы: ' +
+                    Stat.caucas[
+                      Math.floor(Math.random() * (Stat.caucas.length - 1))
+                    ];
+                }
+                return msg;
+              },
+              canBeOmitted: true,
+            },
+            '!dice': {
+              description: app.t('chatCommands[.]throw a dice'),
+              value: function () {
+                dice_sound.play();
+
+                let dice1 = that.dices[Math.floor(Math.random() * 6)];
+                let dice2 = that.dices[Math.floor(Math.random() * 6)];
+                let msg = dice1 + ' ' + dice2;
+
+                return msg;
+              },
+              canBeOmitted: true,
+            },
+            '!actor': {
+              description: app.t(
+                'chatCommands[.]Зароллить рандомного актера из фильма',
+              ),
+              value: function (msg) {
+                let randomActor =
+                  that.movieActors[
+                    Math.floor(Math.random() * (that.movieActors.length - 1))
+                  ];
+                let answer = `Вы: ${randomActor.actorName} (${randomActor.actorDescription}) ${randomActor.actorPhoto}`;
+
+                msg = answer;
+                return msg;
+              },
+              canBeOmitted: true,
+            },
+            '!test': {
+              description: app.t('chatCommands[.]turn every image into a frog'),
+              value: function (msg) {
+                $('img').attr('src', 'https://i.imgur.com/vLgg3Gn.png');
+                $('button').attr(
+                  'style',
+                  'background: url(https://i.imgur.com/vLgg3Gn.png) no-repeat;',
+                );
+                $('span').attr(
+                  'style',
+                  'background: url(https://i.imgur.com/vLgg3Gn.png) no-repeat;',
+                );
+
+                return 'https://i.imgur.com/vLgg3Gn.png';
+              },
+              canBeOmitted: true,
+            },
+            '!comment': {
+              description:
+                'Random comment from the currently playing YouTube video',
+              value: function (msg) {
+                if (PLAYER.mediaType == 'yt') {
+                  const commentItem =
+                    that.ytVideoComments[
+                      Math.floor(
+                        Math.random() * (that.ytVideoComments.length - 1),
+                      )
+                    ];
+                  
+                  msg = commentItem.snippet.topLevelComment.snippet.textDisplay;
+                } else {
+                  msg = 'Видео не из ютуба.';
+                }
+
+                if (typeof that.ytVideoComments === 'undefined') {
+                  msg = 'Пусто.';
+                }
+
+                return msg;
+              },
+              canBeOmitted: true,
+            },
+            '!wiki': {
+              description:
+                'Query wikipedia for a short snippet',
+              value: function (msg) {
+                // Remove command from the message
+                let formattedMsg = _.trim(msg.replace('!wiki', ''));
+
+                // Check for empty string
+                if (formattedMsg === '') {
+                  return 'Укажите слово для поиска.';
+                }
+
+                // Get message without the command
+                const searchQuery = formattedMsg;
+
+                const cyrillicRegex = /[а-я]/i;
+                const isCyrillic = cyrillicRegex.test(searchQuery);
+                const subdomen = isCyrillic ? 'ru' : 'en';
+
+                // If wikiRes is empty do the fetch
+                if (typeof that.wikiRes === 'undefined') {
+                  $.ajax({
+                    url: `https://${subdomen}.wikipedia.org/w/api.php`,
+                    data: {
+                      origin: '*',
+                      action: 'query',
+                      format: 'json',
+                      prop: 'extracts',
+                      indexpageids: 1,
+                      redirects: 1,
+                      utf8: 1,
+                      exchars: 230,
+                      exlimit: 1,
+                      exintro: 1,
+                      explaintext: 1,
+                      titles: searchQuery,
+                    },
+                    dataType: 'jsonp',
+                    success: res => {
+                      const page = res.query.pageids[0].toString();
+                      let answer;
+
+                      console.log(page);
+
+                      if (page === '-1') {
+                        answer = 'Не удалось найти ответ.';
+                      } else {
+                        answer = res.query.pages[page].extract;
+                      }
+
+                      if (answer === '') {
+                        answer = 'Не удалось найти ответ.';
+                      }
+
+                      // Store wiki answer
+                      that.wikiRes = answer;
+
+                      // Imitate Enter press
+                      const e = jQuery.Event('keydown');
+                      e.keyCode = $.ui.keyCode.ENTER;
+                      $('#chatline').trigger(e);
+                    },
+                    error: () => {
+                      // If error set answer to error message
+                      that.wikiRes = 'Не удалось найти ответ.';
+
+                      // Imitate Enter press
+                      const e = jQuery.Event('keydown');
+                      e.keyCode = $.ui.keyCode.ENTER;
+                      $('#chatline').trigger(e);
+                    },
+                    timeout: 1000, // Timeout for 1 second (maybe reduce to 500ms?)
+                  });
+
+                  throw 'Waiting for the wikipedia response';
+                } // If wikiRes has data return the answer and clear wikiRes
+                else {
+                  const answer = that.wikiRes;
+
+                  that.wikiRes = undefined;
+                  return answer;
+                }
+              },
+              canBeOmitted: true,
+            },
+            '!picwiki': {
+              description: 'Thumbnail from the wikipedia article',
+              value: function (msg) {
+                //  https://i.imgur.com/KQPuteD.gif
+
+                // Remove command from the message
+                let formattedMsg = _.trim(msg.replace('!picwiki', ''));
+
+                // Check for empty string
+                if (formattedMsg === '') {
+                  return 'Укажите слово для поиска.';
+                }
+
+                // Split by white space
+                // var words = formattedMsg.split(' ');
+                // Get first one
+                // const searchQuery = _.trim(words[0]);
+                const searchQuery = formattedMsg;
+
+                const cyrillicRegex = /[а-я]/i;
+                const isCyrillic = cyrillicRegex.test(searchQuery);
+                const subdomen = isCyrillic ? 'ru' : 'en';
+
+                // If wikiRes is empty do the fetch
+                if (typeof that.wikiRes === 'undefined') {
+                  $.ajax({
+                    url: `https://${subdomen}.wikipedia.org/w/api.php`,
+                    data: {
+                      origin: '*',
+                      action: 'query',
+                      format: 'json',
+                      prop: 'pageimages',
+                      indexpageids: 1,
+                      redirects: 1,
+                      utf8: 1,
+                      piprop: 'original',
+                      titles: searchQuery,
+                    },
+                    dataType: 'jsonp',
+                    success: res => {
+                      const page = res.query.pageids[0].toString();
+                      let answer;
+
+                      console.log(page);
+
+                      if (page === '-1') {
+                        answer = 'Не удалось найти картинку.';
+                      } else {
+                        answer = res.query.pages[page].original.source;
+                      }
+
+                      if (answer === '') {
+                        answer = 'Не удалось найти картинку.';
+                      }
+
+                      console.log(answer);
+
+                      // Store wiki answer
+                      that.wikiRes = answer;
+
+                      // Imitate Enter press
+                      const e = jQuery.Event('keydown');
+                      e.keyCode = $.ui.keyCode.ENTER;
+                      $('#chatline').trigger(e);
+                    },
+                    error: () => {
+                      // If error set answer to error message
+                      that.wikiRes = 'Не удалось найти картинку.';
+
+                      // Imitate Enter press
+                      const e = jQuery.Event('keydown');
+                      e.keyCode = $.ui.keyCode.ENTER;
+                      $('#chatline').trigger(e);
+                    },
+                    timeout: 1000, // Timeout for 1 second (maybe reduce to 500ms?)
+                  });
+
+                  throw 'Waiting for the wikipedia picture response';
+                } // If wikiRes has data return the answer and clear wikiRes
+                else {
+                  const answer = that.wikiRes;
+
+                  that.wikiRes = undefined;
+                  return answer;
+                }
+              },
+              canBeOmitted: true,
+            },
+            '!gif': {
+              description: 'Random gif from tenor',
+              value: function (msg) {
+                let formattedMsg = _.trim(msg.replace('!gif', ''));
+
+                if (formattedMsg === '') {
+                  return 'Укажите слово для поиска.';
+                }
+
+                if (typeof that.gif === 'undefined') {
+                  $.ajax({
+                    url: 'https://g.tenor.com/v1/search',
+                    data: {
+                      key: atob('M1pCM0pSTzkwTVNI'),
+                      q: formattedMsg,
+                      media_filter: 'minimal',
+                      ar_range: 'all',
+                      limit: 50,
+                    },
+                    dataType: 'jsonp',
+                    success: res => {
+                      console.log(res);
+
+                      // Reponse message
+                      let resMsg = '';
+
+                      // Get gif URL from the response
+                      const results = res.results;
+                      const gifsAmount = results.length;
+
+                      if (gifsAmount < 1) {
+                        that.gif = 'Не удалось найти гифку.';
+                      } else {
+                        const randomRes =
+                          results[Math.floor(Math.random() * (gifsAmount - 1))];
+                        // const randomRes = results[0];
+                        that.gif = randomRes.media[0].gif.url;
+                      }
+
+                      // Imitate Enter press
+                      const e = jQuery.Event('keydown');
+                      e.keyCode = $.ui.keyCode.ENTER;
+                      $('#chatline').trigger(e);
+                    },
+                    error: () => {
+                      that.gif = 'Не удалось найти картинку.';
+
+                      // Imitate Enter press
+                      const e = jQuery.Event('keydown');
+                      e.keyCode = $.ui.keyCode.ENTER;
+                      $('#chatline').trigger(e);
+                    },
+                    timeout: 2000,
+                  });
+
+                  throw 'Waiting for tenor gif response';
+                } else {
+                  const answer = that.gif;
+
+                  that.gif = undefined;
+                  return answer;
+                }
+              },
+              canBeOmitted: true,
+            },
+            '!kak kin4': {
+              description: 'Short movie review',
+              value: function (msg) {
+                if (typeof that.shortReview === 'undefined') {
+                  // Get active queue name and create filter
+                  const movieTitle = $('.queue_active a').text();
+                  const kinopoiskFilter =
+                    /.*?https?:\/\/www\.kinopoisk\.ru\/film\/(\d+)\/?/g;
+
+                  // Is it a movie
+                  const isMovie = kinopoiskFilter.test(movieTitle);
+
+                  if (!isMovie) {
+                    return 'Дождитесь начала фильма.';
+                  }
+
+                  // Strip out movie ID
+                  const kinoID = movieTitle.replace(kinopoiskFilter, '$1');
+
+                  // Ajax settings
+                  const settings = {
+                    type: 'GET',
+                    dataType: 'application/json',
+                    url: 'https://kinopoiskapiunofficial.tech/api/v1/reviews',
+                    data: {
+                      filmId: kinoID,
+                      page: 1,
+                    },
+                    beforeSend: function (xhr) {
+                      xhr.setRequestHeader(
+                        'X-API-KEY',
+                        `${atob('NGMwMGE3ZmItOGY3Zi00YTI3LTkwNzMtNzBlN2IxYWYwZDNk')}`,
+                      );
+                    },
+                    timeout: 3000,
+                  };
+
+                  // Create complete request
+                  settings.complete = res => {
+                    const kparsed = JSON.parse(res.responseText);
+                    const pagesCount = kparsed.pagesCount;
+
+                    console.log('Pages count: ' + pagesCount);
+
+                    settings.data.page = Math.floor(
+                      Math.random() * (pagesCount - 1),
+                    );
+
+                    // lol
+                    if (settings.data.page == 0) {
+                      settings.data.page = 1;
+                    }
+
+                    settings.complete = data => {
+                      const kparsed = JSON.parse(data.responseText);
+
+                      // Review
+                      const reviews = kparsed.reviews;
+
+                      if (typeof reviews === 'undefined') {
+                        that.shortReview = 'Короткие рецензии отсутствуют';
+                      } else {
+                        const reviewsAmount = reviews.length;
+
+                        if (reviews.length < 1) {
+                          that.shortReview = 'Короткие рецензии отсутствуют';
+                        } else {
+                          let filteredReviews = [];
+
+                          // Filter out reviews without title
+                          reviews.map(x => {
+                            if (x.reviewTitle != null) {
+                              filteredReviews.push(x.reviewTitle);
+                            }
+                          });
+
+                          const randomReviewNumber = Math.floor(
+                            Math.random() * (filteredReviews.length - 1),
+                          );
+
+                          const randomReview =
+                            filteredReviews[randomReviewNumber];
+
+                          that.shortReview = randomReview;
+                        }
+                      }
+
+                      const e = jQuery.Event('keydown');
+                      e.keyCode = $.ui.keyCode.ENTER;
+                      $('#chatline').trigger(e);
+                    };
+
+                    $.ajax(settings);
+                    throw 'Waiting for review response';
+                  };
+
+                  $.ajax(settings);
+                  throw 'Waiting for review pages response'; // Prevent the bot response send (to trigger it later)
+                } else {
+                  const shortReview = that.shortReview;
+
+                  that.shortReview = undefined;
+                  return shortReview;
+                }
+              },
+              canBeOmitted: true,
+            },
+            '!pic': {
+              description: 'Query imgur search',
+              value: function (msg) {
+                // Remove command from the message
+                let formattedMsg = _.trim(msg.replace('!pic', ''));
+
+                // Check for empty string
+                if (formattedMsg === '') {
+                  return 'Укажите слово для поиска.';
+                }
+
+                // If pic is empty do the fetch
+                if (typeof that.pic === 'undefined') {
+                  $.ajax({
+                    url: `https://api.imgur.com/3/gallery/search/top/all/0/`,
+                    method: 'GET',
+                    headers: { Authorization: `${atob('Q2xpZW50LUlEIDcxMWE3ZmM3NmJkNjNmMw==')}` },
+                    contentType: false,
+                    data: { q: formattedMsg },
+                    success: res => {
+                      let answer;
+
+                      const data = res.data;
+
+                      if (data.length === 0) {
+                        answer = 'Не удалось найти картинку.';
+                      } else {
+                        const randomNumber = Math.floor(
+                          Math.random() * data.length,
+                        );
+                        const randomData = data[randomNumber];
+                        let imgLink = '';
+
+                        if (typeof randomData.images === 'undefined') {
+                          imgLink = randomData.link;
+                        } else {
+                          imgLink = randomData.images[0].link;
+                        }
+
+                        answer = imgLink;
+                      }
+
+                      //Store imgur answer
+                      that.pic = answer;
+
+                      //Imitate Enter press
+                      const e = jQuery.Event('keydown');
+                      e.keyCode = $.ui.keyCode.ENTER;
+                      $('#chatline').trigger(e);
+                    },
+                    error: err => {
+                      // If error set answer to error message
+                      that.pic = 'Не удалось найти ответ.';
+
+                      // Imitate Enter press
+                      const e = jQuery.Event('keydown');
+                      e.keyCode = $.ui.keyCode.ENTER;
+                      $('#chatline').trigger(e);
+
+                      console.log(err);
+                    },
+                  });
+
+                  throw 'Waiting for the imgur response';
+                } // If wikiRes has data return the answer and clear wikiRes
+                else {
+                  const answer = that.pic;
+
+                  that.pic = undefined;
+                  return answer;
+                }
+              },
+              canBeOmitted: true,
+            },
+            '!randompic': {
+              description: 'Random image from imgur',
+              value: function (msg) {
+                // If pic is empty do the fetch
+                if (typeof that.randomPic === 'undefined') {
+                  const charAll =
+                    'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+
+                  let i, r;
+
+                  const rndImgLink = () => {
+                    let l = 'https://i.imgur.com/';
+
+                    for (i = 0; i < 5; i++) {
+                      r = Math.floor(Math.random() * charAll.length);
+                      l += charAll.charAt(r);
+                    }
+
+                    l += '.jpg';
+
+                    return l;
+                  };
+
+                  const requestImg = link => {
+                    $.ajax({
+                      url: link,
+                      success: data => {
+                        if (data.hashCode() !== -2006913416) {
+                          that.randomPic = link;
+
+                          const e = jQuery.Event('keydown');
+                          e.keyCode = $.ui.keyCode.ENTER;
+                          $('#chatline').trigger(e);
+                        } else {
+                          requestImg(rndImgLink());
+                        }
+                      },
+                      error: err => {
+                        that.randomPic = 'Не удалось найти картинку. =(';
+
+                        const e = jQuery.Event('keydown');
+                        e.keyCode = $.ui.keyCode.ENTER;
+                        $('#chatline').trigger(e);
+                      },
+                    });
+                  };
+
+                  requestImg(rndImgLink());
+
+                  throw 'Waiting for the imgur response';
+                } else {
+                  const answer = that.randomPic;
+
+                  that.randomPic = undefined;
+                  return answer;
+                }
+              },
+              canBeOmitted: true,
+            },
+          };
+
+          this.IS_COMMAND = false;
+          this.prepareMessage = function (msg) {
+            that.IS_COMMAND = false;
+
+            for (var command in that.commandsList) {
+              if (
+                this.commandsList.hasOwnProperty(command) &&
+                _.toLower(_.trim(msg)).indexOf(command) === 0
+              ) {
+                if (
+                  that.isCommandPermitted(command) &&
+                  (that.commandsList[command].isAvailable
+                    ? that.commandsList[command].isAvailable()
+                    : true)
+                ) {
+                  that.IS_COMMAND = true;
+
+                  msg = that.commandsList[command].value(msg);
+                }
+
+                break;
+              }
+            }
+
+            return msg;
+          };
+
+          this.sendUserChatMessage = function (e) {
+            if (e.keyCode === 13) {
+              if (window.CHATTHROTTLE) {
+                return;
+              }
+
+              var msg = that.$chatline.val().trim();
+
+              if (msg !== '') {
+                var meta = {};
+
+                if (window.USEROPTS.adminhat && window.CLIENT.rank >= 255) {
+                  msg = '/a ' + msg;
+                } else if (
+                  window.USEROPTS.modhat &&
+                  window.CLIENT.rank >= window.Rank.Moderator
+                ) {
+                  meta.modflair = window.CLIENT.rank;
+                }
+
+                // The /m command no longer exists, so emulate it clientside
+                if (window.CLIENT.rank >= 2 && msg.indexOf('/m ') === 0) {
+                  meta.modflair = window.CLIENT.rank;
+                  msg = msg.substring(3);
+                }
+
+                var msgForCommand = this.prepareMessage(msg);
+
+                if (that.IS_COMMAND) {
+                  window.socket.emit('chatMsg', { msg: msg, meta: meta });
+                  window.socket.emit('chatMsg', {
+                    msg: 'Смотрящий: ' + msgForCommand,
+                  });
+
+                  that.IS_COMMAND = false;
+                } else {
+                  // Username color (add #123f54)
+                  if (
+                    UI_UsernameColors === 1 &&
+                    usernameColor !== null &&
+                    !that.IS_COMMAND &&
+                    !(msg.indexOf('/') === 0)
+                  ) {
+                    msg = usernameColor + ' ' + msg;
+                  }
+
+                  window.socket.emit('chatMsg', { msg: msg, meta: meta });
+                }
+
+                window.CHATHIST.push(that.$chatline.val());
+                window.CHATHISTIDX = window.CHATHIST.length;
+                that.$chatline.val('');
+              }
+
+              return;
+            } else if (e.keyCode === 9) {
+              // Tab completion
+              try {
+                window.chatTabComplete();
+              } catch (error) {
+                console.error(error);
+              }
+              e.preventDefault();
+              return false;
+            } else if (e.keyCode === 38) {
+              // Up arrow (input history)
+              if (window.CHATHISTIDX === window.CHATHIST.length) {
+                window.CHATHIST.push(that.$chatline.val());
+              }
+              if (window.CHATHISTIDX > 0) {
+                window.CHATHISTIDX--;
+                that.$chatline.val(window.CHATHIST[window.CHATHISTIDX]);
+              }
+
+              e.preventDefault();
+              return false;
+            } else if (e.keyCode === 40) {
+              // Down arrow (input history)
+              if (window.CHATHISTIDX < window.CHATHIST.length - 1) {
+                window.CHATHISTIDX++;
+                that.$chatline.val(window.CHATHIST[window.CHATHISTIDX]);
+              }
+
+              e.preventDefault();
+              return false;
+            }
+          };
+
+          that.$chatline.off().on('keydown', function (e) {
+            that.sendUserChatMessage(e);
+          });
+
+          $('#chatbtn')
+            .off()
+            .on('click', function (e) {
+              that.sendUserChatMessage(e);
+            });
+        },
       );
 
       /***/
