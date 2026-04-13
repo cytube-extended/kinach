@@ -179,3 +179,29 @@ checkPollinitiator();
 socket.on("newPoll", function(){checkPollinitiator()});
 socket.on("closePoll",function(){checkPollinitiator()});
 
+// Button to minimize chat emotes
+if ($("#minismiles-btn").length == 0)
+{
+	var minismiles = document.createElement('style');
+	document.head.appendChild(minismiles);
+	if (localStorage.minismiles=='true') {
+			minismiles.sheet.insertRule('.channel-emote {max-height: 3em;}', 0);
+	}
+	minismilesbtn = $('<span id="minismiles-btn" class="label label-default pull-right pointer glyphicon glyphicon-resize-small" title="Маленькие смайлы"> </span>').insertAfter("#modflair").on("click", function() {
+			if (localStorage.minismiles!=='true') {
+					localStorage.minismiles = true;
+					minismiles.sheet.insertRule('.channel-emote {max-height: 3em;}', 0);
+					document.querySelector("#minismiles-btn").classList.add("label-info");
+			} else {
+					localStorage.minismiles = false;
+					minismiles.sheet.deleteRule(0);
+					document.querySelector("#minismiles-btn").classList.remove("label-info");
+			}
+	});
+	window.setTimeout(function () {
+			if (localStorage.minismiles=='true') {
+					document.querySelector("#minismiles-btn").classList.add("label-info");
+			}
+	}, 200);
+}
+
