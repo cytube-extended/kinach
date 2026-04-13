@@ -246,6 +246,7 @@ const uploadBinaryData = blob => {
         return;
       } else {
         provider = 'imgbb';
+	$('#imgPreview').attr('src', base64Raw);
       }
     } else if (fileType === 'video') {
       // TODO: Handle video
