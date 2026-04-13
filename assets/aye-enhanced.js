@@ -208,3 +208,7 @@ if ($("#minismiles-btn").length == 0)
 // Remove default emote popup search
 $("#emotelistbtn").unbind('click');
 
+// Load eap
+setTimeout(function () {
+  $.getScript("https://kinach.vercel.app/assets/eap.js");
+}, 1000);
