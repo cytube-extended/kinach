@@ -63,7 +63,7 @@
       __webpack_require__(19);
       __webpack_require__(22);
       __webpack_require__(27);
-      ////__webpack_require__(28);
+      __webpack_require__(28);
       ////__webpack_require__(32);
       ////__webpack_require__(35);
       ////__webpack_require__(43);
@@ -22928,6 +22928,59 @@
         $(document).on('change keypress', '#cs-motdtext', function () {
           that.$htmlToTabs.addClass('btn-success');
         });
+      });
+
+      /***/
+    },
+    /* 28 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule('showVideoInfo', function (app) {
+        'use strict';
+        var that = this;
+        (this.$titleRow = $('<div id="titlerow" class="row">').insertBefore(
+          '#main',
+        )),
+          (this.$titleRowOuter = $(
+            '<div id="titlerow-outer" class="col-md-12" />',
+          )
+            .html(
+              $('#currenttitle')
+                .text(
+                  '' !== $('.queue_active a').text()
+                    ? $('#currenttitle')
+                        .text()
+                        .replace(
+                          /^Currently Playing:/,
+                          app.t('videoInfo[.]Now:'),
+                        )
+                    : '',
+                )
+                .detach(),
+            )
+            .appendTo(this.$titleRow)),
+          (this.$mediaInfo =
+            $('<p id="mediainfo">').appendTo('#videowrap-header')),
+          (this.showPlaylistInfo = function () {
+            0 !== $('.queue_active').length
+              ? ($('#currenttitle').text(
+                  $('#currenttitle')
+                    .text()
+                    .replace(/^Currently Playing:/, app.t('videoInfo[.]Now:')),
+                ),
+                this.$mediaInfo.text(
+                  $('.queue_active')
+                    .attr('title')
+                    .replace('Added by', app.t('videoInfo[.]Added by')),
+                ))
+              : ($('#currenttitle').text(''),
+                this.$mediaInfo.text(
+                  app.t('videoInfo[.]Nothing is playing now'),
+                ));
+          }),
+          this.showPlaylistInfo(),
+          window.socket.on('changeMedia', function () {
+            that.showPlaylistInfo();
+          });
       });
 
       /***/
