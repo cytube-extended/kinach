@@ -58,7 +58,7 @@
       __webpack_require__(10);
       __webpack_require__(11);
       __webpack_require__(16);
-      ////__webpack_require__(17);
+      __webpack_require__(17);
       ////__webpack_require__(18);
       ////__webpack_require__(19);
       ////__webpack_require__(22);
@@ -20823,6 +20823,180 @@
           window.socket.on('setUserRank', function () {
             that.handleChatClear();
           });
+        }
+      });
+
+      /***/
+    },
+    /* 17 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule('chatHistory', function (app, settings) {
+        'use strict';
+        var that = this;
+
+        var defaultSettings = {
+          itemsInHistory: 75,
+        };
+        settings = $.extend({}, defaultSettings, settings);
+        app.storage.setDefault('pmHistory', []);
+
+        if ($('#pm-history-btn').length == 0) {
+          window.socket.on('chatMsg', function (data) {
+            if (
+              window.CLIENT.name &&
+              data.msg
+                .toLowerCase()
+                .indexOf(window.CLIENT.name.toLowerCase()) != -1
+            ) {
+              var pmHistory = app.storage.get('pmHistory');
+              if (!$.isArray(pmHistory)) {
+                pmHistory = [];
+              }
+
+              if (pmHistory.length >= settings.itemsInHistory) {
+                pmHistory = pmHistory.slice(0, settings.itemsInHistory - 1);
+              }
+
+              pmHistory.unshift({
+                username: data.username,
+                msg: data.msg,
+                time: data.time,
+              });
+
+              app.storage.set('pmHistory', pmHistory);
+            }
+          });
+
+          this.formatHistoryMessage = function (data) {
+            var $messageWrapper = $('<div class="pm-history-message">');
+
+            var time = new Date(data.time);
+
+            var day = time.getDate();
+            day = day < 10 ? '0' + day : day;
+            var month = time.getMonth() + 1;
+            month = month < 10 ? '0' + month : month;
+            var year = time.getFullYear();
+            var hours = time.getHours();
+            hours = hours < 10 ? '0' + hours : hours;
+            var minutes = time.getMinutes();
+            minutes = minutes < 10 ? '0' + minutes : minutes;
+            var seconds = time.getSeconds();
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+
+            var timeString =
+              day +
+              '.' +
+              month +
+              '.' +
+              year +
+              ' ' +
+              hours +
+              ':' +
+              minutes +
+              ':' +
+              seconds;
+
+            if (data.username !== '[server]') {
+              $messageWrapper.append(
+                $(
+                  '<div class="pm-history-message-time">[' +
+                    timeString +
+                    ']</div>',
+                ),
+              );
+              $messageWrapper.append(
+                $(
+                  '<div class="pm-history-message-username">' +
+                    data.username +
+                    '</div>',
+                ),
+              );
+              $messageWrapper.append(
+                $(
+                  '<div class="pm-history-message-content">' +
+                    data.msg +
+                    '</div>',
+                ),
+              );
+            }
+
+            return $messageWrapper;
+          };
+
+          this.showChatHistory = function () {
+            var pmHistory = app.storage.get('pmHistory');
+            if (!$.isArray(pmHistory)) {
+              pmHistory = [];
+            }
+
+            var $header = $('<div class="modal-header__inner">');
+            $header.append(
+              $('<h3 class="modal-title">').text(
+                app.t('pmHistory[.]Chat history'),
+              ),
+            );
+            $header.append(
+              $('<div class="modat-header__description">').text(
+                app.t('pmHistory[.]Your chat messages history.'),
+              ),
+            );
+
+            var $wrapper = $('<div class="pm-history-content">');
+            for (
+              var position = 0, historyLength = pmHistory.length;
+              position < historyLength;
+              position++
+            ) {
+              $wrapper.append(that.formatHistoryMessage(pmHistory[position]));
+            }
+
+            var $resetChatHistoryBtn = $(
+              '<button type="button" id="pm-history-reset-btn" class="btn btn-danger" data-dismiss="modal">' +
+                app.t('pmHistory[.]Reset history') +
+                '</button>',
+            ).on('click', function () {
+              if (
+                window.confirm(
+                  app.t(
+                    'pmHistory[.]Are you sure, that you want to clear messages history?',
+                  ),
+                )
+              ) {
+                that.resetChatHistory();
+              }
+            });
+            var $exitChatHistoryBtn = $(
+              '<button type="button" id="pm-history-exit-btn" class="btn btn-default" data-dismiss="modal">' +
+                app.t('pmHistory[.]Exit') +
+                '</button>',
+            );
+            var $footer = $('<div class="pm-history-footer">');
+            $footer.append($resetChatHistoryBtn);
+            $footer.append($exitChatHistoryBtn);
+
+            return app.UI.createModalWindow(
+              'chat-history',
+              $header,
+              $wrapper,
+              $footer,
+            );
+          };
+
+          this.$showChatHistoryBtn = $(
+            '<span id="pm-history-btn" class="label label-default pull-right pointer glyphicon glyphicon-envelope">',
+          )
+            // .text(app.t('pmHistory[.]History'))
+            .text(' ')
+            .attr('title', 'История чата')
+            .appendTo('#chatheader')
+            .on('click', function () {
+              that.showChatHistory();
+            });
+
+          this.resetChatHistory = function () {
+            app.storage.set('pmHistory', app.storage.getDefault('pmHistory'));
+          };
         }
       });
 
