@@ -59,7 +59,7 @@
       __webpack_require__(11);
       __webpack_require__(16);
       __webpack_require__(17);
-      ////__webpack_require__(18);
+      __webpack_require__(18);
       ////__webpack_require__(19);
       ////__webpack_require__(22);
       ////__webpack_require__(27);
@@ -20998,6 +20998,80 @@
             app.storage.set('pmHistory', app.storage.getDefault('pmHistory'));
           };
         }
+      });
+
+      /***/
+    },
+    /* 18 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule('common', function (app, settings) {
+        'use strict';
+        var that = this;
+
+        var defaultSettings = {
+          insertUsernameOnClick: false,
+        };
+        settings = $.extend({}, defaultSettings, settings);
+
+        this.$chatline = $('#chatline');
+        this.$userlist = $('#userlist');
+
+        if (settings.insertUsernameOnClick) {
+          $('#messagebuffer')
+            .on('click', '.username', function () {
+              app.Helpers.addMessageToChatInput($(this).text(), 'begin');
+            })
+            .on('click', '.chat-avatar', function () {
+              app.Helpers.addMessageToChatInput(
+                $(this).parent().find('.username').text(),
+                'begin',
+              );
+            });
+        }
+
+        $('#wrap')
+          .children('.navbar-fixed-top')
+          .removeClass('navbar-fixed-top');
+
+        setTimeout(function () {
+          window.handleWindowResize(); //chat height fix
+        }, 3000);
+        setTimeout(function () {
+          window.handleWindowResize(); //chat height fix
+        }, 10000);
+
+        window.addUserDropdown = (function (oldAddUserDropdown) {
+          return function (entry) {
+            var functionResponse = oldAddUserDropdown(entry);
+
+            entry.find('.user-dropdown>strong').click(function () {
+              that.$chatline.val($(this).text() + ': ' + that.$chatline.val());
+            });
+
+            return functionResponse;
+          };
+        })(window.addUserDropdown);
+
+        var usernameDropdown = $('.user-dropdown>strong');
+
+        this.addCB = function (element) {
+          $(element).click(function () {
+            that.$chatline
+              .val($(element).text() + ': ' + that.$chatline.val())
+              .focus();
+          });
+        };
+
+        usernameDropdown.each((index, element) => {
+          let cb = $._data(element, 'events');
+          if (typeof cb === 'undefined') {
+            that.addCB(element);
+          } else {
+            if (cb.click.length == 0) that.addCB(element);
+          }
+        });
+
+        $('#queue').sortable('option', 'axis', 'y');
       });
 
       /***/
