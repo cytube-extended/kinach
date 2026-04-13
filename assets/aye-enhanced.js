@@ -46,3 +46,6 @@ function randomByte() {
     return v.toString(16);
   });
 }
+
+// MOTD state
+$.getScript("https://kinach.vercel.app/assets/MOTDstate.js");
