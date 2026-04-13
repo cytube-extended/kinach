@@ -19930,5 +19930,814 @@
 
       /***/
     },
+    /* 12 */
+    /***/ function (module, exports, __webpack_require__) {
+      __webpack_require__(13);
+      window.cytubeEnhanced.addModule(
+        'bbCodesHelper',
+        function (app, settings) {
+          'use strict';
+          var that = this;
+
+          var defaultSettings = {
+            templateButtons: ['b', 'i', 'sp', 'code', 's'],
+            templateButtonsAnimationSpeed: 150,
+          };
+          settings = $.extend({}, defaultSettings, settings);
+
+          if ($('#chat-controls').length === 0) {
+            $('<div id="chat-controls" class="btn-group">').appendTo(
+              '#chatwrap',
+            );
+          }
+
+          this.handleMarkdownHelperBtnClick = function (
+            $markdownHelperBtn,
+            $markdownTemplatesWrapper,
+          ) {
+            if ($markdownHelperBtn.hasClass('btn-default')) {
+              //closed
+              $markdownHelperBtn.removeClass('btn-default');
+              $markdownHelperBtn.addClass('btn-success');
+
+              $markdownTemplatesWrapper.show();
+              $markdownTemplatesWrapper
+                .children()
+                .animate({ left: 0 }, settings.templateButtonsAnimationSpeed);
+            } else {
+              //opened
+              $markdownHelperBtn.removeClass('btn-success');
+              $markdownHelperBtn.addClass('btn-default');
+
+              $markdownTemplatesWrapper
+                .children()
+                .animate(
+                  { left: -$markdownTemplatesWrapper.width() },
+                  settings.templateButtonsAnimationSpeed,
+                  function () {
+                    $markdownTemplatesWrapper.hide();
+                  },
+                );
+            }
+          };
+
+          this.$markdownHelperBtn = $(
+            '<button id="markdown-helper-btn" type="button" class="btn btn-sm btn-default" title="' +
+              app.t('markdown[.]Markdown helper') +
+              '">',
+          )
+            .html('<i class="glyphicon glyphicon-font"></i>')
+            .on('click', function () {
+              that.handleMarkdownHelperBtnClick(
+                $(this),
+                that.$markdownTemplatesWrapper,
+              );
+
+              app.storage.toggle('bb-codes-opened');
+            });
+
+          if ($('#chat-help-btn').length !== 0) {
+            this.$markdownHelperBtn.insertBefore('#chat-help-btn');
+          } else {
+            this.$markdownHelperBtn.appendTo('#chat-controls');
+          }
+
+          this.$markdownTemplatesWrapper = $(
+            '<div class="btn-group markdown-helper-templates-wrapper">',
+          )
+            .insertAfter(this.$markdownHelperBtn)
+            .hide();
+
+          if (app.storage.get('bb-codes-opened')) {
+            this.handleMarkdownHelperBtnClick(
+              this.$markdownHelperBtn,
+              this.$markdownTemplatesWrapper,
+            );
+          }
+
+          /**
+           * Markdown templates
+           *
+           * To add your template you need to also add your template key into settings.templateButtons
+           * @type {object}
+           */
+          this.markdownTemplates = {
+            b: {
+              text: '<b>B</b>',
+              title: app.t('markdown[.]Bold text'),
+            },
+            i: {
+              text: '<i>I</i>',
+              title: app.t('markdown[.]Cursive text'),
+            },
+            sp: {
+              text: 'SP',
+              title: app.t('markdown[.]Spoiler'),
+            },
+            code: {
+              text: '<code>CODE</code>',
+              title: app.t('markdown[.]Monospace'),
+            },
+            s: {
+              text: '<s>S</s>',
+              title: app.t('markdown[.]Strike'),
+            },
+          };
+
+          var template;
+          for (
+            var templateIndex = 0,
+              templatesLength = settings.templateButtons.length;
+            templateIndex < templatesLength;
+            templateIndex++
+          ) {
+            template = settings.templateButtons[templateIndex];
+
+            $(
+              '<button type="button" class="btn btn-sm btn-default" title="' +
+                this.markdownTemplates[template].title +
+                '">',
+            )
+              .html(this.markdownTemplates[template].text)
+              .data('template', template)
+              .appendTo(this.$markdownTemplatesWrapper);
+          }
+
+          this.handleMarkdown = function (templateType) {
+            if (this.markdownTemplates.hasOwnProperty(templateType)) {
+              $('#chatline')
+                .selection('insert', {
+                  text: '[' + templateType + ']',
+                  mode: 'before',
+                })
+                .selection('insert', {
+                  text: '[/' + templateType + ']',
+                  mode: 'after',
+                });
+            }
+          };
+          this.$markdownTemplatesWrapper.on('click', 'button', function () {
+            that.handleMarkdown($(this).data('template'));
+
+            return false;
+          });
+        },
+      );
+
+      /***/
+    },
+    /* 13 */
+    /***/ function (module, exports) {
+      /*!
+       * jQuery.selection - jQuery Plugin
+       *
+       * Copyright (c) 2010-2014 IWASAKI Koji (@madapaja).
+       * http://blog.madapaja.net/
+       * Under The MIT License
+       *
+       * Permission is hereby granted, free of charge, to any person obtaining
+       * a copy of this software and associated documentation files (the
+       * "Software"), to deal in the Software without restriction, including
+       * without limitation the rights to use, copy, modify, merge, publish,
+       * distribute, sublicense, and/or sell copies of the Software, and to
+       * permit persons to whom the Software is furnished to do so, subject to
+       * the following conditions:
+       *
+       * The above copyright notice and this permission notice shall be
+       * included in all copies or substantial portions of the Software.
+       *
+       * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+       * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+       * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+       * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+       * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+       * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+       * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+       */
+      (function ($, win, doc) {
+        /**
+         * get caret status of the selection of the element
+         *
+         * @param   {Element}   element         target DOM element
+         * @return  {Object}    return
+         * @return  {String}    return.text     selected text
+         * @return  {Number}    return.start    start position of the selection
+         * @return  {Number}    return.end      end position of the selection
+         */
+        var _getCaretInfo = function (element) {
+          var res = {
+            text: '',
+            start: 0,
+            end: 0,
+          };
+
+          if (!element.value) {
+            /* no value or empty string */
+            return res;
+          }
+
+          try {
+            if (win.getSelection) {
+              /* except IE */
+              res.start = element.selectionStart;
+              res.end = element.selectionEnd;
+              res.text = element.value.slice(res.start, res.end);
+            } else if (doc.selection) {
+              /* for IE */
+              element.focus();
+
+              var range = doc.selection.createRange(),
+                range2 = doc.body.createTextRange();
+
+              res.text = range.text;
+
+              try {
+                range2.moveToElementText(element);
+                range2.setEndPoint('StartToStart', range);
+              } catch (e) {
+                range2 = element.createTextRange();
+                range2.setEndPoint('StartToStart', range);
+              }
+
+              res.start = element.value.length - range2.text.length;
+              res.end = res.start + range.text.length;
+            }
+          } catch (e) {
+            /* give up */
+          }
+
+          return res;
+        };
+
+        /**
+         * caret operation for the element
+         * @type {Object}
+         */
+        var _CaretOperation = {
+          /**
+           * get caret position
+           *
+           * @param   {Element}   element         target element
+           * @return  {Object}    return
+           * @return  {Number}    return.start    start position for the selection
+           * @return  {Number}    return.end      end position for the selection
+           */
+          getPos: function (element) {
+            var tmp = _getCaretInfo(element);
+            return { start: tmp.start, end: tmp.end };
+          },
+
+          /**
+           * set caret position
+           *
+           * @param   {Element}   element         target element
+           * @param   {Object}    toRange         caret position
+           * @param   {Number}    toRange.start   start position for the selection
+           * @param   {Number}    toRange.end     end position for the selection
+           * @param   {String}    caret           caret mode: any of the following: "keep" | "start" | "end"
+           */
+          setPos: function (element, toRange, caret) {
+            caret = this._caretMode(caret);
+
+            if (caret === 'start') {
+              toRange.end = toRange.start;
+            } else if (caret === 'end') {
+              toRange.start = toRange.end;
+            }
+
+            element.focus();
+            try {
+              if (element.createTextRange) {
+                var range = element.createTextRange();
+
+                if (
+                  win.navigator.userAgent.toLowerCase().indexOf('msie') >= 0
+                ) {
+                  toRange.start = element.value
+                    .substr(0, toRange.start)
+                    .replace(/\r/g, '').length;
+                  toRange.end = element.value
+                    .substr(0, toRange.end)
+                    .replace(/\r/g, '').length;
+                }
+
+                range.collapse(true);
+                range.moveStart('character', toRange.start);
+                range.moveEnd('character', toRange.end - toRange.start);
+
+                range.select();
+              } else if (element.setSelectionRange) {
+                element.setSelectionRange(toRange.start, toRange.end);
+              }
+            } catch (e) {
+              /* give up */
+            }
+          },
+
+          /**
+           * get selected text
+           *
+           * @param   {Element}   element         target element
+           * @return  {String}    return          selected text
+           */
+          getText: function (element) {
+            return _getCaretInfo(element).text;
+          },
+
+          /**
+           * get caret mode
+           *
+           * @param   {String}    caret           caret mode
+           * @return  {String}    return          any of the following: "keep" | "start" | "end"
+           */
+          _caretMode: function (caret) {
+            caret = caret || 'keep';
+            if (caret === false) {
+              caret = 'end';
+            }
+
+            switch (caret) {
+              case 'keep':
+              case 'start':
+              case 'end':
+                break;
+
+              default:
+                caret = 'keep';
+            }
+
+            return caret;
+          },
+
+          /**
+           * replace selected text
+           *
+           * @param   {Element}   element         target element
+           * @param   {String}    text            replacement text
+           * @param   {String}    caret           caret mode: any of the following: "keep" | "start" | "end"
+           */
+          replace: function (element, text, caret) {
+            var tmp = _getCaretInfo(element),
+              orig = element.value,
+              pos = $(element).scrollTop(),
+              range = { start: tmp.start, end: tmp.start + text.length };
+
+            element.value =
+              orig.substr(0, tmp.start) + text + orig.substr(tmp.end);
+
+            $(element).scrollTop(pos);
+            this.setPos(element, range, caret);
+          },
+
+          /**
+           * insert before the selected text
+           *
+           * @param   {Element}   element         target element
+           * @param   {String}    text            insertion text
+           * @param   {String}    caret           caret mode: any of the following: "keep" | "start" | "end"
+           */
+          insertBefore: function (element, text, caret) {
+            var tmp = _getCaretInfo(element),
+              orig = element.value,
+              pos = $(element).scrollTop(),
+              range = {
+                start: tmp.start + text.length,
+                end: tmp.end + text.length,
+              };
+
+            element.value =
+              orig.substr(0, tmp.start) + text + orig.substr(tmp.start);
+
+            $(element).scrollTop(pos);
+            this.setPos(element, range, caret);
+          },
+
+          /**
+           * insert after the selected text
+           *
+           * @param   {Element}   element         target element
+           * @param   {String}    text            insertion text
+           * @param   {String}    caret           caret mode: any of the following: "keep" | "start" | "end"
+           */
+          insertAfter: function (element, text, caret) {
+            var tmp = _getCaretInfo(element),
+              orig = element.value,
+              pos = $(element).scrollTop(),
+              range = { start: tmp.start, end: tmp.end };
+
+            element.value =
+              orig.substr(0, tmp.end) + text + orig.substr(tmp.end);
+
+            $(element).scrollTop(pos);
+            this.setPos(element, range, caret);
+          },
+        };
+
+        /* add jQuery.selection */
+        $.extend({
+          /**
+           * get selected text on the window
+           *
+           * @param   {String}    mode            selection mode: any of the following: "text" | "html"
+           * @return  {String}    return
+           */
+          selection: function (mode) {
+            var getText = (mode || 'text').toLowerCase() === 'text';
+
+            try {
+              if (win.getSelection) {
+                if (getText) {
+                  // get text
+                  return win.getSelection().toString();
+                } else {
+                  // get html
+                  var sel = win.getSelection(),
+                    range;
+
+                  if (sel.getRangeAt) {
+                    range = sel.getRangeAt(0);
+                  } else {
+                    range = doc.createRange();
+                    range.setStart(sel.anchorNode, sel.anchorOffset);
+                    range.setEnd(sel.focusNode, sel.focusOffset);
+                  }
+
+                  return $('<div></div>').append(range.cloneContents()).html();
+                }
+              } else if (doc.selection) {
+                if (getText) {
+                  // get text
+                  return doc.selection.createRange().text;
+                } else {
+                  // get html
+                  return doc.selection.createRange().htmlText;
+                }
+              }
+            } catch (e) {
+              /* give up */
+            }
+
+            return '';
+          },
+        });
+
+        /* add selection */
+        $.fn.extend({
+          selection: function (mode, opts) {
+            opts = opts || {};
+
+            switch (mode) {
+              /**
+               * selection('getPos')
+               * get caret position
+               *
+               * @return  {Object}    return
+               * @return  {Number}    return.start    start position for the selection
+               * @return  {Number}    return.end      end position for the selection
+               */
+              case 'getPos':
+                return _CaretOperation.getPos(this[0]);
+
+              /**
+               * selection('setPos', opts)
+               * set caret position
+               *
+               * @param   {Number}    opts.start      start position for the selection
+               * @param   {Number}    opts.end        end position for the selection
+               */
+              case 'setPos':
+                return this.each(function () {
+                  _CaretOperation.setPos(this, opts);
+                });
+
+              /**
+               * selection('replace', opts)
+               * replace the selected text
+               *
+               * @param   {String}    opts.text            replacement text
+               * @param   {String}    opts.caret           caret mode: any of the following: "keep" | "start" | "end"
+               */
+              case 'replace':
+                return this.each(function () {
+                  _CaretOperation.replace(this, opts.text, opts.caret);
+                });
+
+              /**
+               * selection('insert', opts)
+               * insert before/after the selected text
+               *
+               * @param   {String}    opts.text            insertion text
+               * @param   {String}    opts.caret           caret mode: any of the following: "keep" | "start" | "end"
+               * @param   {String}    opts.mode            insertion mode: any of the following: "before" | "after"
+               */
+              case 'insert':
+                return this.each(function () {
+                  if (opts.mode === 'before') {
+                    _CaretOperation.insertBefore(this, opts.text, opts.caret);
+                  } else {
+                    _CaretOperation.insertAfter(this, opts.text, opts.caret);
+                  }
+                });
+
+              /**
+               * selection('get')
+               * get selected text
+               *
+               * @return  {String}    return
+               */
+              case 'get':
+              /* falls through */
+              default:
+                return _CaretOperation.getText(this[0]);
+            }
+
+            return this;
+          },
+        });
+      })(jQuery, window, window.document);
+
+      /***/
+    },
+    /* 14 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule('chatAvatars', function (app, settings) {
+        'use strict';
+        var that = this;
+
+        var tab = app.Settings.getTab(
+          'general',
+          app.t('general[.]General'),
+          100,
+        );
+        var userSettings = app.Settings.storage;
+        var appSettings = app.storage;
+
+        var defaultSettings = {
+          avatarClass: 'chat-avatar',
+          smallAvatarClass: 'chat-avatar_small',
+          bigAvatarClass: 'chat-avatar_big',
+        };
+        settings = $.extend({}, defaultSettings, settings);
+
+        var namespace = 'avatars';
+        this.scheme = {
+          'avatars-mode': {
+            title: app.t('chatAvatars[.]Chat avatars'),
+            default: '',
+            options: [
+              { value: '', title: app.t('chatAvatars[.]Disabled') },
+              { value: 'small', title: app.t('chatAvatars[.]Small') },
+              { value: 'big', title: app.t('chatAvatars[.]Big') },
+            ],
+          },
+        };
+        appSettings.setDefault(namespace + '.cache', []);
+
+        this.cacheAvatar = function (username, avatar) {
+          var cachedAvatars = appSettings.get(namespace + '.cache');
+
+          if (cachedAvatars.length >= 50) {
+            cachedAvatars = cachedAvatars.slice(0, 49);
+          }
+
+          cachedAvatars.unshift({
+            username: username,
+            avatar: avatar,
+          });
+
+          appSettings.set(namespace + '.cache', cachedAvatars);
+        };
+
+        this.getAvatarFromCache = function (username) {
+          var cachedAvatar = _.findLast(
+            appSettings.get(namespace + '.cache'),
+            function (o) {
+              return o.username == username;
+            },
+          );
+          cachedAvatar = cachedAvatar ? cachedAvatar.avatar : null;
+
+          return cachedAvatar;
+        };
+
+        this.getAvatarFromUserlist = function (username) {
+          return window.findUserlistItem(username) &&
+            window.findUserlistItem(username).data('profile').image
+            ? window.findUserlistItem(username).data('profile').image
+            : null;
+        };
+
+        this.applyAvatar = function ($usernameBlock, username, newAvatar) {
+          username =
+            username || $usernameBlock.text().replace(/^\s+|[:]?\s+$/g, '');
+          newAvatar = newAvatar || that.getAvatarFromUserlist(username);
+          var cachedAvatar = that.getAvatarFromCache(username);
+          var $messageBlock = $usernameBlock.parent();
+
+          if (cachedAvatar || newAvatar) {
+            if (!cachedAvatar) {
+              that.cacheAvatar(username, newAvatar);
+            }
+
+            if ($messageBlock.find('.' + settings.avatarClass).length === 0) {
+              var $avatar = $('<img>')
+                .attr('src', newAvatar || cachedAvatar)
+                .addClass(
+                  settings.avatarClass +
+                    ' ' +
+                    (userSettings.get(namespace + '.avatars-mode') == 'big'
+                      ? settings.bigAvatarClass
+                      : settings.smallAvatarClass),
+                )
+                .prependTo($messageBlock);
+
+              if (userSettings.get(namespace + '.avatars-mode') == 'big') {
+                $(this).css('display', 'none');
+                $avatar.attr('title', username);
+              }
+            }
+          }
+        };
+
+        /**
+         * Creating markup for settings
+         */
+        var schemeItem;
+        var option;
+        var sort = 100;
+        for (var itemName in this.scheme) {
+          schemeItem = this.scheme[itemName];
+
+          userSettings.setDefault(
+            namespace + '.' + itemName,
+            schemeItem.default,
+          );
+
+          if (userSettings.get(namespace + '.' + itemName)) {
+            for (option in schemeItem.options) {
+              schemeItem.options[option].selected =
+                userSettings.get(namespace + '.' + itemName) ==
+                schemeItem.options[option].value;
+            }
+          }
+
+          tab.addControl(
+            'select',
+            'horizontal',
+            schemeItem.title,
+            itemName,
+            schemeItem.options,
+            null,
+            sort,
+          );
+          sort += 100;
+        }
+
+        /**
+         * Saving and applying settings
+         */
+        app.Settings.onSave(function (settings) {
+          for (var itemName in that.scheme) {
+            settings.set(
+              namespace + '.' + itemName,
+              $('#' + app.prefix + itemName).val(),
+            );
+          }
+
+          if (settings.isDirty(namespace + '.avatars-mode')) {
+            app.Settings.requestPageReload();
+          }
+        });
+
+        /**
+         * Applying settings
+         */
+        if (userSettings.get(namespace + '.avatars-mode')) {
+          window.formatChatMessage = (function (oldFormatChatMessage) {
+            return function (data, last) {
+              var $div = oldFormatChatMessage(data, last);
+
+              that.applyAvatar($div.find('.username'), data.username);
+
+              return $div;
+            };
+          })(window.formatChatMessage);
+
+          $('.username').each(function () {
+            that.applyAvatar($(this));
+          });
+
+          window.socket.on('addUser', function (data) {
+            if (data.profile && data.profile.image && data.name) {
+              $('.username:contains("' + data.name + ':")').each(function () {
+                that.applyAvatar($(this), data.name, data.profile.image);
+              });
+            }
+          });
+        }
+      });
+
+      /***/
+    },
+    /* 15 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule(
+        'chatCommandsHelp',
+        function (app, settings) {
+          'use strict';
+          var that = this;
+
+          var defaultSettings = {
+            commands: {
+              '/me': app.t(
+                'chatCommands[.]%username% action (e.g: <i>/me is dancing</i>)',
+              ),
+              '/sp': app.t('chatCommands[.]spoiler'),
+              '/afk': app.t('chatCommands[.]sets the "AFK" status'),
+            },
+          };
+          settings = $.extend({}, defaultSettings, settings);
+
+          if ($('#chat-controls').length === 0) {
+            $('<div id="chat-controls" class="btn-group">').appendTo(
+              '#chatwrap',
+            );
+          }
+
+          this.commands = {};
+          this.commands[app.t('Standard commands')] = settings.commands;
+
+          if (app.isModulePermitted('additionalChatCommands')) {
+            app
+              .getModule('additionalChatCommands')
+              .done(function (commandsModule) {
+                var additionalCommands = {};
+
+                for (var command in commandsModule.commandsList) {
+                  if (
+                    commandsModule.commandsList.hasOwnProperty(command) &&
+                    commandsModule.isCommandPermitted(command) &&
+                    (commandsModule.commandsList[command].isAvailable
+                      ? commandsModule.commandsList[command].isAvailable()
+                      : true)
+                  ) {
+                    additionalCommands[command] =
+                      commandsModule.commandsList[command].description || '';
+                  }
+                }
+
+                that.commands[app.t('Extra commands')] = additionalCommands;
+              });
+          }
+
+          this.handleChatHelpBtn = function (commands) {
+            var $header = $('<h3 class="modal-title">').text(
+              app.t('The list of chat commands'),
+            );
+
+            var $bodyWrapper = $('<div>');
+
+            for (var commandsPart in commands) {
+              if (commands.hasOwnProperty(commandsPart)) {
+                $('<h3>').html(commandsPart).appendTo($bodyWrapper);
+
+                var $ul = $('<ul>');
+                for (var command in commands[commandsPart]) {
+                  if (commands[commandsPart].hasOwnProperty(command)) {
+                    $('<li>')
+                      .html(
+                        '<code>' +
+                          command +
+                          '</code> - ' +
+                          commands[commandsPart][command] +
+                          '.',
+                      )
+                      .appendTo($ul);
+                  }
+                }
+
+                $ul.appendTo($bodyWrapper);
+              }
+            }
+
+            app.UI.createModalWindow(
+              'chat-commands-help',
+              $header,
+              $bodyWrapper,
+            );
+          };
+          this.$chatHelpBtn = $(
+            '<button id="chat-help-btn" class="btn btn-sm btn-default">',
+          )
+            .text(app.t('Commands list'))
+            .appendTo('#leftcontrols')
+            .on('click', function () {
+              that.handleChatHelpBtn(that.commands);
+            });
+        },
+      );
+
+      /***/
+    },
     
 ]));
