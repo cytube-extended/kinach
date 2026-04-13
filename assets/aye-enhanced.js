@@ -64,3 +64,39 @@ $.getScript("https://kinach.vercel.app/assets/NicknameColors.js");
 
 // Chat pictures
 $.getScript("https://kinach.vercel.app/assets/ChatPictures.js");
+
+function AddNickClass(){
+	let h=function(i){
+		let a=/(.+?):?/gi;
+		let b=`$1`;
+		let c=i.replace(a,b);
+		return c
+	};
+
+	let a=['.userlist_siteadmin','.userlist_owner','.userlist_op'];
+
+	for(let c of a){
+		$(c).each(function(a,b){
+			$(b).addClass(h($(b)["context"].textContent))
+		})
+	}
+
+	if(UI_UsersClassNick===1){
+		$(".userlist_item span:not([class]):nth-child(2)").each(function(a,b){
+			$(b).addClass($(b)["context"].textContent)
+		})
+	}
+}
+AddNickClass();
+
+socket.on("setAFK",function(){AddNickClass()});
+socket.on("setLeader",function(){AddNickClass()});
+socket.on("setUserMeta",function(){AddNickClass()});
+socket.on("connect",function(){AddNickClass()});
+socket.on("addUser",function(){AddNickClass()});
+socket.on("setUserRank",function(){AddNickClass()});
+socket.on("userLeave",function(){AddNickClass()});
+socket.on("channelCSSJS",function(){AddNickClass()});
+socket.on("channelRanks",function(){AddNickClass()});
+socket.on("usercount",function(){AddNickClass()});
+socket.on("userlist",function(){AddNickClass()});
