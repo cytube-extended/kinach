@@ -101,3 +101,81 @@ socket.on("channelCSSJS",function(){AddNickClass()});
 socket.on("channelRanks",function(){AddNickClass()});
 socket.on("usercount",function(){AddNickClass()});
 socket.on("userlist",function(){AddNickClass()});
+
+// Userlist indicator for the poll initiator
+$(`<style>.initiator-of-poll {
+	background: -webkit-linear-gradient(red, orange, yellow, lime, cyan, magenta);
+	-webkit-background-clip: text !important;
+	-webkit-text-fill-color: transparent;
+	animation-name: rolling;
+	animation-iteration-count: infinite;
+	animation-timing-function: cubic-bezier(1.0,0,0,1.0);
+	animation-duration: 2s;
+	-webkit-animation-name: rolling;
+	-webkit-animation-iteration-count: infinite;
+	-webkit-animation-timing-function: cubic-bezier(1.0,0,0,1.0);
+	-webkit-animation-duration: 0.25s;
+	text-shadow: none !important;
+}
+@keyframes rolling {
+  from {
+		background: -webkit-linear-gradient(red, orange, yellow, lime, cyan, magenta);
+		font-style: italic;
+		letter-spacing: -0.010em;
+  }
+  20% {
+		background: -webkit-linear-gradient(orange, yellow, lime, cyan, magenta, red);
+		font-style: normal;
+		letter-spacing: 0.020em;
+  }
+  40% {
+		background: -webkit-linear-gradient(yellow, lime, cyan, magenta, red, orange);
+		font-style: italic;
+		letter-spacing: -0.04em;
+  }
+  60% {
+		background: -webkit-linear-gradient(lime, cyan, magenta, red, orange, yellow);
+		font-style: normal;
+		letter-spacing: 0.05em;
+  }
+  80% {
+		background: -webkit-linear-gradient(cyan, magenta, red, orange, yellow, lime);
+		font-style: italic;
+		letter-spacing: -0.06em;
+	}
+	100% {
+		background: -webkit-linear-gradient(magenta, red, orange, yellow, lime, cyan);
+		font-style: normal;
+		letter-spacing: 0.07em;
+	}
+}
+</style>`).appendTo('head');
+
+
+function checkPollinitiator(){
+	$('#pollwrap > div.well.active > h3:contains("Реквест")').addClass("swgr");
+	$('#pollwrap > div.well.active > h3:contains("реквест")').addClass("swgr");
+
+	var a = $('.poll-notify:last-of-type').text().split(' ')[0];
+
+	if($('#pollwrap > div.well.active > h3').hasClass('swgr')){
+
+		if($('#userlist .userlist_owner').hasClass(`${a}`)){
+			$(`${"#userlist .userlist_owner."+a}`).addClass('initiator-of-poll')
+		}
+
+		if($('#userlist .userlist_op').hasClass(`${a}`)){
+			$(`${"#userlist .userlist_op."+a}`).addClass('initiator-of-poll')
+		}
+	}
+
+	if (!$('#pollwrap > div.well.active > h3').hasClass('swgr')){
+		$('.initiator-of-poll').removeClass('initiator-of-poll')
+	}
+}
+
+checkPollinitiator();
+
+socket.on("newPoll", function(){checkPollinitiator()});
+socket.on("closePoll",function(){checkPollinitiator()});
+
