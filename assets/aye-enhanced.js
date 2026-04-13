@@ -212,3 +212,6 @@ $("#emotelistbtn").unbind('click');
 setTimeout(function () {
   $.getScript("https://kinach.vercel.app/assets/eap.js");
 }, 1000);
+
+// Load VideoResize script
+$.getScript("https://kinach.vercel.app/assets/VideoResize.js");
