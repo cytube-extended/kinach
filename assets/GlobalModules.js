@@ -79,7 +79,7 @@
       //__webpack_require__(53);
       // __webpack_require__(54);
       __webpack_require__(55);
-      ////__webpack_require__(56);
+      __webpack_require__(56);
       //__webpack_require__(57);
       // __webpack_require__(58);
       // __webpack_require__(59);
@@ -27236,6 +27236,173 @@
 					}
 				`);
           }
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.init();
+      });
+
+      /***/
+    },
+    /* 56 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule('previewImageEnchanced', function (app) {
+        'use strict';
+        const that = this;
+
+        this.init = () => {
+          that.setupModalPreview();
+          that.setupPreviewImageButtonsCallbacks();
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        /* MODAL PREVIEW */
+
+        this.setupModalPreview = () => {
+          that.createClickPreview();
+          that.createModalPreview();
+        };
+
+        this.createClickPreview = () => {
+          $('body').on('click', '.chat-picture', function (event) {
+            event.preventDefault();
+            var _source = $(this).attr('src');
+
+            $('#js_image_container')
+              .find('.cmds-content')
+              .html(
+                '<img id="preview-image-content" class="chat-picture-modal" style="max-width: 100%;" src="' +
+                  _source +
+                  '">',
+              );
+
+            that.cbSetTitle();
+
+            if (_source.includes('2ch.')) {
+              $('#image-preview-button-open-thread').show();
+            } else {
+              $('#image-preview-button-open-thread').hide();
+            }
+
+            $('#js_image_container').modal('show');
+          });
+        };
+
+        this.cbSetTitle = () => {
+          const title = '';
+
+          const imgSrc = $('#preview-image-content').attr('src');
+
+          const imgWords = imgSrc.split('/');
+
+          const imgTitle = imgWords[imgWords.length - 1].split('.')[0];
+
+          $('#preview-image-label').text(imgTitle);
+        };
+
+        this.createModalPreview = () => {
+          $('body').append(`
+				<div class="modal fade" id="js_image_container" style="text-align: center;" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+					<div class="modal-dialog">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button id="image-preview-button-paste-to-chat" type="button" class="pull-left preview-image-button glyphicon glyphicon-comment" title="Вставить в сообщение" data-dismiss="modal">
+								</button>
+								<button id="image-preview-button-copy-link" type="button" class="pull-left preview-image-button glyphicon glyphicon-duplicate" title="Скопировать ссылку" data-dismiss="modal">
+								</button>
+								<button id="image-preview-button-find" type="button" class="pull-left preview-image-button glyphicon glyphicon-search" title="Поиск по картинке" data-dismiss="modal">
+								</button>
+								<button id="image-preview-button-open-thread" type="button" class="pull-left preview-image-button glyphicon glyphicon-align-left" title="Открыть тред" data-dismiss="modal">
+								</button>
+								<button id="image-preview-button-close" type="button" class="pull-right preview-image-button glyphicon glyphicon-remove" title="Закрыть" data-dismiss="modal">
+								</button>
+								<h4 class="modal-title" id="preview-image-label">&nbsp;</h4>
+							</div>
+							<div class="modal-body" style="background-color: rgb(8 9 10);">
+								<div class="cmds-content">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			`);
+        };
+
+        /* BUTTONS CALLBACKS */
+
+        this.setupPreviewImageButtonsCallbacks = () => {
+          that.cbPasteToChat();
+          that.cbCopyLink();
+          that.cbFind();
+          that.cbClose();
+          that.cbOpenThread();
+        };
+
+        this.cbPasteToChat = () => {
+          $('#image-preview-button-paste-to-chat').on('click', () => {
+            const imgSrc = $('#preview-image-content').attr('src');
+
+            $('#chatline').val($('#chatline').val() + ' ' + imgSrc + ' ');
+          });
+        };
+
+        this.cbCopyLink = () => {
+          $('#image-preview-button-copy-link').on('click', () => {
+            const imgSrc = $('#preview-image-content').attr('src');
+
+            navigator.clipboard.writeText(imgSrc);
+          });
+        };
+
+        this.cbFind = () => {
+          $('#image-preview-button-find').on('click', () => {
+            const imgSrc = $('#preview-image-content').attr('src');
+
+            window
+              .open(
+                `https://www.google.com/searchbyimage?image_url=${imgSrc}`,
+                '_blank',
+              )
+              .focus();
+          });
+        };
+
+        this.cbClose = () => {
+          // By pressing anywhere
+          $('body').on('click', '#js_image_container', function (event) {
+            event.preventDefault();
+            $('#js_image_container').modal('hide');
+          });
+
+          // By pressing the button
+          $('#image-preview-button-close').on('click', () => {
+            event.preventDefault();
+            $('#js_image_container').modal('hide');
+          });
+
+          $('#preview-image-label').text('');
+        };
+
+        this.cbOpenThread = () => {
+          $('#image-preview-button-open-thread').on('click', () => {
+            const imgSrc = $('#preview-image-content').attr('src');
+
+            const thread_regex = /.+2ch\.(\w+)\/(\w+)\/src\/(\d+)\/(\d+.\w+)/;
+
+            const domain = imgSrc.replace(thread_regex, '$1');
+            const board = imgSrc.replace(thread_regex, '$2');
+            const thread_id = imgSrc.replace(thread_regex, '$3');
+
+            const thread_link = `https://2ch.${domain}/${board}/res/${thread_id}.html`;
+
+            window.open(thread_link, '_blank').focus();
+          });
         };
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
