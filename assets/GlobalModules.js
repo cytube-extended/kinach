@@ -92,7 +92,7 @@
       // __webpack_require__(66);
       // __webpack_require__(67);
       __webpack_require__(68);
-      ////__webpack_require__(69);
+      __webpack_require__(69);
       // __webpack_require__(70);
       // __webpack_require__(71);
     },
@@ -30170,6 +30170,394 @@
         this.chatlineInputFix = () => {
           const f = $('<form>').attr('onsubmit', 'return false');
           $('#chatline').wrap(f);
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.init();
+      });
+
+      /***/
+    },
+    /* 69 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule('movieData', function (app) {
+        'use strict';
+        const that = this;
+
+        this.init = () => {
+          that.createButtons();
+
+          that.checkMovieResources();
+          that.setupCallbacks();
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.createButtons = () => {
+          that.createDubButton();
+          that.createQualityButton();
+        };
+
+        // Create dub selection
+        this.createDubButton = () => {
+          if ($('#dub-btn').length > 0) {
+            return;
+          }
+
+          $('<div>')
+            .addClass('btn-group')
+            .attr('id', 'dub-btn')
+            .appendTo('#plcontrol')
+            .hide();
+
+          // Create button
+          $('<button>')
+            .addClass('btn')
+            .addClass('btn-default')
+            .addClass('btn-sm')
+            .addClass('video-dropdown-toggle')
+            .attr({
+              type: 'button',
+              'data-toggle': 'dropdown',
+              'aria-haspopup': 'true',
+              'aria-expanded': 'false',
+            })
+            .html('Озвучка <span class="caret"></span>')
+            .appendTo('#dub-btn');
+
+          // Create menu
+          $('<ul>')
+            .attr('id', 'dub-menu')
+            .addClass('dropdown-menu')
+            .appendTo('#dub-btn');
+        };
+
+        this.createQualityButton = () => {
+          if ($('#quality-btn').length > 0) {
+            return;
+          }
+
+          $('<div>')
+            .addClass('btn-group')
+            .attr('id', 'quality-btn')
+            .appendTo('#plcontrol')
+            .hide();
+
+          // Create button
+          $('<button>')
+            .addClass('btn')
+            .addClass('btn-default')
+            .addClass('btn-sm')
+            .addClass('video-dropdown-toggle')
+            .attr({
+              type: 'button',
+              'data-toggle': 'dropdown',
+              'aria-haspopup': 'true',
+              'aria-expanded': 'false',
+            })
+            .html('Качество <span class="caret"></span>')
+            .appendTo('#quality-btn');
+
+          // Create menu
+          $('<ul>')
+            .attr('id', 'quality-menu')
+            .addClass('dropdown-menu')
+            .appendTo('#quality-btn');
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.checkMovieResources = () => {
+          console.log('Check movie resources');
+
+          if (that.isPlayerOpen()) {
+            const link = that.getCurrentLink();
+
+            if (that.isMovieLink(link)) {
+              // Get current queue data
+              const queueData = $('.queue_active').data();
+
+              // Get movie resources
+              const queueMovieResources = queueData.movieResources;
+
+              // If no movie resources
+              if (typeof queueMovieResources === 'undefined') {
+                // Check if requesting movie resources
+                if (queueData.requestingMovieResources === true) {
+                  return;
+                }
+
+                // Get title
+                const title = queueData.media.title;
+
+                // Is KP link
+                const hasKP = title.includes('kinopoisk.ru');
+                if (hasKP === false) {
+                  console.log('Has no kp link');
+                  that.clearMovieDataButtons();
+                  return;
+                }
+
+                // Get KP ID
+                let regex_kp_id = /(.+?)\/(\d+)\//;
+                const kp_id = title.replace(regex_kp_id, '$2');
+
+                $('.queue_active').data('requestingMovieResources', true);
+                // that.requestMovieResources(kp_id, title);
+                that.requestMovieResources(kp_id);
+              }
+              // If has dub data
+              else {
+                that.fillButtons(queueMovieResources);
+              }
+            }
+            // If not movie link
+            else {
+              that.clearMovieDataButtons();
+            }
+          }
+          // If player is closed
+          else {
+            that.clearMovieDataButtons();
+          }
+        };
+
+        this.isPlayerOpen = () => $('#ytapiplayer_html5_api').length > 0;
+        this.isMovieLink = link =>
+          /(.+?)\/(?:240|360|480|720|1080)\.mp4/.test(link);
+        this.setPlayerLink = link =>
+          $($('#ytapiplayer_html5_api')[0]).attr('src', link);
+
+        this.getCurrentLink = () => $('#ytapiplayer_html5_api').attr('src');
+        this.getLinkQuality = link =>
+          link.replace(/(?:.+?)\/(240|360|480|720|1080)\.mp4/, '$1');
+        this.getCurrentQuality = () =>
+          that.getLinkQuality(that.getCurrentLink());
+        this.getLinkTranslationHash = link =>
+          link.replace(
+            /(?:.+?)\/([a-z0-9]*)\/(?:240|360|480|720|1080)\.mp4/,
+            '$1',
+          );
+        this.getCurrentTranslationHash = () =>
+          that.getLinkTranslationHash(that.getCurrentLink());
+
+        this.clearMovieDataButtons = () => {
+          console.log('Clear movie resources');
+
+          that.clearQualityButton();
+          that.clearDubButton();
+
+          $('.queue_active').data('movieResources', undefined);
+        };
+
+        this.clearQualityButton = () => {
+          $('#quality-menu').empty();
+          $('#quality-btn').hide();
+        };
+
+        this.clearDubButton = () => {
+          $('#dub-menu').empty();
+          $('#dub-btn').hide();
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // Setup callbacks
+        this.setupCallbacks = () => {
+          // Clear on any switch
+          socket.on('changeMedia', () => that.clearMovieDataButtons());
+          socket.on('setCurrent', () => that.clearMovieDataButtons());
+
+          // Check on updates
+          socket.on('mediaUpdate', () => that.checkMovieResources());
+          $('#mediarefresh').on('click', () => {
+            setTimeout(that.checkMovieResources, 2000);
+          });
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // Rename to request movie resources
+        this.requestMovieResources = kpID => {
+          $.ajax({
+            url: 'https://nifty-well-gander.glitch.me/getMovie',
+            type: 'POST',
+            data: { kpID: kpID },
+            dataType: 'json',
+            success: function (response) {
+              console.log('Received dub from server.');
+
+              if (response.type === 'movie') {
+                const data = response.data;
+
+                console.log('Movie resources data');
+                console.log(data);
+
+                $('.queue_active').data('movieResources', data);
+                that.fillButtons(data);
+              }
+
+              $('.queue_active').removeData('requesting_dub');
+            },
+            error: function (err) {
+              console.log(err);
+              $('.queue_active').removeData('requesting_dub');
+            },
+          });
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // Init
+        this.fillButtons = data => {
+          console.log('Show buttons');
+
+          // Fill dub menu with dub data
+          that.fillDubButton(data);
+
+          // Get current dub hash and select it from dub menu
+          that.fillQualityButton(data);
+        };
+
+        // Get currently playing movie resources
+        this.getCurrentMovieResource = data => {
+          const current_translation_hash = that.getCurrentTranslationHash();
+
+          for (let t = 0; t < data.length; t++) {
+            const data_translation_hash = that.getLinkTranslationHash(
+              data[t].qualities[0].movieLinks,
+            );
+
+            if (current_translation_hash === data_translation_hash) {
+              const current_movie_resource = {
+                current_quality: that.getCurrentQuality(),
+                current_qualities: data[t].qualities,
+                current_translation_ID: t,
+                current_translation_title: data[t].translation,
+              };
+
+              console.log('Current movie resource:');
+              console.log(current_movie_resource);
+
+              return current_movie_resource;
+            }
+          }
+        };
+
+        this.fillDubButton = data => {
+          if ($('#dub-btn').length <= 0) {
+            that.createDubButton();
+          }
+
+          // Ignore if already has dub data in dub  menu
+          if ($('#dub-menu').children().length > 0) {
+            return;
+          }
+
+          $('#dub-btn').show();
+
+          const dubMenu = $('#dub-menu');
+          dubMenu.empty();
+
+          for (var i = 0; i < data.length; i++) {
+            const dub_title = data[i].translation;
+            const dubID = i;
+
+            $('<li>')
+              .attr('id', `dub-option-${i}`)
+              .html(`<a>${dub_title}</a>`)
+              .appendTo(dubMenu)
+              .on('click', function () {
+                that.handleSelectDub(data, dubID);
+              });
+          }
+        };
+
+        this.fillQualityButton = data => {
+          if ($('#quality-btn').length <= 0) {
+            that.createQualityButton();
+          }
+
+          if ($('#quality-menu').children().length > 0) {
+            return;
+          }
+
+          const current_movie_resources = that.getCurrentMovieResource(data);
+          that.handleSelectDub(
+            data,
+            current_movie_resources.current_translation_ID,
+          );
+        };
+
+        this.handleSelectDub = (data, dubID) => {
+          const selected_dub = data[dubID];
+
+          const dub_qualities = selected_dub.qualities;
+          that.handleQualities(dub_qualities);
+
+          that.changeCurrentDub(dub_qualities);
+        };
+
+        this.handleQualities = qualities => {
+          if ($('#quality-btn').length > 0) {
+            that.createQualityButton();
+          }
+
+          $('#quality-btn').show();
+
+          const qualityMenu = $('#quality-menu');
+          qualityMenu.empty();
+
+          for (var i = 0; i < qualities.length; i++) {
+            const quality_link = qualities[i].movieLinks;
+            const quality_title = qualities[i].quality;
+
+            $('<li>')
+              .attr('id', `quality-option-${i}`)
+              .html(`<a>${quality_title}</a>`)
+              .appendTo(qualityMenu)
+              .on('click', function () {
+                that.handleSelectQuality(quality_link);
+              });
+          }
+        };
+
+        this.changeCurrentDub = dub_qualities => {
+          let dub_link = '';
+
+          // Get current quality
+          const current_quality = that.getCurrentQuality();
+          const current_quality_name = current_quality + 'p';
+
+          // Set to the best quality first
+          dub_link = dub_qualities[0].movieLinks;
+
+          // Then try to find the same quality
+          for (let i = 0; i < dub_qualities.length; i++) {
+            if (dub_qualities[i].quality === current_quality_name) {
+              dub_link = dub_qualities[i].movieLinks;
+              break;
+            }
+          }
+
+          that.setPlayerLink(dub_link);
+        };
+
+        this.handleSelectQuality = link => {
+          that.setPlayerLink(link);
         };
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
