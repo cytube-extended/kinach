@@ -70,7 +70,7 @@
       __webpack_require__(44);
       // __webpack_require__(45);
       __webpack_require__(46);
-      ////__webpack_require__(47);
+      __webpack_require__(47);
       ////__webpack_require__(48);
       ////__webpack_require__(49);
       ////__webpack_require__(50);
@@ -25698,6 +25698,46 @@
           };
 
           this.init();
+        },
+      );
+
+      /***/
+    },
+    /* 47 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule(
+        'copyChatEmote',
+        function (app, settings) {
+          'use strict';
+          var that = this;
+
+          this.$chatline = $('#chatline');
+
+          this.addClickCallback = function () {
+            $('.channel-emote').each((index, item) => {
+              item = $(item);
+
+              let el = $(item);
+              let insertText = el.attr('title');
+
+              el.off();
+              el.click(_ => {
+                that.$chatline
+                  .val(that.$chatline.val() + ` ${insertText} `)
+                  .focus();
+              });
+              el.attr('style', 'cursor: pointer');
+            });
+          };
+
+          setTimeout(function () {
+            that.addClickCallback();
+          }, 1000);
+          window.socket.on('chatMsg', function () {
+            setTimeout(function () {
+              that.addClickCallback();
+            }, 1000);
+          });
         },
       );
 
