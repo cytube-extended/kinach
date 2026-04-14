@@ -5,6 +5,9 @@
   "license": "ISC",
   "type": "module",
   "main": "assets/index.js",
+  "scripts": {
+    "build": "vite build"
+  },
   "devDependencies": {
     "@types/jquery": "^1.10.27",
     "typescript": "^6.0.2",
