@@ -29367,5 +29367,175 @@
 
       /***/
     },
+    /* 66 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule('quickEmoteSearch', function (app) {
+        'use strict';
+        const that = this;
+
+        this.init = () => {
+          that.setupParent();
+          that.setupInput();
+          that.setupClearButton();
+          that.setupEmoteButtonClick();
+          that.setupQuickEmoteSearchCallback();
+
+          that.appendCSS();
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // ELEMENTS
+        this.setupParent = () => {
+          if ($('#quick-emote-search-parent').length === 0) {
+            $('<div>')
+              .attr('id', 'quick-emote-search-parent')
+              .insertBefore('#visibleEmotesList')
+              .hide();
+          }
+        };
+
+        this.setupInput = () => {
+          if ($('#quick-emote-search-input').length === 0) {
+            $('<input>')
+              .attr({
+                id: 'quick-emote-search-input',
+                placeholder: 'ПОИСК',
+                autocomplete: 'off',
+              })
+              .addClass('form-control')
+              .appendTo('#quick-emote-search-parent');
+          }
+        };
+
+        this.setupClearButton = () => {
+          if ($('#quick-emote-search-clear-btn').length === 0) {
+            const buttonWrap = $('<div>')
+              .addClass('wrapped-btn')
+              .prependTo('#quick-emote-search-parent')
+              .on('click', () => {
+                $('#quick-emote-search-input').val('').trigger('input');
+              });
+
+            $('<span>')
+              .addClass('btn')
+              .addClass('btn-sm')
+              .addClass('btn-danger')
+              .attr('id', 'quick-emote-search-clear-btn')
+              .html('<span class="glyphicon glyphicon-remove"></span>')
+              .appendTo(buttonWrap);
+          }
+        };
+
+        // SHOW / HIDE
+        this.setupEmoteButtonClick = () => {
+          $('#emotelistbtn').on('click contextmenu', () => {
+            setTimeout(() => {
+              that.handleEmotesButtonClick();
+            }, 210);
+          });
+        };
+
+        this.handleEmotesButtonClick = () => {
+          console.log($('#visibleEmotesList').is(':hidden'));
+
+          if (
+            $('#visibleEmotesList').is(':hidden') &&
+            $('#hiddenEmotesList').is(':hidden')
+          ) {
+            $('#quick-emote-search-parent').hide();
+            $('#quick-emote-search-input').blur();
+          } else {
+            $('#quick-emote-search-parent').fadeIn(150);
+            $('#quick-emote-search-clear-btn').hide();
+            $('#quick-emote-search-input').val('').focus().trigger('input');
+          }
+        };
+
+        // FILTER
+        this.setupQuickEmoteSearchCallback = () => {
+          $('#quick-emote-search-input').on('input', () => {
+            that.handleFilterEmotes();
+          });
+        };
+
+        this.handleFilterEmotes = () => {
+          const v = $('#visibleEmotesList');
+          const h = $('#hiddenEmotesList');
+
+          if (!v.is(':hidden')) {
+            that.filterEmotes(v);
+          }
+
+          if (!h.is(':hidden')) {
+            that.filterEmotes(h);
+          }
+        };
+
+        this.filterEmotes = emoteList => {
+          const ci = $('#quick-emote-search-input').val().trim();
+
+          ci === ''
+            ? $('#quick-emote-search-clear-btn').hide()
+            : $('#quick-emote-search-clear-btn').show();
+
+          emoteList
+            .children()
+            .toArray()
+            .forEach(e =>
+              !e.title.toLowerCase().includes(ci.toLowerCase())
+                ? $(e).hide()
+                : $(e).show(),
+            );
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.appendCSS = function () {
+          $(`<style>`).appendTo('head').text(`
+
+				#quick-emote-search-input {
+					width: 100%;
+					text-align: center;
+					caret-color: transparent;
+					font-weight: bolder;
+					font-size: 12pt;
+					text-transform: uppercase;
+					text-decoration: none;
+				}
+
+				#quick-emote-search-input:focus {
+					box-shadow: none !important;
+				}
+
+				/* ==== */
+
+				.wrapped-btn {
+					height: 0;
+				}
+
+				#quick-emote-search-clear-btn {
+					position: relative;
+					top: 4px;
+					left: 4px;
+					opacity: 0.5;
+				}
+
+			`);
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.init();
+      });
+
+      /***/
+    },
     
 ]));
