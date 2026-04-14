@@ -67,7 +67,7 @@
       __webpack_require__(32);
       __webpack_require__(35);
       __webpack_require__(43);
-      ////__webpack_require__(44);
+      __webpack_require__(44);
       // __webpack_require__(45);
       ////__webpack_require__(46);
       ////__webpack_require__(47);
@@ -24415,6 +24415,761 @@
           }
         },
       );
+
+      /***/
+    },
+    /* 44 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule('movieInfo', function (app, settings) {
+        'use strict';
+
+        this.kinoID;
+
+        this.movieActors = [];
+
+        this.movieDirectors = '';
+        this.movieProducers = '';
+        this.movieCompositors = '';
+
+        var that = this;
+
+        this.movieFetch = function () {
+          let movieTitle = $('.queue_active a').text();
+          let kinopoiskFilter =
+            /.*?https?:\/\/www\.kinopoisk\.ru\/film\/(\d+)\//g;
+
+          that.kinoID = movieTitle.replace(kinopoiskFilter, '$1');
+
+          var isMovie = kinopoiskFilter.test(movieTitle);
+          this.createMovieButton(isMovie);
+
+          if (isMovie) {
+            this.updateMoviePanelInfo();
+
+            app
+              .getModule('additionalChatCommands')
+              .done(function (additionalChatCommandsModule) {
+                additionalChatCommandsModule.movieActors = [];
+              });
+
+            $.ajax({
+              type: 'GET',
+              dataType: 'application/json',
+              url: `${atob(
+                'aHR0cHM6Ly9raW5vcG9pc2thcGl1bm9mZmljaWFsLnRlY2gvYXBpL3YxL3N0YWZmP2ZpbG1JZD0=',
+              )}${this.kinoID}`,
+              beforeSend: function (xhr) {
+                xhr.setRequestHeader(
+                  `${atob('WC1BUEktS0VZ')}`,
+                  `${atob('NGMwMGE3ZmItOGY3Zi00YTI3LTkwNzMtNzBlN2IxYWYwZDNk')}`,
+                );
+              },
+              complete: function (data) {
+                let resp = data;
+                let kparsed = JSON.parse(resp.responseText);
+
+                that.movieDirectors = '';
+                that.movieProducers = '';
+                that.movieCompositors = '';
+
+                that.movieActors = [];
+
+                // Actors
+                $.each(kparsed, function (key, value) {
+                  if (value.professionKey === 'ACTOR') {
+                    let actorDescription = value.description;
+                    if (
+                      actorDescription &&
+                      !actorDescription.includes('в титрах не указан')
+                    ) {
+                      let actorPhoto = value.posterUrl;
+
+                      $(`<img src=${actorPhoto} />`).on('load', function () {
+                        let imgWidth = $(this)[0].width;
+                        $(this)[0].remove();
+                        if (imgWidth != 52) {
+                          let actorName = value.nameRu;
+
+                          var movieActor = {
+                            actorName: actorName,
+                            actorPhoto: actorPhoto,
+                            actorDescription: actorDescription,
+                          };
+                          that.movieActors.push(movieActor);
+
+                          app
+                            .getModule('additionalChatCommands')
+                            .done(function (additionalChatCommandsModule) {
+                              additionalChatCommandsModule.movieActors.push(
+                                movieActor,
+                              );
+                            });
+                        }
+                      });
+                    }
+                  }
+
+                  // Directors
+                  if (
+                    value.professionKey === 'DIRECTOR' &&
+                    that.movieDirectors.length < 50
+                  )
+                    that.movieDirectors += value.nameRu + ', ';
+
+                  // Producers
+                  if (
+                    value.professionKey === 'PRODUCER' &&
+                    that.movieProducers.length < 50
+                  )
+                    that.movieProducers += value.nameRu + ', ';
+
+                  // Compositors
+                  if (
+                    value.professionKey === 'COMPOSER' &&
+                    that.movieCompositors.length < 50
+                  )
+                    that.movieCompositors += value.nameRu + ', ';
+                });
+              },
+            });
+          }
+        };
+
+        this.createMovieButton = function (isMovie) {
+          if (isMovie && $('#movieButton').length == 0) {
+            // Init button
+            $(
+              '<span id="movieButton" title="Описание фильма" style="padding: 0px 0px;cursor: pointer">',
+            )
+              .html(
+                '<img src="https://i.imgur.com/bpvLec5.png" style="max-height: 40px;" onload="" onerror="$(this).remove();"/>',
+              )
+              .appendTo('#leftcontrols')
+              // .on('click', _ => { this.renderMoviePanel() } );
+              .on('click', e => $('#moviePanel').slideToggle(200));
+
+            this.createMoviePanel();
+            this.pickActorBtnCB();
+          }
+        };
+
+        this.pickActorBtnCB = function () {
+          $('#rollActor').on('click', function () {
+            let prvChat = $('#chatline').val();
+
+            $('#chatline').val('!actor');
+
+            let e = jQuery.Event('keydown');
+            e.which = 13;
+            e.keyCode = 13;
+            $('#chatline').trigger(e);
+
+            $('#chatline').val(prvChat);
+          });
+        };
+
+        this.createMoviePanel = function () {
+          if ($('#moviePanel').length == 0) {
+            $(`<style>`).appendTo('head').text(`
+				@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+
+				.movieImg{
+					max-width: 10em;
+					border: double;
+					border-color: crimson;
+				}
+
+				#moviePanel hr{
+					margin-top: 1em;
+					margin-bottom: 1em;
+				}
+
+				.movie-rate-img{
+					max-width: 32px;
+					max-height: 32px;
+				}
+
+				.movie-rate-txt{
+					text-size: 2em;
+				}
+
+				#moviePanel {
+					font-family: 'Open Sans', sans-serif;
+				}
+			`);
+
+            $(`
+					<div class="col-lg-12 col-md-12 closePanel" id="moviePanel" style="display: none;">
+						<div class="well" id="moviePanelContent" style="min-height: 20em">
+
+							<div class="row">
+								<div id="moviePanelHeader" class="row text-center"><strong>Информация о фильме</strong></div>
+							</div>
+
+							<br>
+
+							<div class="row">
+								<div class="col-lg-12 col-md-12 col-lg-12" style="padding: 0">
+									<div class="col-lg-4 col-md-4 col-lg-4">
+										<img id="movieImg" class="movieImg" src="" />
+										<div>
+											<br>
+											<div class="row text-center">
+												<div class="col-lg-12 col-md-12 col-lg-12">
+													<div class="col-lg-6 col-md-6 col-lg-6"><div id="rateKP"><a href="#" target="_blank" rel="noopener noreferrer" ><img class="movie-rate-img" src="https://i.imgur.com/QJinjle.png" /> <strong class="movie-rate-txt"></strong></a></div></div>
+													<div class="col-lg-6 col-md-6 col-lg-6"><div id="rateIMDB"><a href="#" target="_blank" rel="noopener noreferrer" ><img class="movie-rate-img" src="https://i.imgur.com/AD1JBPx.png" /> <strong class="movie-rate-txt"></strong></a></div></div>
+												</div>
+											</div>
+											<br>
+											<div class="text-center"><button id="rollActor" class="btn btn-sm btn-success" title="Зароллить рандомного актёра из фильма">Выбрать актёра</button></div>
+											<br>
+											<div>
+												<strong>В главных ролях:</strong>
+											</div>
+											<br>
+											<div>
+												<div id="actor0"><p><a href="#" target="_blank" rel="noopener noreferrer" ></a></p></div>
+												<div id="actor1"><p><a href="#" target="_blank" rel="noopener noreferrer" ></a></p></div>
+												<div id="actor2"><p><a href="#" target="_blank" rel="noopener noreferrer" ></a></p></div>
+												<div id="actor3"><p><a href="#" target="_blank" rel="noopener noreferrer" ></a></p></div>
+												<div id="actor4"><p><a href="#" target="_blank" rel="noopener noreferrer" ></a></p></div>
+												<div id="actor5"><p><a href="#" target="_blank" rel="noopener noreferrer" ></a></p></div>
+												<div id="actor6"><p><a href="#" target="_blank" rel="noopener noreferrer" ></a></p></div>
+											</div>
+										</div>
+									</div>
+									<div class="col-lg-8 col-md-8 col-lg-8">
+										<div id="movieContent">
+											<div class="row">
+												<div id="movieNameRu" style="font-size: 24px;"><a href="#" target="_blank" rel="noopener noreferrer" ><strong></strong></a></div>
+											</div>
+											<div class="row">
+												<div id="movieNameEn"><em>Test</em></div>
+											</div>
+											<div class="row">
+												<hr>
+											</div>
+
+
+											<div class="row">
+												<div class="col-lg-6 col-md-6 col-lg-6">
+													<p>Год производства: </p>
+												</div>
+												<div id="movieYear" class="col-lg-6 col-md-6 col-lg-6">
+													<p></p>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-lg-6 col-md-6 col-lg-6">
+													<p>Страна: </p>
+												</div>
+												<div id="movieCountries" class="col-lg-6 col-md-6 col-lg-6">
+													<p></p>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-lg-6 col-md-6 col-lg-6">
+													<p>Жанр: </p>
+												</div>
+												<div id="movieGenres" class="col-lg-6 col-md-6 col-lg-6">
+													<p></p>
+												</div>
+											</div>
+
+											<hr>
+
+											<div class="row">
+												<div class="col-lg-6 col-md-6 col-lg-6">
+													<p>Режиссеры: </p>
+												</div>
+												<div id="movieDirectors" class="col-lg-6 col-md-6 col-lg-6">
+													<p></p>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-lg-6 col-md-6 col-lg-6">
+													<p>Продюсеры: </p>
+												</div>
+												<div id="movieProducers" class="col-lg-6 col-md-6 col-lg-6">
+													<p></p>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-lg-6 col-md-6 col-lg-6">
+													<p>Композиторы: </p>
+												</div>
+												<div id="movieCompositors" class="col-lg-6 col-md-6 col-lg-6">
+													<p></p>
+												</div>
+											</div>
+
+											<hr>
+
+											<div class="row">
+												<div class="col-lg-6 col-md-6 col-lg-6">
+													<p>Бюджет: </p>
+												</div>
+												<div id="movieBudget" class="col-lg-6 col-md-6 col-lg-6">
+													<p></p>
+												</div>
+											</div>
+
+											<br>
+
+											<div class="row">
+												<div class="col-lg-6 col-md-6 col-lg-6">
+													<p>Сборы в России: </p>
+												</div>
+												<div id="movieGrossRu" class="col-lg-6 col-md-6 col-lg-6">
+													<p></p>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-lg-6 col-md-6 col-lg-6">
+													<p>Сборы в США: </p>
+												</div>
+												<div id="movieGrossUsa" class="col-lg-6 col-md-6 col-lg-6">
+													<p></p>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-lg-6 col-md-6 col-lg-6">
+													<p>Сборы в мире: </p>
+												</div>
+												<div id="movieGrossWorld" class="col-lg-6 col-md-6 col-lg-6">
+													<p></p>
+												</div>
+											</div>
+
+											<hr>
+
+											<div class="row">
+												<div class="col-lg-6 col-md-6 col-lg-6">
+													<p>Премьера в России: </p>
+												</div>
+												<div id="moviePremiereRu" class="col-lg-6 col-md-6 col-lg-6">
+													<p></p>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-lg-6 col-md-6 col-lg-6">
+													<p>Премьера в мире: </p>
+												</div>
+												<div id="moviePremiereWorld" class="col-lg-6 col-md-6 col-lg-6">
+													<p></p>
+												</div>
+											</div>
+
+											<hr>
+
+											<div class="row">
+												<div class="col-lg-6 col-md-6 col-lg-6">
+													<p>Время: </p>
+												</div>
+												<div id="movieLength" class="col-lg-6 col-md-6 col-lg-6">
+													<p></p>
+												</div>
+											</div>
+
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="row">
+							<div class="col-lg-12 col-md-12 col-lg-12">
+								<hr>
+								<div>
+									<h4><strong>Описание</strong></h4>
+								</div>
+								<div id="movieDescription">
+									<p class="movie-description" style="text-align: justify;">
+									</p>
+								</div>
+							</div>
+							</div>
+
+						</div>
+					</div>
+				`).insertBefore('#pollwrap');
+          }
+        };
+
+        this.updateMoviePanelInfo = function () {
+          $.ajax({
+            type: 'GET',
+            dataType: 'application/json',
+            url: `${atob(
+              'aHR0cHM6Ly9raW5vcG9pc2thcGl1bm9mZmljaWFsLnRlY2gvYXBpL3YyLjEvZmlsbXMv',
+            )}${that.kinoID}${atob(
+              'P2FwcGVuZF90b19yZXNwb25zZT1CVURHRVQsIFJBVElORw==',
+            )}`,
+            beforeSend: function (xhr) {
+              xhr.setRequestHeader(
+                `${atob('WC1BUEktS0VZ')}`,
+                `${atob('NGMwMGE3ZmItOGY3Zi00YTI3LTkwNzMtNzBlN2IxYWYwZDNk')}`,
+              );
+            },
+            complete: function (res) {
+              let kparsed = JSON.parse(res.responseText);
+              let data = kparsed.data;
+              let budget = kparsed.budget;
+              let rating = kparsed.rating;
+              let imdbID = kparsed.externalId.imdbId;
+
+              let unknown = 'неизвестно';
+
+              // Rating
+              $('#rateKP > a > strong')[0].innerText = rating.rating;
+              $('#rateIMDB > a > strong')[0].innerText = rating.ratingImdb;
+
+              // Rating links
+              $('#rateKP > a')[0].href = data.webUrl;
+              $('#rateIMDB > a')[0].href = `${atob(
+                'aHR0cHM6Ly93d3cuaW1kYi5jb20vdGl0bGUv',
+              )}${imdbID}`;
+
+              // Movie poster
+              $($('#movieImg')[0]).attr('src', data.posterUrl);
+
+              // Movie names
+              $('#movieNameRu > a > strong')[0].innerText = data.nameRu;
+              $('#movieNameEn > em')[0].innerText = data.nameEn;
+
+              $('#movieNameRu > a')[0].href = data.webUrl;
+
+              // Movie cast
+              setTimeout(() => {
+                // Actors
+                if (that.movieActors.length > 0) {
+                  for (var i = 0; i < 7; i++) {
+                    $(`#actor${i} > p > a`)[0].innerText = that.movieActors[i]
+                      ? that.movieActors[i].actorName
+                      : '';
+                    let actorID = that.movieActors[i].actorPhoto
+                      .split('/')[6]
+                      .split('.')[0];
+                    $(`#actor${i} > p > a`)[0].href = `${atob(
+                      'aHR0cHM6Ly93d3cua2lub3BvaXNrLnJ1L25hbWUv',
+                    )}${actorID}`;
+                  }
+                }
+
+                // Directors
+                $('#movieDirectors > p')[0].innerText =
+                  that.movieDirectors.length > 0
+                    ? that.movieDirectors.slice(0, -2)
+                    : unknown;
+
+                // Producers
+                $('#movieProducers > p')[0].innerText =
+                  that.movieProducers.length > 0
+                    ? that.movieProducers.slice(0, -2)
+                    : unknown;
+
+                // Compositors
+                $('#movieCompositors > p')[0].innerText =
+                  that.movieCompositors.length > 0
+                    ? that.movieCompositors.slice(0, -2)
+                    : unknown;
+              }, 5000);
+
+              /////////////////////////////////////////////////////////////////////////
+
+              // Movie Year
+              $('#movieYear > p')[0].innerText = data.year;
+
+              // Movie Countries
+              let movieCountries = '';
+              data.countries.forEach(function (item, index) {
+                movieCountries += item.country + ', ';
+              });
+              $('#movieCountries > p')[0].innerText = that.checkForNull(
+                movieCountries.slice(0, -2),
+                unknown,
+              );
+
+              // Movie Genres
+              let movieGenres = '';
+              data.genres.forEach(function (item, index) {
+                movieGenres += item.genre + ', ';
+              });
+              $('#movieGenres > p')[0].innerText = that.checkForNull(
+                movieGenres.slice(0, -2),
+                unknown,
+              );
+
+              /////////////////////////////////////////////////////////////////////////
+
+              // Movie Budget
+              $('#movieBudget > p')[0].innerText =
+                budget.budget === null ? unknown : `${budget.budget}`;
+
+              $('#movieGrossRu > p')[0].innerText =
+                budget.grossRu === null ? unknown : `$${budget.grossRu}`;
+              $('#movieGrossUsa > p')[0].innerText =
+                budget.grossUsa === null ? unknown : `$${budget.grossUsa}`;
+              $('#movieGrossWorld > p')[0].innerText =
+                budget.grossWorld === null ? unknown : `$${budget.grossWorld}`;
+
+              //////////////////////////////////////////////////////////////////////////
+
+              // Movie Releases
+              $('#moviePremiereRu > p')[0].innerText = that.checkForNull(
+                data.premiereRu,
+                unknown,
+              );
+              $('#moviePremiereWorld > p')[0].innerText = that.checkForNull(
+                data.premiereWorld,
+                unknown,
+              );
+
+              // Movie Length
+              $('#movieLength > p')[0].innerText = that.checkForNull(
+                data.filmLength,
+                unknown,
+              );
+
+              // Movie Description
+              $('#movieDescription > p')[0].innerText = that.checkForNull(
+                data.description,
+                unknown,
+              );
+            },
+          });
+        };
+
+        this.checkForNull = function (e, placeholder) {
+          return e === null ? placeholder : e;
+        };
+
+        this.movieFetch();
+        window.socket.on('changeMedia', function () {
+          that.movieFetch();
+        });
+
+        /////////////////////////////////////////////////////////////////////////////
+
+        // pollMovieOptions
+        this.createMovieOptions = function (options) {
+          $('.well.active > .option').each(function (a, b) {
+            const title = $(b)
+              .contents()
+              .filter(function() {
+                return this.nodeType == Node.TEXT_NODE}
+              )
+              .text();
+            const link = $(b)
+              .find('a')
+              .text();
+            const isMovie = link === '' ?
+              false :
+              link.includes('kinopoisk');
+
+            if (isMovie) {
+              const kinoID = link.match(/\d+/g);
+
+              let movieInfoBtn = $(
+                `<i id="movieInfoToggle" class="glyphicon glyphicon-chevron-left pull-right pointer" />`,
+              )
+                .attr('title', 'Показать информацию о фильме')
+                .on('click', _ => {
+                  let infoToggle = $(this).find('#movieInfoToggle');
+                  let optionPanel = $(this).find('#movieOptionPanel');
+
+                  // Arrow toggle change
+                  that.toggleOptionDropdown(infoToggle);
+                  // Panel dropdown
+                  that.renderOptionPanel(optionPanel);
+                })
+                .prependTo($(b));
+
+              /////////////////////////////////////////////////////////////////////////////
+
+              $.ajax({
+                type: 'GET',
+                dataType: 'application/json',
+                url: `${atob(
+                  'aHR0cHM6Ly9raW5vcG9pc2thcGl1bm9mZmljaWFsLnRlY2gvYXBpL3YyLjEvZmlsbXMv',
+                )}${kinoID}${atob(
+                  'P2FwcGVuZF90b19yZXNwb25zZT1CVURHRVQsIFJBVElORw==',
+                )}`,
+                beforeSend: function (xhr) {
+                  xhr.setRequestHeader(
+                    `${atob('WC1BUEktS0VZ')}`,
+                    `${atob(
+                      'NGMwMGE3ZmItOGY3Zi00YTI3LTkwNzMtNzBlN2IxYWYwZDNk',
+                    )}`,
+                  );
+                },
+                complete: function (res) {
+                  let kparsed = JSON.parse(res.responseText);
+                  let data = kparsed.data;
+                  let rating = kparsed.rating;
+                  let imdbID = kparsed.externalId.imdbId;
+
+                  let unknown = 'неизвестно';
+
+                  // Movie poster
+                  let moviePoster = `<img class="movieImg" src="${data.posterUrl}" style="max-width: 10em;border: double;border-color: crimson;"/>`;
+
+                  // Rating
+                  let rateKP = `<a href=${data.webUrl} target="_blank" rel="noopener noreferrer" ><img class="movie-rate-img" src="https://i.imgur.com/QJinjle.png" /><strong> ${rating.rating}</strong></a>`;
+                  let rateIMDB = `<a href=${atob(
+                    'aHR0cHM6Ly93d3cuaW1kYi5jb20vdGl0bGUv',
+                  )}${imdbID} target="_blank" rel="noopener noreferrer" ><img class="movie-rate-img" src="https://i.imgur.com/AD1JBPx.png" /><strong> ${
+                    rating.ratingImdb
+                  }</strong></a>`;
+
+                  // Movie names
+                  let movieNameRu = `<a href="${data.webUrl}"><strong>${data.nameRu}</strong></a>`;
+                  let movieNameEn = `<em>${data.nameEn}</em>`;
+
+                  // Movie Year
+                  let movieYear = data.year;
+
+                  // Movie Countries
+                  let movieCountries = '';
+                  data.countries.forEach(function (item, index) {
+                    movieCountries += item.country + ', ';
+                  });
+                  movieCountries = that.checkForNull(
+                    movieCountries.slice(0, -2),
+                    unknown,
+                  );
+
+                  // Movie Genres
+                  let movieGenres = '';
+                  data.genres.forEach(function (item, index) {
+                    movieGenres += item.genre + ', ';
+                  });
+                  movieGenres = that.checkForNull(
+                    movieGenres.slice(0, -2),
+                    unknown,
+                  );
+
+                  // Movie Length
+                  let movieLength = that.checkForNull(data.filmLength, unknown);
+
+                  // Movie Description
+                  let movieDescription = that.checkForNull(
+                    data.description,
+                    unknown,
+                  );
+
+                  // BUILD
+
+                  let optionPanel = $(`
+    								<div id="movieOptionPanel" class="well closePanel" style="display: none;">
+     									<div class="row">
+      										<div class="col-lg-5 col-md-5 col-lg-5">
+     											${moviePoster}
+      										</div>
+      										<div id="movieInfoContent" class="col-lg-7 col-md-7 col-lg-7">
+     											<div class="row" style="font-size: 24px;">
+      												${movieNameRu}
+     											</div>
+     											<div class="row">
+      												${movieNameEn}
+     											</div>
+     											<br>
+     											<div class="row">
+      												<p>Год производства: ${movieYear}</p>
+     											</div>
+     											<div class="row">
+      												<p>Жанр: ${movieGenres}</p>
+     											</div>
+     											<div class="row">
+      												<p>Страна: ${movieCountries}</p>
+     											</div>
+     											<div class="row">
+      												<p>Время: ${movieLength}</p>
+     											</div>
+     											<div class="row">
+      												<div class="col-lg-6 col-md-6 col-lg-6">${rateKP}</div>
+      												<div class="col-lg-6 col-md-6 col-lg-6">${rateIMDB}</div>
+     											</div>
+      										</div>
+     									</div>
+     									<hr>
+     									<div class="row">
+      										<div class="col-lg-12 col-md-12 col-lg-12">
+     											<h4><strong>Описание</strong></h4>
+      										</div>
+      										<div class="col-lg-12 col-md-12 col-lg-12">
+     											${movieDescription}
+      										</div>
+     									</div>
+                      <hr>
+                      <div id="kp-${kinoID}-images" style="max-height: 640px; overflow: scroll; overflow-x: hidden;">
+                      </div>
+    								</div>
+                  `).appendTo($(b));
+
+
+                  // Add images
+                  $.ajax({
+                    type: 'GET',
+                    dataType: 'application/json',
+                    url: `https://kinopoiskapiunofficial.tech/api/v2.2/films/${kinoID}/images?type=STILL&page=1`,
+                    beforeSend: function (xhr) {
+                      xhr.setRequestHeader(
+                        'X-API-KEY',
+                        `${atob('NGMwMGE3ZmItOGY3Zi00YTI3LTkwNzMtNzBlN2IxYWYwZDNk')}`
+                      );
+                    },
+                    complete: function (res) {
+                      const { items } = JSON.parse(res.responseText);
+                      const maxImgCount = 10;
+                      const images = items
+                        .slice(0, maxImgCount)
+                        .map(x => x.imageUrl)
+                        .map(x => `<img src='${x}' style='width: 100%;' />`)
+                      for (const image of images) {
+                        $(image).appendTo(`#kp-${kinoID}-images`);
+                      }
+                    },
+                  });
+                },
+              });
+            }
+          });
+        };
+
+        this.toggleOptionDropdown = function (infoToggle) {
+          if (infoToggle.hasClass('glyphicon-chevron-left')) {
+            infoToggle.removeClass('glyphicon-chevron-left');
+            infoToggle.addClass('glyphicon-chevron-down');
+          } else {
+            infoToggle.removeClass('glyphicon-chevron-down');
+            infoToggle.addClass('glyphicon-chevron-left');
+          }
+        };
+
+        this.renderOptionPanel = function (optionPanel) {
+          if (!optionPanel) return null;
+
+          if (optionPanel.hasClass('openPanel')) {
+            optionPanel.hide();
+
+            optionPanel.removeClass('openPanel');
+            optionPanel.addClass('closePanel');
+          } else {
+            optionPanel.show();
+
+            optionPanel.removeClass('closePanel');
+            optionPanel.addClass('openPanel');
+          }
+        };
+
+        setTimeout(function () {
+          that.createMovieOptions();
+        }, 4000);
+
+        window.socket.on('newPoll', function () {
+          that.createMovieOptions();
+        });
+      });
 
       /***/
     },
