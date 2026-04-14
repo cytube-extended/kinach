@@ -30763,5 +30763,704 @@
 
       /***/
     },
-    
+    /* 71 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule('movieSearch', function (app) {
+        ('use strict');
+        const that = this;
+
+        this.store = {
+          moduleName: 'Найти кин4 / сири4',
+          api_token: `${atob('eWhaTU1qN3ZjbGkxNmIxajlHWnBUZG1VZ1UzSnd0b0s=')}`,
+        };
+
+        this.init = () => {
+          that.createPanelToggle();
+          that.createPanel();
+          that.appendCSS();
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////// MAIN BUTTON & PANEL //////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.createPanelToggle = () => {
+          if ($('#movieSearchToggle').length <= 0) {
+            $(
+              `<button id="movieSearchToggle" class="btn btn-sm btn-default" title="${that.store.moduleName}"></button>`,
+            )
+              .on('click', e => $('#movieSearchPanel').slideToggle(200))
+              .appendTo('#leftcontrols');
+          }
+        };
+
+        this.createPanel = () => {
+          $(`
+						<div class="col-lg-12 col-md-12" id="movieSearchPanel" style="display: none;">
+							<div class="well text-center" id="movieSearchPanelContent" style="margin-bottom: 0 !important; min-height: 100px;">
+								<div>
+									<strong>${that.store.moduleName}</strong>
+								</div>
+								<br>
+								<div id="movieSearchWrapper">
+									<input class="form-control not-contained" type="text" id="movieSearchInput" placeholder="Название / Кинопоиск ID" autocomplete="off">
+									<div class="c-wrap">
+										<span id="movieSearchFindButton" class="btn btn-md btn-success" title="${that.store.moduleName}">
+											<span class="glyphicon glyphicon-search"></span>
+										</span>
+									</div>
+								</div>
+								<div>
+									<div id="foundMovieInfo" style="padding-top: 10px;">
+									</div>
+								</div>
+							</div>
+						</div>
+					`).insertBefore('#pollwrap');
+
+          $('#movieSearchFindButton').on('click', that.handleMovieSearch);
+          $('#movieSearchInput').on('keypress', e => {
+            if (e.which === 13) {
+              that.handleMovieSearch();
+            }
+          });
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////// QUERY /////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        this.clearInputForm = () => {
+          $('#movieSearchInput').val('');
+        };
+
+        this.getQuery = () => {
+          const movieSearchInput = $('#movieSearchInput').val();
+
+          if (movieSearchInput.length >= 2) {
+            const isId = !isNaN(movieSearchInput);
+            const query = isId
+              ? { kinopoisk_id: movieSearchInput }
+              : { query: movieSearchInput };
+            return query;
+          } else {
+            return undefined;
+          }
+        };
+
+        this.searchByType = (content_type, queryObject, callback) => {
+          $.ajax({
+            type: 'GET',
+            url: 'https://videocdn.tv/api/' + content_type,
+            data: {
+              ...queryObject,
+              api_token: that.store.api_token,
+            },
+            success: result => {
+              if (!result) {
+                reject('No result');
+              }
+              const { data } = JSON.parse(result);
+              if (!data || data.length <= 0) {
+                reject('No data');
+              }
+              callback(data);
+            },
+          });
+        };
+
+        this.globalSearch = (queryObject, callback) => {
+          that.searchByType('movies', queryObject, callback);
+          that.searchByType('animes', queryObject, callback);
+          that.searchByType('anime-tv-series', queryObject, callback);
+          that.searchByType('tv-series', queryObject, callback);
+          that.searchByType('show-tv-series', queryObject, callback);
+        };
+
+        this.handleMovieSearch = () => {
+          const query = that.getQuery();
+          if (typeof query === 'undefined') {
+            return;
+          }
+
+          try {
+            that.createSearchResultsWrapper().then(list => {
+              that.globalSearch(query, data => {
+                that.displaySearchBatch(data, list);
+              });
+            });
+          } catch (error) {
+            console.log('Search failed');
+            console.log(error);
+          }
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////// MAIN ITEMS ///////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        this.createContentTypeObject = (titleName, className) => {
+          return { titleName, className };
+        };
+        this.parseContentType = async content_type => {
+          return new Promise((resolve, reject) => {
+            switch (content_type) {
+              case 'movie':
+                resolve(that.createContentTypeObject('кин4', 'badge-blue'));
+              case 'animes':
+                resolve(that.createContentTypeObject('аниме', 'badge-red'));
+              case 'anime_tv_series':
+                resolve(
+                  that.createContentTypeObject('аниме сериал', 'badge-red'),
+                );
+              case 'tv_series':
+                resolve(that.createContentTypeObject('сири4', 'badge-orange'));
+              case 'show_tv_series':
+                resolve(that.createContentTypeObject('ТВ шоу', 'badge-purple'));
+              default:
+                return resolve(content_type);
+            }
+          });
+        };
+
+        this.createDropdownPanel = () => {
+          return new Promise((resolve, reject) => {
+            const dropdownPanel = $(
+              '<div style="background: none; border: none;">',
+            ).hide();
+            resolve(dropdownPanel);
+          });
+        };
+
+        this.createBadge = (
+          classString,
+          styleString,
+          slot,
+          titleString,
+          dropdownPanel,
+        ) => {
+          return new Promise((resolve, reject) => {
+            const badge = $(`
+							<div title="${titleString}" class="badge ${classString} pointer display-inline-block" style="margin: 6px; overflow: hidden; text-overflow: ellipsis; ${styleString}">
+								${slot}
+							</div>
+						`).click(function () {
+              $(this).toggleClass('display-inline-block');
+              $(this).toggleClass('display-block');
+              dropdownPanel.slideToggle(200);
+            });
+            resolve(badge);
+          });
+        };
+
+        this.animateCallback = async (when, videoPlayer, buttonParent) => {
+          return new Promise((resolve, reject) => {
+            if (when === 'before') {
+              videoPlayer.empty();
+              buttonParent.empty();
+              videoPlayer.slideToggle(200);
+              buttonParent.slideToggle(200);
+
+              resolve(true);
+            } else {
+              videoPlayer.slideToggle(200);
+              buttonParent.slideToggle(200);
+
+              setTimeout(() => {
+                videoPlayer.empty();
+                buttonParent.empty();
+              }, 200);
+
+              resolve(true);
+            }
+          });
+        };
+
+        this.addQueueItem = async (
+          link,
+          ru_title,
+          kinopoisk_id,
+          seriesData,
+          animaticaCallback,
+        ) => {
+          return new Promise((resolve, reject) => {
+            $('#mediaurl').val(encodeURI(link));
+            $('#mediaurl').trigger('keyup');
+            const queueTitle =
+              typeof seriesData === 'undefined'
+                ? `${ru_title} — https://www.kinopoisk.ru/film/${kinopoisk_id}/`
+                : `${ru_title} [ Сезон: ${seriesData.season} Серия: ${seriesData.episode} ] — https://www.kinopoisk.ru/film/${kinopoisk_id}/`;
+            $('#addfromurl-title-val').val(queueTitle);
+            $('#queue_end').click();
+            animaticaCallback();
+            resolve(true);
+          });
+        };
+
+        async function* renderQualityBadge({
+          qualitiesObject,
+          ru_title,
+          kinopoisk_id,
+          seriesData,
+          videoPlayer,
+          buttonParent,
+        }) {
+          const qualitiesObjectEntries = Object.entries(qualitiesObject);
+
+          for (let i = 0; i < qualitiesObjectEntries.length; i++) {
+            const [qualityName, linkNoProtocol] = qualitiesObjectEntries[i];
+            const link = 'https:' + linkNoProtocol;
+
+            const badge = $(
+              `<span class="badge badge-default pointer">${qualityName}</span>`,
+            ).click(() => {
+              that.animateCallback('before', videoPlayer, buttonParent);
+              $(
+                `<video src="${link}" controls=""style="max-width: 100%;"></video>`,
+              ).appendTo(videoPlayer);
+              $(
+                '<button class="btn btn-sm btn-success" style="margin: 8px 0;">Добавить в плейлист</button>',
+              )
+                .click(() => {
+                  that.addQueueItem(
+                    link,
+                    ru_title,
+                    kinopoisk_id,
+                    seriesData,
+                    () => {
+                      that.animateCallback('after', videoPlayer, buttonParent);
+                    },
+                  );
+                })
+                .appendTo(buttonParent);
+            });
+
+            yield new Promise((resolve, reject) => {
+              resolve(badge);
+            });
+          }
+        }
+
+        this.renderQualitiesPanel = async (
+          qualitiesObject,
+          ru_title,
+          kinopoisk_id,
+          seriesData,
+        ) => {
+          return new Promise(async (resolve, reject) => {
+            const parent = $('<div>');
+            resolve(parent);
+
+            const badges = $(
+              '<div style="display: flex; justify-content: space-around; padding: 12px 24px;">',
+            ).appendTo(parent);
+            const videoPlayer = $('<div>').hide().appendTo(parent);
+            const buttonParent = $('<div>').hide().appendTo(parent);
+
+            for await (const badge of renderQualityBadge({
+              qualitiesObject,
+              ru_title,
+              kinopoisk_id,
+              seriesData,
+              videoPlayer,
+              buttonParent,
+            })) {
+              badges.append(badge);
+            }
+          });
+        };
+
+        async function* renderPanel(value) {
+          const valueEntries = Object.entries(value);
+          for (let i = 0; i < valueEntries.length; i++) {
+            yield new Promise((resolve, reject) => {
+              resolve(valueEntries[i]);
+            });
+          }
+        }
+        async function* renderTranslationItem(data, downloadData) {
+          const { translations, content_type, ru_title, kinopoisk_id } = data;
+          for (let i = 0; i < translations.length; i++) {
+            if (translations[i].title) {
+              const translationParent = $('<span>').fadeOut(1);
+              yield new Promise((resolve, reject) => {
+                setTimeout(() => {
+                  resolve(translationParent.fadeToggle(200));
+                }, 1);
+              });
+              const { id, title, short_title, priority } = translations[i];
+              const qualitiesOrSeasons = downloadData[`${id}`];
+              that
+                .createDropdownPanel()
+                .then(async translationDropdownPanel => {
+                  const priorityBorder = `border: 3px solid hsl(100deg 0% ${
+                    50 + priority * 5
+                  }%);`;
+                  const priorityTitle =
+                    typeof priority === 'undefined'
+                      ? '(?) ' + title
+                      : `(${priority}) ` + title;
+                  that
+                    .createBadge(
+                      'badge-green',
+                      priorityBorder,
+                      short_title,
+                      priorityTitle,
+                      translationDropdownPanel,
+                    )
+                    .then(async translationBadge => {
+                      translationBadge.appendTo(translationParent);
+                      translationDropdownPanel.appendTo(translationParent);
+                      if (content_type === 'movie') {
+                        that
+                          .renderQualitiesPanel(
+                            qualitiesOrSeasons,
+                            ru_title,
+                            kinopoisk_id,
+                          )
+                          .then(panel =>
+                            panel.appendTo(translationDropdownPanel),
+                          );
+                      } else {
+                        for await (const [
+                          season,
+                          episodesObject,
+                        ] of renderPanel(qualitiesOrSeasons)) {
+                          const seasonString = `Сезон: ${season}`;
+                          that.createDropdownPanel().then(seasonDropown => {
+                            that
+                              .createBadge(
+                                'badge-purple',
+                                '',
+                                seasonString,
+                                seasonString,
+                                seasonDropown,
+                              )
+                              .then(async seasonBadge => {
+                                seasonBadge.appendTo(translationDropdownPanel);
+                                seasonDropown.appendTo(
+                                  translationDropdownPanel,
+                                );
+                                for await (const [
+                                  episode,
+                                  qualitiesObject,
+                                ] of renderPanel(episodesObject)) {
+                                  const episodeString = `Серия: ${episode}`;
+                                  that
+                                    .createDropdownPanel()
+                                    .then(episodeDropdown => {
+                                      that
+                                        .createBadge(
+                                          'badge-cyan',
+                                          '',
+                                          episodeString,
+                                          episodeString,
+                                          episodeDropdown,
+                                        )
+                                        .then(episodeBadge => {
+                                          episodeBadge.appendTo(seasonDropown);
+                                          episodeDropdown.appendTo(
+                                            seasonDropown,
+                                          );
+                                          that
+                                            .renderQualitiesPanel(
+                                              qualitiesObject,
+                                              ru_title,
+                                              kinopoisk_id,
+                                              { season, episode },
+                                            )
+                                            .then(qualities => {
+                                              qualities.appendTo(
+                                                episodeDropdown,
+                                              );
+                                            });
+                                        });
+                                    });
+                                }
+                              });
+                          });
+                        }
+                      }
+                    });
+                });
+            }
+          }
+        }
+
+        this.renderSearchItem = async (
+          translationsList,
+          data,
+          downloadData,
+        ) => {
+          return new Promise(async (resolve, reject) => {
+            for await (const translation of renderTranslationItem(
+              data,
+              downloadData,
+            )) {
+              translationsList.append(translation);
+            }
+          });
+        };
+
+        this.openSearchItem = data => {
+          return new Promise((resolve, reject) => {
+            const translationsList = $(`<div></div>`);
+            resolve(translationsList);
+            const iframeLink = 'https:' + data.iframe_src;
+            that.loadSearchItemData(iframeLink).then(downloadData => {
+              if (downloadData) {
+                that.renderSearchItem(translationsList, data, downloadData);
+              }
+            });
+          });
+        };
+
+        async function* createBadgeLinks(badgesData) {
+          for (let i = 0; i < badgesData.length; i++) {
+            yield new Promise((resolve, reject) => {
+              resolve(
+                $(`<a target="_blank" rel="noopener noreferrer" href="${badgesData[i].link}" style="text-decoration: none;">
+								<span class="badge ${badgesData[i].classString}" style="font-weight: bold; ${badgesData[i].styleString}">${badgesData[i].slot}</span>
+								</a>
+							`),
+              );
+            });
+          }
+        }
+
+        // Receives an item from "data" array from search
+        async function* renderBatch(searchBatchData) {
+          for (let i = 0; i < searchBatchData.length; i++) {
+            const data = searchBatchData[i];
+            const {
+              ru_title,
+              orig_title,
+              content_type,
+              kinopoisk_id,
+              imdb_id,
+            } = data;
+
+            const parent = $('<li class="srContent"></li>').hide();
+            const content = $('<div class="srInfo"></div>').hide();
+            const info = $('<div>').appendTo(parent);
+            const badgeLinks = $('<div class="pull-left">').appendTo(info);
+
+            const badgesData = [
+              {
+                link: `https://www.kinopoisk.ru/film/${kinopoisk_id}/`,
+                slot: 'KP',
+                classString: 'badge-orange',
+                styleString: 'color: white;',
+              },
+              {
+                link: `https://www.imdb.com/title/${imdb_id}/`,
+                slot: 'IMDb',
+                classString: 'badge-yellow',
+                styleString: 'color: black;',
+              },
+            ];
+            for await (const badge of createBadgeLinks(badgesData)) {
+              badgeLinks.append(badge);
+            }
+            that
+              .parseContentType(content_type)
+              .then(async ({ titleName, className }) => {
+                $(
+                  `<span class="pull-right badge ${className}" style="min-width: 60px;">${titleName}</span>`,
+                ).appendTo(info);
+                $('<div class="qe_clear"></div>').appendTo(info);
+              });
+
+            const poster = $(
+              '<img style="border: 1px solid white; margin: 8px; max-height: 70.6px"/>',
+            )
+              .attr(
+                'src',
+                `https://st.kp.yandex.net/images/sm_film/${kinopoisk_id}.jpg`,
+              )
+              .hide();
+            $(
+              `<span class="text-center badge badge-default pointer" title="${orig_title}"  style="border: 2px solid white; overflow: hidden; text-overflow: ellipsis; max-width: 320px;">${ru_title}</span>`,
+            )
+              .click(function () {
+                poster.slideToggle(200);
+                content.slideToggle(200);
+                if (content.children().length <= 0) {
+                  that.openSearchItem(data).then(translationsList => {
+                    content.append(translationsList);
+                  });
+                }
+              })
+              .appendTo(parent);
+            $('<div></div>').append(poster).append(content).appendTo(parent);
+
+            yield new Promise((resolve, reject) => {
+              resolve(parent.slideToggle(200));
+            });
+          }
+        }
+
+        // Receives "data" array from search
+        this.displaySearchBatch = async (data, list) => {
+          console.log(list);
+          return new Promise(async (resolve, reject) => {
+            for await (const render of renderBatch(data)) {
+              list.append(render);
+            }
+            resolve(list);
+          });
+        };
+
+        this.createSearchResultsWrapper = async () => {
+          return new Promise((resolve, reject) => {
+            const searchResultsList = $(`<ul style="max-height: 400px"></ul>`);
+            resolve(searchResultsList);
+
+            $('#searchResultsListWrapper').remove();
+            const searchResultsListWrapper = $(
+              '<div id="searchResultsListWrapper"></div>',
+            ).appendTo('#foundMovieInfo');
+            searchResultsList
+              .addClass('srList')
+              .appendTo(searchResultsListWrapper);
+          });
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////// INTERNAL ITEM ////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        this.addQueueItem = (
+          link,
+          ru_title,
+          kinopoisk_id,
+          seriesData,
+          animaticaCallback,
+        ) => {
+          $('#mediaurl').val(encodeURI(link));
+          $('#mediaurl').trigger('keyup');
+          const queueTitle =
+            typeof seriesData === 'undefined'
+              ? `${ru_title} — https://www.kinopoisk.ru/film/${kinopoisk_id}/`
+              : `${ru_title} [ Сезон: ${seriesData.season} Серия: ${seriesData.episode} ] — https://www.kinopoisk.ru/film/${kinopoisk_id}/`;
+          $('#addfromurl-title-val').val(queueTitle);
+          $('#queue_end').click();
+          animaticaCallback();
+        };
+
+        this.loadSearchItemData = async iframeLink => {
+          return new Promise(async (resolve, reject) => {
+            $.ajax({
+              type: 'GET',
+              url: iframeLink,
+              data: { api_token: that.store.api_token },
+              success: result => {
+                if (!result) {
+                  reject('Can not load iframe data');
+                }
+                resolve(
+                  JSON.parse($(result).filter('#downloads').attr('value')),
+                );
+              },
+              error: error => {
+                console.log(error);
+                resolve([error]);
+              },
+            });
+          });
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////// CSS //////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.appendCSS = function () {
+          $(`<style>`).appendTo('head').text(`
+						#movieSearchToggle {
+							background: url(https://i.imgur.com/pP8H63l.png) no-repeat;
+							height: 40px !important;
+							width: 40px !important;
+							text-indent: -9999px;
+							outline: none;
+							border: none;
+							opacity: 0.8;
+							background-size: contain !important;
+						}
+
+						.c-wrap{
+							height: 0px
+						}
+
+						#movieSearchFindButton {
+							margin-left: calc(100% - 38px);
+							z-index: 0;
+							position: relative;
+							top: -38px;
+						}
+
+						.display-block {
+							display: block;
+						}
+
+						.display-inline-block {
+							display: inline-block;
+						}
+
+
+            .srList {
+              list-style: none outside none;
+              margin-left: 0;
+							overflow-x: hidden;
+              overflow-y: scroll;
+              padding: 0;
+							margin: 0;
+            }
+
+            .srContent {
+              padding: 6px 12px;
+              background-color: rgba(15, 20, 25, 0.75);
+              border: 1px solid #000000;
+            }
+
+						.badge-default {
+							background-color: rgb(128 128 128 / 70%);
+            }
+						.badge-green {
+							background-color: rgb(55, 175, 55);
+						}
+            .badge-red {
+              background-color: rgb(235, 75, 65);
+            }
+						.badge-blue {
+              background-color: rgb(80, 85, 175);
+            }
+            .badge-cyan {
+              background-color: rgb(52, 136, 178);
+            }
+            .badge-orange {
+              background-color: rgb(250, 130, 20);
+            }
+						.badge-yellow {
+              background-color: rgb(175, 175, 25);
+            }
+						.badge-purple {
+							background-color: rgb(150, 75, 175);
+            }
+
+
+						.srInfo {
+              background-color: rgba(10,10,10,0.5);
+              border: 1px solid #000000;
+            }
+
+					`);
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////// ENTRY /////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.init();
+      });
+      /***/
+    },
+
+    /******/
 ]));
