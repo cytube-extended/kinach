@@ -87,7 +87,7 @@
       // __webpack_require__(61);
       //__webpack_require__(62);
       __webpack_require__(63);
-      ////__webpack_require__(64);
+      __webpack_require__(64);
       ////__webpack_require__(65);
       // __webpack_require__(66);
       // __webpack_require__(67);
@@ -28429,6 +28429,844 @@
               });
           }
         };
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.init();
+      });
+
+      /***/
+    },
+    /* 64 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule('sketchpad', function (app) {
+        'use strict';
+        const that = this;
+
+        this.init = () => {
+          that.loadSketchpadScript();
+
+          that.createSketchpadToggle();
+          that.createSketchpadPanel();
+
+          that.setupGraffitiCore();
+
+          that.appendCSS();
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.loadSketchpadScript = () => {
+          // $.getScript('https://dl.dropboxusercontent.com/s/75qp6spnfw1af0d/sketchpad.min.js');
+        };
+
+        this.createSketchpadToggle = () => {
+          if ($('#sketchpad-panel-toggle').length === 0) {
+            $('<button>')
+              .attr('id', 'sketchpad-panel-toggle')
+              .attr('title', 'Открыть / Закрыть рисовалку')
+              .addClass('btn')
+              .addClass('btn-sm')
+              .addClass('btn-default')
+              .appendTo('#leftcontrols')
+              .on('click', e => $('#sketchpad-panel').slideToggle(200));
+          }
+        };
+
+        this.createSketchpadPanel = () => {
+          const sketchpad_panel = $('<div>')
+            .attr('id', 'sketchpad-panel')
+            .addClass('col-lg-12')
+            .addClass('col-md-12')
+            .hide()
+            .insertBefore('#pollwrap');
+
+          const sketchpad_panel_content = $('<div>')
+            .attr('id', 'sketchpad-panel-content')
+            .addClass('well')
+            .addClass('text-center')
+            .css({
+              'margin-bottom': '0 !important',
+              'min-height': '200px',
+            })
+            .appendTo(sketchpad_panel);
+
+          // Fill with elements
+
+          // Title
+          const graffiti_title = $('<div>')
+            .addClass('graffiti_title')
+            .html('<strong>Рисовалка</strong>')
+            .appendTo(sketchpad_panel_content);
+
+          // Area
+          const graffiti_area = $('<div>')
+            .addClass('graffiti-area')
+            .css({
+              width: '465px',
+              height: '270px',
+            })
+            .appendTo(sketchpad_panel_content);
+
+          // Canvases
+          const canvas1 = $('<canvas>')
+            .attr({
+              width: '465',
+              height: '270',
+            })
+            .css('display', 'block')
+            .appendTo(graffiti_area);
+
+          const canvas2 = $('<canvas>')
+            .attr({
+              width: '465',
+              height: '270',
+            })
+            .css({
+              display: 'block',
+              position: 'relative',
+              top: '-270px',
+              'z-index': '9999',
+            })
+            .appendTo(graffiti_area);
+
+          // Tools row 1
+          const graffiti_tools_row1 = $('<div>')
+            .addClass('graffiti-tools1')
+            .addClass('row')
+            .appendTo(sketchpad_panel_content);
+
+          const graffiti_tools1_child1 = $('<div>')
+            .addClass('col-lg-4')
+            .addClass('col-md-4')
+            .css('font-size', '14pt')
+            .appendTo(graffiti_tools_row1);
+
+          const graffiti_tools1_child2 = $('<div>')
+            .addClass('col-lg-4')
+            .addClass('col-md-4')
+            .appendTo(graffiti_tools_row1);
+
+          const graffiti_tools1_child3 = $('<div>')
+            .addClass('col-lg-4')
+            .addClass('col-md-4')
+            .css('font-size', '14pt')
+            .appendTo(graffiti_tools_row1);
+
+          $('<span>')
+            .addClass('glyphicon')
+            .addClass('glyphicon-arrow-left')
+            .addClass('pointer')
+            .attr('title', 'Отменить')
+            .css({
+              color: 'lightsalmon',
+              'margin-right': '8px',
+            })
+            .on('click', () => {
+              window.graffiti.prev();
+            })
+            .appendTo(graffiti_tools1_child1);
+
+          $('<span>')
+            .addClass('glyphicon')
+            .addClass('glyphicon-arrow-right')
+            .addClass('pointer')
+            .attr('title', 'Повторить')
+            .css({
+              color: 'lightgreen',
+              'margin-left': '8px',
+            })
+            .on('click', () => {
+              window.graffiti.next();
+            })
+            .appendTo(graffiti_tools1_child1);
+
+          $('<input>')
+            .attr({
+              id: 'graffiti_color',
+              name: 'graffiti_color',
+              type: 'color',
+              value: '#49c16a',
+            })
+            .addClass('pointer')
+            .appendTo(graffiti_tools1_child2);
+
+          $('<span>')
+            .addClass('glyphicon')
+            .addClass('glyphicon-trash')
+            .addClass('pointer')
+            .attr('title', 'Очистить')
+            .css('color', 'lightblue')
+            .on('click', () => {
+              window.graffiti.clear();
+            })
+            .appendTo(graffiti_tools1_child3);
+
+          // BR
+          $('<br>').appendTo(sketchpad_panel_content);
+
+          // Tools row 2
+          const graffiti_tools_row2 = $('<div>')
+            .addClass('graffiti-tools2')
+            .addClass('row')
+            .appendTo(sketchpad_panel_content);
+
+          const graffiti_tools2_child1 = $('<div>')
+            .addClass('col-lg-4')
+            .addClass('col-md-4')
+            .appendTo(graffiti_tools_row2);
+
+          const graffiti_tools2_child2 = $('<div>')
+            .addClass('col-lg-4')
+            .addClass('col-md-4')
+            .appendTo(graffiti_tools_row2);
+
+          const graffiti_tools2_child3 = $('<div>')
+            .addClass('col-lg-3')
+            .addClass('col-md-3')
+            .appendTo(graffiti_tools_row2);
+
+          // Child 1
+          const gtc1_row1 = $('<div>')
+            .addClass('row')
+            .html('<strong>Прозрачность</strong>')
+            .appendTo(graffiti_tools2_child1);
+
+          const gtc1_row2 = $('<div>')
+            .addClass('row')
+            .appendTo(graffiti_tools2_child1);
+
+          // Slider 1 (opacity)
+          const opacity_slider = $('<div>')
+            .addClass('slider')
+            .css('padding', '12px 24px')
+            .appendTo(gtc1_row2);
+
+          $('<span>')
+            .attr('id', 'sense_val')
+            .hide()
+            .html('<strong>100</strong>')
+            .appendTo(opacity_slider);
+
+          const opacity_slider_sense = $('<div>')
+            .attr('id', 'sense')
+            .appendTo(opacity_slider);
+
+          // Child 2
+          const gtc2_row1 = $('<div>')
+            .addClass('row')
+            .html('<strong>Размер</strong>')
+            .appendTo(graffiti_tools2_child2);
+
+          const gtc2_row2 = $('<div>')
+            .addClass('row')
+            .appendTo(graffiti_tools2_child2);
+
+          // Slider 2
+          const size_slider = $('<div>')
+            .addClass('slider')
+            .css('padding', '12px 24px')
+            .appendTo(gtc2_row2);
+
+          $('<span>')
+            .attr('id', 'brush_val')
+            .hide()
+            .html('<strong>10</strong>')
+            .appendTo(size_slider);
+
+          const size_slider_sense = $('<div>')
+            .attr('id', 'brush')
+            .appendTo(size_slider);
+
+          // Child 3
+          $('<button>')
+            .addClass('pointer')
+            .addClass('btn')
+            .addClass('btn-sm')
+            .addClass('btn-info')
+            .addClass('pull-left')
+            .attr({
+              id: 'graffiti_decrease',
+              title: 'Уменьшить холст',
+            })
+            .html('<span class="glyphicon glyphicon-minus"></span>')
+            .css({
+              'font-size': '14px',
+              width: '40px',
+              height: '40px',
+            })
+            .appendTo(graffiti_tools2_child3);
+
+          $('<button>')
+            .addClass('pointer')
+            .addClass('btn')
+            .addClass('btn-sm')
+            .addClass('btn-info')
+            .addClass('pull-right')
+            .attr({
+              id: 'graffiti_increase',
+              title: 'Увеличить холст',
+            })
+            .html('<span class="glyphicon glyphicon-plus"></span>')
+            .css({
+              'font-size': '14px',
+              width: '40px',
+              height: '40px',
+            })
+            .appendTo(graffiti_tools2_child3);
+
+          // Tools row 3
+          const graffiti_tools_row3 = $('<div>')
+            .addClass('graffiti-tools3')
+            .addClass('row')
+            .appendTo(sketchpad_panel_content);
+
+          $('<br>').appendTo(graffiti_tools_row3);
+
+          $('<button>')
+            .addClass('pointer')
+            .addClass('btn')
+            .addClass('btn-sm')
+            .addClass('btn-success')
+            .attr({
+              id: 'graffiti_save',
+              title: 'Опубликовать',
+            })
+            .html('Опубликовать')
+            .appendTo(graffiti_tools_row3);
+        };
+
+        this.setupGraffitiCore = () => {
+          window.GraffitiCore = (function ($) {
+            function Class(conf) {
+              var init = conf.init || function () {};
+              delete conf.init;
+              init.prototype = conf;
+              return init;
+            }
+
+            var Curve = new Class({
+              init: function (brush) {
+                this.brush = brush;
+                this.points = [];
+              },
+
+              push: function (point) {
+                this.points.push(point);
+              },
+            });
+
+            var Canvas = new Class({
+              init: function (canvas) {
+                this.context = canvas.getContext('2d');
+
+                this.context.lineCap = 'round';
+                this.context.lineJoin = 'round';
+
+                this.width = canvas.width;
+                this.height = canvas.height;
+              },
+
+              clear: function () {
+                this.context.clearRect(0, 0, this.width, this.height);
+              },
+
+              data: function () {
+                return this.context.canvas.toDataURL('image/png');
+              },
+
+              draw: function (curve) {
+                var brush = curve.brush;
+                var points = curve.points;
+
+                this.context.beginPath();
+
+                this.context.lineWidth = brush.width;
+                this.context.strokeStyle = brush.color;
+
+                this.context.moveTo(points[0].x, points[0].y);
+                this.context.lineTo(points[0].x - 0.5, points[0].y - 0.5);
+
+                for (var i in points) {
+                  this.context.lineTo(points[i].x, points[i].y);
+                }
+
+                this.context.stroke();
+
+                this.context.closePath();
+              },
+            });
+
+            var GraffitiCore = new Class({
+              init: function (conf) {
+                conf = this.initConf(conf);
+
+                this.buildDom(conf);
+                this.initSystemObjects(conf);
+                this.bindEvents(conf);
+              },
+
+              initConf: function (conf) {
+                var _conf = {
+                  selector: undefined,
+
+                  width: 600,
+                  height: 300,
+
+                  brush: {
+                    width: 40,
+                    color: 'rgba(200, 200, 50, 0.75)',
+                  },
+                };
+
+                for (var prop in conf) {
+                  _conf[prop] = conf[prop];
+                }
+
+                return _conf;
+              },
+
+              buildDom: function (conf) {
+                var wrapper = $(conf.selector);
+
+                this.dom = {
+                  wrapper: wrapper
+                    .css({
+                      width: conf.width,
+                      height: conf.height,
+                    })
+                    .empty(),
+
+                  canvas: {
+                    common: $('<canvas>')
+                      .attr({
+                        width: conf.width,
+                        height: conf.height,
+                      })
+                      .css({
+                        display: 'block',
+                      })
+                      .appendTo(wrapper),
+
+                    overlay: $('<canvas>')
+                      .attr({
+                        width: conf.width,
+                        height: conf.height,
+                      })
+                      .css({
+                        display: 'block',
+                        position: 'relative',
+                        top: -conf.height,
+                        zIndex: 9999,
+                      })
+                      .appendTo(wrapper),
+                  },
+                };
+              },
+
+              initSystemObjects: function (conf) {
+                this.system = {
+                  curve: undefined,
+                  curves: [],
+
+                  brush: conf.brush,
+
+                  canvas: {
+                    common: new Canvas(this.dom.canvas.common.get(0)),
+                    overlay: new Canvas(this.dom.canvas.overlay.get(0)),
+                  },
+
+                  inProcess: false,
+                  historyIndex: -1,
+                };
+              },
+
+              bindEvents: function (conf) {
+                var s = this.system;
+                var overlay = this.dom.canvas.overlay;
+
+                var proceedCurveByEvent = function (e) {
+                  s.curve.push({
+                    x: e.pageX - overlay.offset().left,
+                    y: e.pageY - overlay.offset().top,
+                  });
+
+                  s.canvas.overlay.clear();
+                  s.canvas.overlay.draw(s.curve);
+                };
+
+                overlay.bind({
+                  // Mouse events
+                  mousedown: function (e) {
+                    s.inProcess = true;
+                    s.curve = new Curve(s.brush);
+                    proceedCurveByEvent(e);
+                  },
+
+                  mousemove: function (e) {
+                    if (s.inProcess) {
+                      proceedCurveByEvent(e);
+                    }
+                  },
+
+                  mouseup: function (e) {
+                    if (s.inProcess) {
+                      s.inProcess = false;
+                      proceedCurveByEvent(e);
+
+                      s.canvas.overlay.clear();
+                      s.canvas.common.draw(s.curve);
+
+                      s.historyIndex += 1;
+                      s.curves = s.curves.slice(0, s.historyIndex);
+
+                      s.curves.push(s.curve);
+                      s.curve = undefined;
+                    }
+                  },
+                });
+
+                $(window).mouseup(function () {
+                  if (s.inProcess) {
+                    overlay.mouseup();
+                  }
+                });
+              },
+
+              clear: function () {
+                var s = this.system;
+
+                s.canvas.common.clear();
+                s.historyIndex = -1;
+                s.curves = [];
+              },
+
+              data: function () {
+                return this.system.canvas.common.data();
+              },
+
+              prev: function () {
+                var s = this.system;
+
+                s.canvas.common.clear();
+                s.historyIndex = Math.max(s.historyIndex - 1, -1);
+
+                for (var i = 0; i <= s.historyIndex; i += 1) {
+                  s.canvas.common.draw(s.curves[i]);
+                }
+              },
+
+              next: function () {
+                var s = this.system;
+
+                s.canvas.common.clear();
+                s.historyIndex = Math.min(
+                  s.historyIndex + 1,
+                  s.curves.length - 1,
+                );
+
+                for (var i = 0; i <= s.historyIndex; i += 1) {
+                  s.canvas.common.draw(s.curves[i]);
+                }
+              },
+
+              setBrush: function (brush) {
+                this.system.brush = brush;
+              },
+
+              // EDIT
+              getSystem: function () {
+                return this.system;
+              },
+
+              getCanvasCommon: function () {
+                return this.system.canvas.common;
+              },
+
+              getCanvasOverlay: function () {
+                return this.system.canvas.overlay;
+              },
+
+              getCommonSize: function (width, height) {
+                return {
+                  width: this.system.canvas.common.width,
+                  height: this.system.canvas.common.height,
+                };
+              },
+
+              getOverlaySize: function (width, height) {
+                return {
+                  width: this.system.canvas.overlay.width,
+                  height: this.system.canvas.overlay.height,
+                };
+              },
+
+              setCommonSize: function (size) {
+                this.system.canvas.common.width = size.width;
+                this.system.canvas.common.height = size.height;
+              },
+
+              setOverlaySize: function (size) {
+                this.system.canvas.overlay.width = size.width;
+                this.system.canvas.overlay.height = size.height;
+              },
+            });
+
+            return GraffitiCore;
+          })(jQuery);
+
+          // Graffiti init canvas
+          window.graffiti = new GraffitiCore({
+            selector: '.graffiti-area',
+
+            width: 465,
+            height: 270,
+
+            brush: {
+              width: 10,
+              color: 'rgba(73, 193, 106, 1)',
+            },
+          });
+
+          // Save button
+          $('#graffiti_save').on('click', function () {
+            var graffiti_image = window.graffiti.data();
+            const base64Clean = graffiti_image.substr(
+              graffiti_image.indexOf(',') + 1,
+              graffiti_image.length,
+            );
+
+            $.ajax({
+              type: 'POST',
+              url: 'https://api.imgur.com/3/image',
+              headers: {
+                Authorization: `${atob('Q2xpZW50LUlEIDcxMWE3ZmM3NmJkNjNmMw==')}`,
+              },
+              data: {
+                image: base64Clean,
+                type: 'base64',
+              },
+              success: res => {
+                $('#chatline')
+                  .val(`${$('#chatline').val()} ${res.data.link.substring(0)} `)
+                  .focus();
+              },
+            });
+          });
+
+          // Sensetivity slider
+          $('#sense_val').show(); // Hide value numbers
+          $('#sense').slider(); // Sense slider init
+
+          var sense = $('#sense');
+          sense.slider({
+            range: 'min',
+            min: 1,
+            animate: 'slow',
+            value: 100,
+            slide: function (event, ui) {
+              $('#sense_val').html(`<strong>${ui.value}</strong>`);
+            },
+            change: function (event, ui) {
+              var current_color = graffiti.system.brush.color;
+              var sense_val = parseInt($('#sense_val').text(), 10) / 100;
+              var brush_val = parseInt($('#brush_val').text(), 10);
+              var colors_int = current_color
+                .replace(/[A-Za-z\)\(]/g, '')
+                .split(',');
+              graffiti.setBrush({
+                width: brush_val,
+                color:
+                  'rgba(' +
+                  colors_int[0] +
+                  ', ' +
+                  colors_int[1] +
+                  ', ' +
+                  colors_int[2] +
+                  ', ' +
+                  sense_val +
+                  ')',
+              });
+            },
+          });
+
+          // Width of brush
+          $('#brush_val').show(); // Hide value numbers
+          $('#brush').slider();
+          var brush = $('#brush');
+
+          brush.slider({
+            range: 'min',
+            min: 1,
+            animate: 'slow',
+            value: 10,
+            slide: function (event, ui) {
+              $('#brush_val').html(`<strong>${ui.value}</strong>`);
+            },
+            change: function (event, ui) {
+              var current_color = graffiti.system.brush.color;
+              var brush_val = parseInt($('#brush_val').text(), 10);
+              graffiti.setBrush({ width: brush_val, color: current_color });
+            },
+          });
+
+          // Resize canvas
+          $('#graffiti_decrease').on('click', () => {
+            const iter = -10;
+
+            // Get common and overlay
+            const commonCanvas = window.graffiti.getCanvasCommon();
+
+            // Get DOM
+            const commonDom = commonCanvas.context.canvas;
+
+            const width = Number($(commonDom).attr('width')) + iter;
+            const height = Number($(commonDom).attr('height')) + iter;
+
+            that.newCanvas({ width, height });
+          });
+
+          $('#graffiti_increase').on('click', () => {
+            const iter = +10;
+
+            // Get common and overlay
+            const commonCanvas = window.graffiti.getCanvasCommon();
+
+            // Get DOM
+            const commonDom = commonCanvas.context.canvas;
+
+            const width = Number($(commonDom).attr('width')) + iter;
+            const height = Number($(commonDom).attr('height')) + iter;
+
+            that.newCanvas({ width, height });
+          });
+
+          // Change color
+          $('#graffiti_color').on('change', function () {
+            var current_color = window.graffiti.system.brush.color;
+
+            var colors_int = current_color
+              .replace(/[A-Za-z\)\(]/g, '')
+              .split(',');
+            var sense_val = parseInt($('#sense_val').text(), 10) / 100;
+            var brush_val = parseInt($('#brush_val').text(), 10);
+            var new_color = that.hex2rgb();
+            console.log('rgba(' + new_color + ', ' + colors_int[3] + ')');
+            graffiti.setBrush({
+              width: brush_val,
+              color: 'rgba(' + new_color + ', ' + sense_val + ')',
+            });
+          });
+        };
+
+        this.toR = h => {
+          return parseInt(that.cutHex(h).substring(0, 2), 16);
+        };
+        this.toG = h => {
+          return parseInt(that.cutHex(h).substring(2, 4), 16);
+        };
+        this.toB = h => {
+          return parseInt(that.cutHex(h).substring(4, 6), 16);
+        };
+        this.cutHex = h => {
+          return h.charAt(0) == '#' ? h.substring(1, 7) : h;
+        };
+        this.hex2rgb = () => {
+          var h = $('#graffiti_color').val();
+          var r_val = that.toR(h);
+          var g_val = that.toG(h);
+          var b_val = that.toB(h);
+          return r_val + ', ' + g_val + ', ' + b_val;
+        };
+
+        this.resizeCanvas = iter => {
+          // Get common and overlay
+          const commonCanvas = window.graffiti.getCanvasCommon();
+          const overlayCanvas = window.graffiti.getCanvasOverlay();
+
+          // Get DOM
+          const commonDom = commonCanvas.context.canvas;
+          const overlayDom = overlayCanvas.context.canvas;
+
+          // Get sizes
+          const commonSize = window.graffiti.getCommonSize();
+          const overlaySize = window.graffiti.getOverlaySize();
+
+          // Generate new sizes
+          const newCommonWidth = commonSize.width + iter;
+          const newCommonHeight = commonSize.height + iter;
+
+          const newOverlayWidth = overlaySize.width + iter;
+          const newOverlayHeight = overlaySize.height + iter;
+
+          // Create new sizes
+          const newCommonSize = {
+            width: newCommonWidth,
+            height: newCommonHeight,
+          };
+          const newOverlaySize = {
+            width: newOverlayWidth,
+            height: newOverlayHeight,
+          };
+
+          // Set new sizes
+          window.graffiti.setCommonSize(newCommonSize);
+          window.graffiti.setOverlaySize(newOverlaySize);
+
+          // Update DOM canvases
+          $(commonDom).attr({
+            width: newCommonWidth,
+            height: newCommonHeight,
+          });
+
+          $(overlayDom).attr({
+            width: newOverlayWidth,
+            height: newOverlayHeight,
+          });
+        };
+
+        this.newCanvas = size => {
+          window.graffiti = new GraffitiCore({
+            selector: '.graffiti-area',
+
+            width: size.width,
+            height: size.height,
+
+            brush: {
+              width: 10,
+              color: $('#graffiti_color').val(),
+            },
+          });
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.appendCSS = function () {
+          $(`<style>`).appendTo('head').text(`
+
+				#sketchpad-panel-toggle {
+					background: url(https://i.imgur.com/QMxsdCE.png) no-repeat;
+					height: 40px !important;
+					width: 40px !important;
+					outline: none;
+					border: none;
+					opacity: 0.8;
+					background-size: contain !important;
+				}
+
+				.graffiti-area {
+					border: 4px dashed #606060;
+					margin: 15px 0px 15px 0px;
+				}
+
+			`);
+        };
+
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
