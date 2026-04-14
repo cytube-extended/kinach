@@ -1,0 +1,23 @@
+#resize-video-larger, #resize-video-smaller {
+  float: right;
+  line-height: 1.6 !important;
+  right: 7.5px;
+  top: -1px;
+  padding-right: 4px;
+}
+
+.glyphicon {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.pointer {
+  cursor: pointer;
+}
