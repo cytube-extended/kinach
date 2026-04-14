@@ -1,6 +1,4 @@
-if (!window.initialized) {
-  window.initialized = true
-  
+if (!window.HAS_CONNECTED_BEFORE) {
   $(document).ready(function() { 
     $('<link id="chanfavicon" href="https://kinach.vercel.app/assets/icon_obsr.ico" type="image/x-icon" />')
       .attr('rel', 'shortcut icon')
