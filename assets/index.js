@@ -59,4 +59,39 @@ if (!window.CHANNEL_JS_LOADED) {
       }
     }
   }
+
+  // App version
+  const defaultAppVersion = 'main';
+  const customAppVersion = localStorage.getItem('appVersion');
+  const isCustomAppVersionValid = typeof customAppVersion === 'string' && customAppVersion !== '';
+  const appVersion = isCustomAppVersionValid ? customAppVersion : defaultAppVersion;
+  
+  const appVersionContainer = document.getElementById('us-scriptcontrol');
+  const appVersionWrapper = document.createElement('div');
+  
+  const appVersionLabel = document.createElement('label');
+  appVersionLabel.setAttribute('for', 'us-app-version-input');
+  appVersionLabel.className = 'control-label';
+  appVersionLabel.textContent = 'Версия скриптов';
+  appVersionLabel.title = 'Используемая версия скриптов';
+  
+  const appVersionInput = document.createElement('input');
+  appVersionInput.className = 'form-control';
+  appVersionInput.id = 'us-app-version-input';
+  appVersionInput.type = 'text';
+  appVersionInput.value = appVersion;
+  appVersionInput.placeholder = defaultAppVersion;
+  
+  const appVersionSubmit = document.createElement('button');
+  appVersionSubmit.className = 'btn btn-sm btn-info';
+  appVersionSubmit.textContent = 'Apply & Refresh';
+  appVersionSubmit.addEventListener('click', () => {
+    localStorage.setItem('appVersion', appVersionInput.value.trim());
+    location.reload();
+  });
+  
+  appVersionWrapper.appendChild(appVersionLabel);
+  appVersionWrapper.appendChild(appVersionInput);
+  appVersionWrapper.appendChild(appVersionSubmit);
+  appVersionContainer.appendChild(appVersionWrapper);
 }
