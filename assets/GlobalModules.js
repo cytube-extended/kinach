@@ -71,7 +71,7 @@
       // __webpack_require__(45);
       __webpack_require__(46);
       __webpack_require__(47);
-      ////__webpack_require__(48);
+      __webpack_require__(48);
       ////__webpack_require__(49);
       ////__webpack_require__(50);
       ////__webpack_require__(51);
@@ -25740,6 +25740,344 @@
           });
         },
       );
+
+      /***/
+    },
+    /* 48 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule('modPoll', function (app, settings) {
+        'use strict';
+        var that = this;
+
+        if (window.CLIENT.rank < 2) return;
+
+        var defaultSettings = {
+          pollTitleTemplates: [
+            {
+              name: 'Реквесты',
+              text: 'Реквесты в ЛС. Название + ссылка на Кинопоиск',
+            },
+            {
+              name: 'Единички',
+              text: 'Отборочный (единички)',
+            },
+            {
+              name: 'Отборочный',
+              text: 'Отборочный',
+            },
+            {
+              name: 'Финал',
+              text: 'Финалочка',
+            },
+            {
+              name: 'ГОЛОСОВАНИЕ',
+              text: 'ГОЛОСОВАНИЕ',
+            },
+          ],
+          pollTimeoutTemplates: [
+            {
+              name: '30 сек',
+              text: '30',
+            },
+            {
+              name: '1 минута',
+              text: '1:00',
+            },
+            {
+              name: '3 минуты',
+              text: '3:00',
+            },
+            {
+              name: '5 минут',
+              text: '5:00',
+            },
+          ],
+        };
+        settings = $.extend({}, defaultSettings, settings);
+
+        this.init = function () {
+          that.setupNewPollButton();
+          that.setupNewPollCallback();
+
+          that.appendCSS();
+        };
+
+        /////////////////////////////////////////////////////////////
+
+        this.setupNewPollButton = function () {
+          // On newPoll btn
+          $('#newpollbtn').on('click', function () {
+            // Remove option inputs
+            $('.poll-menu-option').remove();
+            // Setup new addOption button
+            that.addOptionBtnSetup();
+            // Setup title templates
+            that.addTemplates();
+          });
+        };
+
+        this.setupNewPollCallback = function () {
+          // On newPoll callback
+          window.socket.on('newPoll', function () {
+            setTimeout(function () {
+              that.copyOptionSetup();
+            }, 1000);
+          });
+          setTimeout(function () {
+            that.copyOptionSetup();
+          }, 5000);
+        };
+
+        /////////////////////////////////////////////////////////////
+
+        this.addTemplates = function () {
+          // Setup title templates
+          that.addTitleTemplates();
+          // Setup timeout templates
+          that.addTimeoutTemplates();
+        };
+
+        this.addTitleTemplates = function () {
+          let titleInput = $(
+            $('#pollwrap > .well.poll-menu > input.form-control')[0],
+          );
+
+          let inputGroup = $('<div>')
+            .addClass('input-group')
+            .addClass('pointer')
+            .insertBefore($(titleInput));
+
+          $('<br><br>').insertBefore($(inputGroup));
+
+          $('<span>')
+            .addClass('btn-md')
+            .addClass('btn-default')
+            .addClass('dropdown-toggle')
+            .addClass('input-group-addon')
+            .attr('id', 'poll-dropdown-addon')
+            .attr('data-toggle', 'dropdown')
+            .attr('aria-haspopup', 'true')
+            .attr('aria-expanded', 'false')
+            .appendTo($(inputGroup))
+            .html(`<strong>Шаблоны</strong><span class="caret"></span>`);
+
+          titleInput
+            .attr('placeholder', 'Название опроса')
+            .attr('aria-describedby', 'poll-dropdown-addon')
+            .attr('id', 'poll-title')
+            .appendTo($(inputGroup));
+
+          let dropDownList = $('<ul>')
+            .addClass('dropdown-menu')
+            .prependTo($(inputGroup));
+
+          for (var i = 0; i < settings.pollTitleTemplates.length; i++) {
+            let tmpText = settings.pollTitleTemplates[i].text;
+            $('<li>')
+              .attr('id', `poll-option-${i}`)
+              .html(`<a>${settings.pollTitleTemplates[i].name}</a>`)
+              .appendTo(dropDownList)
+              .on('click', function () {
+                titleInput.val(`${tmpText}`);
+              });
+          }
+        };
+
+        this.addTimeoutTemplates = function () {
+          let timeoutInput = $(
+            $('#pollwrap > .well.poll-menu > input.form-control')[0],
+          );
+
+          let inputGroup = $('<div>')
+            .addClass('input-group')
+            .addClass('pointer')
+            .insertBefore($(timeoutInput));
+
+          $('<span>')
+            .addClass('btn-md')
+            .addClass('btn-default')
+            .addClass('dropdown-toggle')
+            .addClass('input-group-addon')
+            .attr('id', 'poll-dropdown-addon')
+            .attr('data-toggle', 'dropdown')
+            .attr('aria-haspopup', 'true')
+            .attr('aria-expanded', 'false')
+            .appendTo($(inputGroup))
+            .html(`<strong>Шаблоны</strong><span class="caret"></span>`);
+
+          timeoutInput
+            .attr('placeholder', 'Таймер')
+            .attr('aria-describedby', 'poll-dropdown-addon')
+            .attr('id', 'poll-timeout')
+            .appendTo($(inputGroup));
+
+          let dropDownList = $('<ul>')
+            .addClass('dropdown-menu')
+            .prependTo($(inputGroup));
+
+          for (var i = 0; i < settings.pollTimeoutTemplates.length; i++) {
+            let tmpText = settings.pollTimeoutTemplates[i].text;
+            $('<li>')
+              .attr('id', `poll-option-${i}`)
+              .html(`<a>${settings.pollTimeoutTemplates[i].name}</a>`)
+              .appendTo(dropDownList)
+              .on('click', function () {
+                timeoutInput.val(`${tmpText}`);
+              });
+          }
+        };
+
+        /////////////////////////////////////////////////////////////
+
+        this.copyOptionSetup = function () {
+          if ($('poll-copy-option').length > 0 && $('.option').length == 0)
+            return;
+
+          $('<br>').insertAfter($('#pollwrap > .well.active > h3'));
+
+          $('.well.active > .option').each(function (index, item) {
+            $(
+              `<span id="pollOptionCopy" class="btn btn-sm btn-info pull-left pointer" title="Очистить строку"><i class="glyphicon glyphicon-duplicate" /></span>`,
+            )
+              .attr('title', 'Скопировать вариант в новое голосование')
+              .on('click', _ => {
+                that.addOption(this);
+              })
+              .prependTo($(item));
+          });
+        };
+
+        this.addOption = function (option) {
+          let optionName = option.innerText.split(/(^([0-9]*(\?)*))/g)[4];
+
+          let inputOptions = $('.poll-menu-option');
+
+          if (inputOptions.length == 0) return;
+
+          let isCopied = false;
+
+          for (var i = 0; i < inputOptions.length; i++) {
+            if ($(inputOptions[i]).val() === '') {
+              $(inputOptions[i]).val(optionName);
+              isCopied = true;
+              return;
+            }
+          }
+
+          if (!isCopied) {
+            $('#addNewOptionBtn').click();
+            $($('.poll-menu-option').last()).val(optionName);
+            return;
+          }
+        };
+
+        /////////////////////////////////////////////////////////////
+
+        this.addOptionBtnSetup = function () {
+          let startPoll = $('#pollwrap .btn-block');
+
+          $('<br>').insertBefore(startPoll);
+
+          var addOptionBtn = $('#pollwrap button:contains(Добавить вариант)');
+          addOptionBtn.attr('id', 'addNewOptionBtn');
+          addOptionBtn.off();
+          addOptionBtn.insertBefore(startPoll);
+
+          $('<br>').insertBefore(startPoll);
+
+          addOptionBtn.click(that.createPollOption);
+
+          that.createPollOption();
+          that.createPollOption();
+
+          that.createRemoveLastOptionButton(addOptionBtn);
+        };
+
+        this.createRemoveLastOptionButton = function (addOptionBtn) {
+          $('<button>')
+            .attr('id', 'removeLastOptionButton')
+            .addClass('btn')
+            .addClass('btn-sm')
+            .addClass('btn-default')
+            .html('Убрать последний вариант')
+            .insertAfter(addOptionBtn)
+            .click(_ => {
+              if ($('.poll-clean-option').length == 0) return;
+
+              // Remove input
+              $('.form-control.poll-menu-option').last().remove();
+
+              // Remove clean btn
+              $('.poll-clean-option').last().remove();
+            });
+        };
+
+        this.createPollOption = function () {
+          let optionInput = $('<input/>')
+            .addClass('form-control')
+            .attr('type', 'text')
+            .addClass('poll-menu-option')
+            .insertBefore('#pollwrap .btn-block');
+
+          // Create clean button
+          let cleanOption = $('<span>')
+            .addClass('btn')
+            .addClass('btn-sm')
+            .addClass('btn-danger')
+            .addClass('poll-clean-option')
+            .attr('title', 'Очистить строку')
+            .html(`<span class="glyphicon glyphicon-trash">`);
+
+          // Clean option callback
+          cleanOption.click(_ => {
+            $(optionInput).remove();
+            $(cleanOption).remove();
+          });
+
+          // Wrap inside a div
+          $('<div>')
+            .addClass('c-wrap')
+            .append(cleanOption)
+            .insertAfter(optionInput);
+        };
+
+        /////////////////////////////////////////////////////////////
+
+        // Append module's style
+        this.appendCSS = function () {
+          $(`<style>`).appendTo('head').text(`
+
+			.poll-clean-option{
+				position: relative;
+				top: -44px;
+				margin-left: calc(100% - 38px);
+				opacity: 0.8;
+			}
+
+				.poll-clean-option:hover{
+					opacity: 1.0
+				}
+
+			.c-wrap{
+				height: 0px
+			}
+
+			.form-control.poll-menu-option{
+				padding-right: 40px;
+			}
+
+			#pollOptionCopy{
+				top: 8px;
+    		right: 4px;
+			}
+
+			`);
+        };
+
+        this.init();
+
+        console.log('[cytubeEnhanced]: modPoll module is loaded!');
+      });
 
       /***/
     },
