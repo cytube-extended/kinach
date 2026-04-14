@@ -85,7 +85,7 @@
       // __webpack_require__(59);
       // __webpack_require__(60);
       // __webpack_require__(61);
-      ////__webpack_require__(62);
+      //__webpack_require__(62);
       ////__webpack_require__(63);
       ////__webpack_require__(64);
       ////__webpack_require__(65);
@@ -28170,6 +28170,222 @@
 
 
 			`);
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.init();
+      });
+
+      /***/
+    },
+    /* 62 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule('videojsSubtitles', function (app) {
+        'use strict';
+        const that = this;
+
+        this.init = () => {
+          that.setupCallbacks();
+          that.check_sub();
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.setupCallbacks = () => {
+          // Server callbacks
+          socket.on('changeMedia', () => {
+            that.clear_sub();
+          });
+          socket.on('setCurrent', () => that.clear_sub());
+          socket.on('mediaUpdate', () => that.check_sub());
+
+          // Button callbacks
+          $('#mediarefresh').on('click', () => {
+            setTimeout(that.check_sub, 2000);
+          });
+        };
+
+        this.clear_sub = () => {
+          $('#subtitles-button').remove();
+        };
+
+        this.check_sub = () => {
+          if ($('#ytapiplayer_html5_api').length > 0) {
+            that.create_subtitles_input();
+          }
+        };
+
+        this.create_subtitles_input = () => {
+          if ($('#subtitles-button').length === 0) {
+            $('<button>')
+              .attr('id', 'subtitles-button')
+              .attr('title', 'Загрузить файл с субтитрами (.srt)')
+              .addClass('btn')
+              .addClass('btn-sm')
+              .addClass('btn-default')
+              .appendTo('#plcontrol')
+              .css({
+                width: '40px',
+                height: '30px',
+              })
+              .text('CC');
+
+            $('<input>')
+              .attr({
+                type: 'file',
+                id: 'subtitles-input',
+                accept: '.srt',
+              })
+              .css({
+                opacity: '0',
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+                cursor: 'pointer',
+                top: '0',
+                bottom: '0',
+                left: '0',
+                right: '0',
+              })
+              .appendTo('#subtitles-button')
+              .on('change', () => {
+                that.handle_update_subtitles();
+              });
+          }
+        };
+
+        this.handle_update_subtitles = async () => {
+          // Read file with subtitles and convert to base64
+          const subtitles_base64 = await that.read_subtitles_file();
+
+          // Convert base64 to URL
+          const subtitles_url = that.base64_to_url(subtitles_base64);
+
+          // Set player CORS
+          $('#ytapiplayer_html5_api').attr('crossorigin', 'anonymous');
+
+          // Remove all subtitle tracks
+          $('track').remove();
+
+          // Create subtitles object
+          const subtitles = {
+            kind: 'captions',
+            language: 'en',
+            label: 'Субтитры',
+            src: subtitles_url,
+          };
+
+          // Set subtitles
+          $(window.PLAYER.player.addRemoteTextTrack(subtitles)).attr(
+            'default',
+            '',
+          );
+        };
+
+        this.read_subtitles_file = async () => {
+          const file = document.querySelector('#subtitles-input').files[0];
+          const subtitles_base64 = await that.to_base64(file);
+          const base64_no_meta = subtitles_base64.split(',').pop();
+
+          return base64_no_meta;
+        };
+
+        this.to_base64 = file =>
+          new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+          });
+
+        this.base64_to_url = base64 => {
+          const base64_decoded = window.atob(base64);
+
+          const web_vtt = that.srt_to_vtt(base64_decoded);
+
+          const subBlob = new Blob([web_vtt]);
+          const subURL = URL.createObjectURL(subBlob);
+
+          return subURL;
+        };
+
+        this.srt_to_vtt = data => {
+          var srt = data.replace(/\r+/g, '');
+
+          srt = srt.replace(/^\s+|\s+$/g, '');
+
+          var cuelist = srt.split('\n\n');
+          var result = '';
+
+          if (cuelist.length > 0) {
+            result += 'WEBVTT\n\n';
+            for (var i = 0; i < cuelist.length; i = i + 1) {
+              result += that.convert_srt_cue(cuelist[i]);
+            }
+          }
+
+          return result;
+        };
+
+        this.convert_srt_cue = caption => {
+          var cue = '';
+          var s = caption.split(/\n/);
+
+          while (s.length > 3) {
+            for (var i = 3; i < s.length; i++) {
+              s[2] += '\n' + s[i];
+            }
+            s.splice(3, s.length - 3);
+          }
+
+          var line = 0;
+
+          if (!s[0].match(/\d+:\d+:\d+/) && s[1].match(/\d+:\d+:\d+/)) {
+            cue += s[0].match(/\w+/) + '\n';
+            line += 1;
+          }
+
+          if (s[line].match(/\d+:\d+:\d+/)) {
+            var m = s[1].match(
+              /(\d+):(\d+):(\d+)(?:,(\d+))?\s*--?>\s*(\d+):(\d+):(\d+)(?:,(\d+))?/,
+            );
+
+            if (m) {
+              cue +=
+                m[1] +
+                ':' +
+                m[2] +
+                ':' +
+                m[3] +
+                '.' +
+                m[4] +
+                ' --> ' +
+                m[5] +
+                ':' +
+                m[6] +
+                ':' +
+                m[7] +
+                '.' +
+                m[8] +
+                '\n';
+              line += 1;
+            } else {
+              return '';
+            }
+          } else {
+            return '';
+          }
+
+          if (s[line]) {
+            cue += s[line] + '\n\n';
+          }
+
+          return cue;
         };
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
