@@ -4,5 +4,8 @@
   "author": "basevich",
   "license": "ISC",
   "type": "module",
-  "main": "assets/index.js"
+  "main": "assets/index.js",
+  "devDependencies": {
+    "vite": "^8.0.8"
+  }
 }
