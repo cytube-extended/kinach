@@ -76,7 +76,7 @@
       __webpack_require__(50);
       __webpack_require__(51);
       __webpack_require__(52);
-      ////__webpack_require__(53);
+      //__webpack_require__(53);
       // __webpack_require__(54);
       ////__webpack_require__(55);
       ////__webpack_require__(56);
@@ -26425,6 +26425,281 @@
             window.addUserDropdown($(users[i]));
           }
         };
+
+        this.init();
+      });
+
+      /***/
+    },
+    /* 53 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule('voiceMsg', function (app, settings) {
+        'use strict';
+        const that = this;
+
+        const defaultSettings = {
+          test: 1,
+        };
+        settings = $.extend({}, defaultSettings, settings);
+
+        this.init = () => {
+          that.createPanelToggle();
+          that.createPanel();
+          that.appendCSS();
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // Create toggle button and append to leftcontrols
+        this.createPanelToggle = () => {
+          if ($('#audioPanelToggle').length == 0) {
+            // Create button
+            $('#leftcontrols').append(
+              `<button id="audioPanelToggle" class="btn btn-sm btn-default" title="Голосовое сообщение" data-toggle="modal">
+							<span class="glyphicon glyphicon-uploadbtn"></span>
+						</button>`,
+            );
+
+            // Subscribe Show / Hide panel callback
+            $('#audioPanelToggle').on('click', e =>
+              $('#audioPanel').slideToggle(200),
+            );
+          }
+        };
+
+        this.createPanel = () => {
+          $(`
+				<div class="col-lg-12 col-md-12" id="audioPanel" style="display: none;">
+					<div class="well img-menu text-center" id="audioPanelContent" style="margin-bottom: 0 !important; min-height: 100px;">
+						<div><strong>Голосовое сообщение</strong></div>
+
+						<br>
+
+						<div>
+							<button id="voiceRecordBtn" class="btn btn-md btn-info" title="Начать / Закончить запись">
+								<span id="recordStartIcon" class="glyphicon glyphicon-ice-lolly"></span>
+								<span id="recordStopIcon" class="glyphicon glyphicon-stop" style="display: none;"></span>
+							</button>
+							<button id="voiceSendBtn" class="btn btn-md btn-success" title="Загрузить и отправить" style="display: none;">
+								<span class="glyphicon glyphicon-send"></span>
+							</button>
+						</div>
+
+						<hr>
+
+						<div>
+							<div id="recContent">
+							</div>
+						</div>
+
+					</div>
+				</div>
+			`).insertBefore('#pollwrap');
+
+          // Subscribe record audio callback on the button
+          $('#voiceRecordBtn').on('click', () => {
+            this.handleRecording();
+          });
+
+          // Subscribe send audio callback on the button
+          $('#voiceSendBtn').on('click', () => {
+            this.handleSendVoice();
+          });
+        };
+
+        // Recorder
+        let recorder = null;
+
+        // Record audio init
+        this.handleRecording = () => {
+          const startRec = () => {
+            // Create variable for the recorder
+            recorder = null;
+
+            // Record audio
+            const onsuccess = stream => {
+              const chunks = [];
+
+              // Create recorder
+              recorder = new MediaRecorder(stream, {
+                type: 'audio/ogg; codecs=opus',
+              });
+
+              // Starting the record
+              recorder.start();
+
+              // Record
+              recorder.ondataavailable = e => {
+                chunks.push(e.data);
+              };
+
+              recorder.onstop = function (e) {
+                // Create Blob from chunks
+                const blob = new Blob(chunks, {
+                  type: 'audio/ogg; codecs=opus',
+                });
+
+                // Get Blob URL
+                const audioURL = window.URL.createObjectURL(blob);
+
+                // Display recording
+                console.log('audioURL');
+                console.log(audioURL);
+
+                // Create audio element
+                const audioEl = $('<audio>');
+
+                // Add attributes
+                audioEl.attr({
+                  id: 'audioRec',
+                  controls: 'true',
+                  src: audioURL,
+                });
+
+                // Append to the audio panel
+                audioEl.appendTo('#recContent');
+
+                // Display stop
+                console.log('recorder stopped');
+
+                // Show send button
+                $('#voiceSendBtn').show();
+              };
+            };
+            //
+
+            //
+            // Navigator
+            //
+
+            // Get naviator from any browser
+            navigator.getUserMedia =
+              navigator.getUserMedia ||
+              navigator.webkitGetUserMedia ||
+              navigator.mozGetUserMedia ||
+              navigator.msGetUserMedia;
+
+            // Get audio permission and start recording
+            navigator.getUserMedia(
+              {
+                audio: true,
+              },
+              onsuccess,
+              e => {
+                console.log(e);
+              },
+            );
+            //
+          };
+
+          const stopRec = () => {
+            recorder.stop();
+          };
+
+          // Toggle
+          if ($('#voiceRecordBtn').hasClass('btn-info')) {
+            console.log('Start recording');
+
+            // Change toggle button
+            $('#recordStartIcon').hide();
+            $('#recordStopIcon').show();
+
+            // Change toggle color
+            $('#voiceRecordBtn').removeClass('btn-info');
+            $('#voiceRecordBtn').addClass('btn-danger');
+
+            startRec();
+          } else {
+            console.log('Stop recording');
+
+            // Change toggle button
+            $('#recordStopIcon').hide();
+            $('#recordStartIcon').show();
+
+            // Change toggle color
+            $('#voiceRecordBtn').removeClass('btn-danger');
+            $('#voiceRecordBtn').addClass('btn-info');
+
+            stopRec();
+          }
+        };
+
+        this.handleSendVoice = async () => {
+          // Get audio element
+          const audioEl = $('#audioRec');
+
+          // Get Blob
+          const blob = await fetch(audioEl.attr('src')).then(r => r.blob());
+
+          // Convert to base64
+          const audioBase64 = await this.blobToBase64(blob);
+
+          // Remove audio element
+          audioEl.remove();
+
+          // Hide send button
+          $('#voiceSendBtn').hide();
+
+          // Send data
+          this.uploadAudio(audioBase64);
+
+          // Display base64 data
+          // console.log(audioBase64);
+        };
+
+        this.blobToBase64 = blob => {
+          return new Promise((resolve, _) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(blob);
+          });
+        };
+
+        this.uploadAudio = base64Raw => {
+          $.ajax({
+            url: 'https://nifty-well-gander.glitch.me/catbox',
+            type: 'POST',
+            data: { file: base64Raw },
+            dataType: 'json',
+            success: function (response) {
+              console.log('Voice recording link: ' + response);
+              $('#chatline').val(
+                `${$('#chatline').val()} ${response.data.url} `,
+              );
+            },
+            error: function (err) {
+              console.log(err);
+            },
+          });
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.appendCSS = function () {
+          $(`<style>`).appendTo('head').text(`
+
+				#audioPanelToggle {
+					/* background: url(https://i.imgur.com/DLnEPwY.png) no-repeat; */
+					background: url(https://i.imgur.com/7rOjHuT.png) no-repeat;
+					height: 40px !important;
+					width: 40px !important;
+					text-indent: -9999px;
+					outline: none;
+					border: none;
+					opacity: 0.8;
+					background-size: contain !important;
+				}
+
+			`);
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
         this.init();
       });
