@@ -1,0 +1,8 @@
+{
+  "name": "kinach",
+  "version": "2.0.0",
+  "author": "basevich",
+  "license": "ISC",
+  "type": "module",
+  "main": "assets/index.js"
+}
