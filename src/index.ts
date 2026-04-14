@@ -1,9 +1,16 @@
-import { inline } from "./inline";
+const loadESM = () => {
+  const url = new URL("main.js", import.meta.env.BASE_URL);
+  const modPromise: Promise<typeof import("./main")> = import(url.toString());
 
-export default function () {
-  inline();
+  modPromise
+    .then((mod) =>
+      mod
+        .init()
+        .catch((err) =>
+          console.error("failed to initialize entry module: " + err),
+        ),
+    )
+    .catch((err) => console.error("failed to load entry module: " + err));
+};
 
-  const url = new URL("lazy.js", import.meta.env.BASE_URL).toString();
-  const modPromise: Promise<typeof import("./lazy")> = import(url);
-  modPromise.then((mod) => mod.lazy());
-}
+loadESM();
