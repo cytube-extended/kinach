@@ -69,7 +69,7 @@
       __webpack_require__(43);
       __webpack_require__(44);
       // __webpack_require__(45);
-      ////__webpack_require__(46);
+      __webpack_require__(46);
       ////__webpack_require__(47);
       ////__webpack_require__(48);
       ////__webpack_require__(49);
@@ -25361,6 +25361,345 @@
         this.addChessButton();
         this.createStyles();
       });
+
+      /***/
+    },
+    /* 46 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule(
+        'chatlineSmiles',
+        function (app, settings) {
+          'use strict';
+          var that = this;
+
+          this.tabNames = new Array(
+            'YOBA',
+            'PEPE',
+            'MUSIC',
+            'POLITICS',
+            'OTHER',
+          );
+
+          this.chatlineCloseCallback = function () {
+            if ($._data($('#chatline')[0], 'events').click !== 'undefined') {
+              $('#chatline').on('click', _ => {
+                if ($('#smileDiv').hasClass('copen')) $('#btn-smile').click();
+              });
+            }
+          };
+
+          this.init = function () {
+            that.createEmotesBoard('smileDiv');
+
+            var smileButton = that.CElement('div', 'btn-smile', '', '');
+
+            if (USEROPTS.chatbtn) $(smileButton).addClass('shifted');
+
+            $(smileButton).insertAfter('#messagebuffer');
+
+            $(smileButton).on('click', _ => {
+              $('#chatline').focus();
+              that.upDiv('smileDiv');
+              that.toggleButton(this, '', '');
+              $('#chatline').blur();
+            });
+
+            that.chatlineCloseCallback();
+
+            window.socket.on('updateEmote', function () {
+              that.updateEmotesBoard();
+            });
+            window.socket.on('importEmotes', function () {
+              that.updateEmotesBoard();
+            });
+            window.socket.on('removeEmote', function () {
+              that.updateEmotesBoard();
+            });
+            window.socket.on('emoteList', function () {
+              that.updateEmotesBoard();
+            });
+          };
+
+          //////////////////////////////////////////////////////////////////////
+
+          this.toggleButton = function (button, textNormal, textPushed) {
+            // On first click
+            if ($('#emojipanel0').children().length === 0) {
+              that.updateEmotesBoard();
+            }
+
+            button = $(button);
+
+            button.toggleClass('cpushed');
+
+            if (button.hasClass('cpushed')) {
+              button.html(textPushed);
+            } else {
+              button.html(textNormal);
+            }
+          };
+
+          this.upDiv = function (divID) {
+            $(`#${divID}`).toggleClass('copen');
+          };
+
+          //////////////////////////////////////////////////////////////////////
+
+          this.createEmotesBoard = function (divID) {
+            var div = $('<div></div>').attr('id', divID);
+            var panels = [];
+
+            for (var i = 0; i < that.tabNames.length; i++) {
+              panels.push(
+                new that.CElement('div', 'emojipanel' + i, '', 'emoji-panel'),
+              );
+              $(panels[i]).appendTo(div);
+            }
+
+            if (panels.length > 0) $(panels[0]).addClass('copen');
+
+            var divBox = that.createMotdButtons(
+              divID + 'Radio',
+              'btn btn-default emoji-button',
+              that.tabNames,
+              panels,
+            );
+
+            $(divBox).insertAfter('#messagebuffer');
+            $(div).insertAfter('#messagebuffer');
+
+            //that.updateEmotesBoard();
+            that.appendCSS();
+          };
+
+          //////////////////////////////////////////////////////////////////////
+
+          this.CElement = function (element, elementID, innerHTML, className) {
+            return $(`<${element}></${element}>`)
+              .attr('id', elementID)
+              .addClass(className)
+              .html(innerHTML);
+          };
+
+          this.createMotdButtons = function (
+            btnsGroup,
+            btnClassName,
+            btnsInner,
+            panels,
+          ) {
+            var outer = $('<div></div>').attr('id', btnsGroup);
+
+            let btns = new Array(btnsInner.length);
+            let labels = new Array(btnsInner.length);
+
+            $(btnsInner).each(function (index, name) {
+              btns[index] = $(
+                `<input type="radio" name=${btnsGroup} id=${
+                  btnsGroup + index
+                } value=${index}>`,
+              );
+              labels[index] = $(
+                `<label for=${
+                  btnsGroup + index
+                } class="${btnClassName}" >${name}</label>`,
+              );
+
+              $(labels[index]).on('click', _ => {
+                $(labels).each(function (a, b) {
+                  if (a == index) $(panels[a]).addClass('copen');
+                  else $(panels[a]).removeClass('copen');
+                });
+              });
+
+              $(btns[index]).appendTo(outer);
+              $(labels[index]).appendTo(outer);
+            });
+
+            return outer;
+          };
+
+          this.updateEmotesBoard = function () {
+            var emojiPanels = $('.emoji-panel');
+
+            emojiPanels.each(function (a, b) {
+              $(b).html('');
+            });
+
+            CHANNEL.emotes.forEach(function (item) {
+              switch (item.name[1]) {
+                case '1':
+                  that.addSmileToDiv(emojiPanels[0], item);
+                  break;
+                case '2':
+                  that.addSmileToDiv(emojiPanels[1], item);
+                  break;
+                case '3':
+                  that.addSmileToDiv(emojiPanels[2], item);
+                  break;
+                case '4':
+                  that.addSmileToDiv(emojiPanels[3], item);
+                  break;
+                default:
+                  that.addSmileToDiv(emojiPanels[4], item);
+                  break;
+              }
+            });
+          };
+
+          this.addSmileToDiv = function (obj, emote) {
+            let tmpEmote = $('<img class="smile-preview">')
+              .attr({ src: emote.image, title: emote.name })
+              .click(function () {
+                that.pasteSmile(emote.name);
+              });
+
+            $(obj).append(tmpEmote);
+          };
+
+          this.pasteSmile = function (smileName) {
+            $('#chatline')
+              .val(`${$('#chatline').val()} ${smileName} `)
+              .focus();
+          };
+
+          this.sendEvent = function (el, etype) {
+            if (el.fireEvent) {
+              el.fireEvent('on' + etype);
+            } else {
+              var evObj = doc.createEvent('Events');
+              evObj.initEvent(etype, true, false);
+              el.dispatchEvent(evObj);
+            }
+          };
+
+          this.appendCSS = function () {
+            $(`<style>`).appendTo('head').text(`
+			@media (max-width: 991px) {
+				#smileDiv, #smileDivRadio {
+					bottom: 76px;
+				}
+			}
+
+			@media (min-width: 992px) {
+				#smileDiv, #smileDivRadio {
+					bottom: 38px;
+				}
+			}
+
+			#smileDiv, #smileDivRadio {
+				position: absolute;
+				overflow: hidden;
+				width: 100%;
+				left: 0;
+				z-index: 9;
+				max-height: 0;
+				font-size: 14px;
+				transition-duration: 0.115s;
+				transition-timing-function: cubic-bezier(0.75, 0.00, 0.25, 1.00);
+				text-align: center;
+				padding: 0;
+				border-radius: 0;
+				background-color: rgb(0 0 0 / 75%);
+			}
+				#smileDivRadio input {
+					display: none;
+				}
+				#smileDivRadio label:hover {
+					background-color: hsl(0deg 0% 85%);
+				}
+				#smileDivRadio input:checked + label {
+					background-color: transparent;
+					color: inherit;
+				}
+				#smileDiv {
+					border-top: solid 0em;
+				}
+				#smileDiv.copen {
+					max-height: 60%;
+					border-bottom: 2em solid transparent!important;
+					overflow-y: auto;
+					padding: 0.5em 0;
+				}
+				#smileDiv.copen + #smileDivRadio {
+					max-height: 100%;
+				}
+					.smile-preview {
+						cursor: pointer;
+						margin: 0.2em;
+						max-height: 40px;
+					}
+					.chat-image {
+						max-height: 8em;
+						max-width: 100%;
+						cursor: zoom-in;
+					}
+				.emoji-panel {
+					display: none;
+				}
+				.emoji-panel.copen {
+					display: block;
+				}
+				.emoji-button {
+					color: white;
+					font-weight: 600;
+					text-shadow: none;
+					line-height: 2em;
+					padding: 0;
+					width: 20%;
+				}
+				.emoji-button:focus {
+					color: #fff;
+					background-color: rgba(0,0,0,0);
+				}
+				.emoji-button:hover {
+					color: #333;
+					text-shadow: none;
+				}
+
+				#smileDivRadio0 + label { background-color: hsl(50deg 100% 35%);}
+				#smileDivRadio1 + label { background-color: hsl(100deg 100% 25%);}
+				#smileDivRadio2 + label { background-color: hsl(300deg 100% 25%);}
+				#smileDivRadio3 + label { background-color: hsl(200deg 100% 25%);}
+				#smileDivRadio4 + label { background-color: hsl(0deg 0% 35%);}
+
+				#btn-smile {
+					position: absolute;
+					cursor: pointer;
+					height: 2.5em;
+					z-index: 1;
+					right: 0px;
+					width: 3em;
+					background-image: url(https://i.imgur.com/nGePXmR.png);
+					background-size: auto 82%;
+					background-position: center;
+					background-repeat: no-repeat;
+				}
+					#btn-smile.cpushed {
+						background-image: url(https://i.imgur.com/dFq5DXU.png);
+					}
+
+					#btn-smile.shifted {
+						right: 50px;
+					}
+
+					#btn-smile {
+						opacity: 0.5;
+					}
+
+					#btn-smile:hover {
+						opacity: 1;
+					}
+
+				#chatline {
+					padding-right: 40px;
+				}
+
+			`);
+          };
+
+          this.init();
+        },
+      );
 
       /***/
     },
