@@ -27958,5 +27958,228 @@
 
       /***/
     },
+    /* 61 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule('botManager', function (app, settings) {
+        'use strict';
+        const that = this;
+
+        const defaultSettings = {
+          bot_name: 'ZhabaModer',
+        };
+        settings = $.extend({}, defaultSettings, settings);
+
+        this.init = () => {
+          that.setupBotMsgHandler();
+
+          that.appendCSS();
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.setupBotMsgHandler = () => {
+          if (!Socket) {
+            return;
+          }
+
+          socket.on('chatMsg', data => {
+            if (
+              data.username === settings.bot_name &&
+              data.msg.includes(CLIENT.name)
+            ) {
+              that.handleBotMessage(data);
+            }
+          });
+        };
+
+        this.handleBotMessage = data => {
+          if (!Socket) {
+            return;
+          }
+
+          const regex =
+            /.+(\b[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}-\b[0-9]{8}\b).+/;
+
+          const msg = data.msg;
+          const intent_id_rnd = msg.replace(regex, '$1');
+
+          const intent_id = intent_id_rnd.slice(0, -9);
+          const rnd = intent_id_rnd.substring(intent_id_rnd.length - 8);
+
+          const el = $(`#${intent_id_rnd}.bot-intent`);
+
+          if ($(`#${intent_id_rnd} .bot-intent-btn`).length > 0) {
+            return;
+          }
+
+          console.log('Create intent buttons');
+          const intent_good = $('<span>')
+            .attr('id', intent_id_rnd)
+            .addClass('bot-intent-btn')
+            .addClass('bot-intent-good')
+            .addClass('pointer')
+            .html(`<a href="javascript:window.hgi('${intent_id_rnd}')">✔️</a>`);
+
+          const intent_bad = $('<span>')
+            .attr('id', intent_id_rnd)
+            .addClass('bot-intent-btn')
+            .addClass('bot-intent-bad')
+            .addClass('pointer')
+            .html(`<a href="javascript:window.hbi('${intent_id_rnd}')">❌</a>`);
+
+          const intent_edit = $('<span>')
+            .attr('id', intent_id_rnd)
+            .addClass('bot-intent-btn')
+            .addClass('bot-intent-edit')
+            .addClass('pointer')
+            .html(`<a href="javascript:window.hei('${intent_id_rnd}')">✏️</a>`)
+            .appendTo(el);
+        };
+
+        this.handleGoodIntent = intent_id => {
+          console.log(`Good intent: ${intent_id}`);
+          that.removeIntentBtns(intent_id);
+
+          if (Socket) {
+            Socket.emit('handleGoodIntent', { intent_id: intent_id });
+          }
+        };
+        window.hgi = that.handleGoodIntent;
+
+        this.handleBadIntent = intent_id => {
+          console.log(`Bad intent: ${intent_id}`);
+          that.removeIntentBtns(intent_id);
+
+          if (Socket) {
+            Socket.emit('handleBadIntent', { intent_id: intent_id });
+          }
+        };
+        window.hbi = that.handleBadIntent;
+
+        this.handleEditIntent = intent_id => {
+          console.log(`Edit intent: ${intent_id}`);
+          that.removeIntentBtns(intent_id);
+
+          const intent_text = $(`span#${intent_id}.bot-intent`);
+
+          const old_intent_text = intent_text
+            .first()
+            .text()
+            .replace(`${CLIENT.name}: `, '');
+
+          intent_text.first().text('');
+
+          const intent_edit_input = $(
+            `<input id="${intent_id}" class="form-control intent-edit-input" type="text" maxlength="240">`,
+          ).val(old_intent_text);
+
+          intent_text.append(intent_edit_input).focus(); //;
+
+          const intent_edit_btn = $('<span>')
+            .attr('id', intent_id)
+            .addClass('btn')
+            .addClass('btn-md')
+            .addClass('btn-success')
+            .addClass('intent-edit-btn')
+            .html(
+              `<a class="glyphicon glyphicon-ok" href="javascript:window.heis('${intent_id}')" style="text-decoration: none;"></a>`,
+            )
+            .insertAfter(intent_edit_input);
+        };
+        window.hei = that.handleEditIntent;
+
+        this.handleEditIntentSubmit = intent_id => {
+          const input = $(`#${intent_id} input`);
+          const button = $(`#${intent_id}.intent-edit-btn`);
+
+          const new_intent_text = input.val();
+
+          input.remove();
+          button.remove();
+
+          const intent_text = $(`span#${intent_id}.bot-intent`);
+          intent_text.first().text(new_intent_text);
+
+          if (Socket) {
+            Socket.emit('handleEditIntent', {
+              intent_id: intent_id,
+              new_response: new_intent_text,
+            });
+          }
+        };
+        window.heis = that.handleEditIntentSubmit;
+
+        this.removeIntentBtns = intent_id => {
+          $(`#${intent_id}.bot-intent-btn`).remove();
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.appendCSS = function () {
+          $(`<style>`).appendTo('head').text(`
+
+				.bot-intent-btn {
+					color: white;
+					font-weight: bold;
+					margin: 0 2px;
+					padding: 0 4px;
+					border-radius: 4px;
+					opacity: 0.25;
+				}
+
+				.bot-intent-btn:hover {
+					opacity: 0.75;
+				}
+
+				.bot-intent-btn a {
+					text-decoration: none;
+				}
+
+				.bot-intent-good {
+					background: green;
+				}
+
+				.bot-intent-bad {
+					background: red;
+				}
+
+				.bot-intent-edit {
+					background: orange;
+					/*margin-left: 5px !important;*/
+				}
+
+				.bot-intent-edit-input {
+					background: orange;
+					margin-left: 5px !important;
+				}
+
+				.intent-edit-input {
+					width: calc(100% - 38px);
+				}
+
+				.intent-edit-btn {
+					margin-left: calc(100% - 38px);
+					z-index: 0;
+					position: relative;
+					top: -38px;
+				}
+
+
+			`);
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.init();
+      });
+
+      /***/
+    },
     
 ]));
