@@ -26706,5 +26706,506 @@
 
       /***/
     },
+    /* 54 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule('findMovie', function (app) {
+        'use strict';
+        const that = this;
+
+        this.init = () => {
+          that.createPanelToggle();
+
+          that.createPanel();
+
+          that.appendCSS();
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // Create toggle button and append to leftcontrols
+        this.createPanelToggle = () => {
+          if ($('#findMoviePanelToggle').length == 0) {
+            // Create button
+            $('#leftcontrols').append(
+              `<button id="findMoviePanelToggle" class="btn btn-sm btn-default" title="Найти кин4" data-toggle="modal">
+							<span class="glyphicon glyphicon-uploadbtn"></span>
+						</button>`,
+            );
+
+            // Subscribe Show / Hide panel callback
+            $('#findMoviePanelToggle').on('click', e =>
+              $('#findMoviePanel').slideToggle(200),
+            );
+          }
+        };
+
+        this.createPanel = () => {
+          $(`
+				<div class="col-lg-12 col-md-12" id="findMoviePanel" style="display: none;">
+					<div class="well img-menu text-center" id="findMoviePanelContent" style="margin-bottom: 0 !important; min-height: 100px;">
+						<div><strong>Найти кин4 или сири4</strong></div>
+
+						<br>
+
+						<div>
+							<input class="form-control not-contained" type="text" id="findMovieKPInput" placeholder="Кинопоиск ID">
+
+							<div class="c-wrap">
+								<span id="findMovieKPBtn" class="btn btn-md btn-warning" title="Найти кин4 / сири4">
+									<span class="glyphicon glyphicon-search"></span>
+								</span>
+							</div>
+						</div>
+
+						<hr>
+
+						<div>
+							<div id="foundMovieInfo" class="row">
+
+							</div>
+							<br>
+							<div id="foundMovieLink" class="row">
+								<div id="foundMovieLinkContent" class="col-lg-12 col-md-12">
+
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+			`).insertBefore('#pollwrap');
+
+          // Callback to find movie
+          $('#findMovieKPBtn').on('click', () => {
+            this.handleFindMovie();
+          });
+
+          // Strip out KP ID on input
+          $('#findMovieKPInput').on('input', that.handleKpInput);
+        };
+
+        this.kpFormatter = e => {
+          return -1 !== e.indexOf('kinopoisk.ru')
+            ? e.match(/(\d+)/g)[0] || ''
+            : e;
+        };
+
+        this.handleKpInput = () => {
+          const KpInput = $('#findMovieKPInput').val();
+          const KpID = that.kpFormatter(KpInput);
+
+          $('#findMovieKPInput').val(KpID);
+        };
+
+        // Record audio init
+        this.handleFindMovie = () => {
+          // Get KP ID
+          const kpID = $('#findMovieKPInput').val();
+
+          // Clear KP ID input
+          $('#findMovieKPInput').val('');
+
+          // Request to API
+          $.ajax({
+            url: 'https://nifty-well-gander.glitch.me/getMovie',
+            type: 'POST',
+            data: { kpID: kpID },
+            dataType: 'json',
+            success: function (response) {
+              //that.createMovieLinks(response.data.movieInfo)
+              that.handleMovieOrSeries(response);
+            },
+            error: function (err) {
+              console.log(err);
+            },
+          });
+        };
+
+        //////////////////////////////////////////////////////////////
+
+        this.handleMovieOrSeries = response => {
+          if (response.type === 'movie') {
+            that.createMovieLinks(response.data);
+          } else if (response.type === 'series') {
+            that.createSeriesLinks(response.data);
+          }
+        };
+
+        //////////////////////////////////////////////////////////////
+
+        this.createSeriesLinks = seriesInfo => {
+          that.createSeriesTranslations(seriesInfo);
+        };
+
+        this.createSeriesTranslations = seriesInfo => {
+          // Remove old elements
+          $('#foundMovieInfo').empty();
+
+          // Create new elements
+          const DropDownParent = $(
+            '<div id="found-series-translation-dropdown" class="dropdown col-lg-6 col-md-6">',
+          ).appendTo('#foundMovieInfo');
+          const Button = $(
+            '<button class="btn btn-default dropdown-toggle col-lg-12 col-md-12" type="button" id="found-series-translation" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">',
+          )
+            .html(`Перевод <span class="caret"></span>`)
+            .appendTo(DropDownParent);
+
+          const List = $(
+            '<ul class="dropdown-menu pull-left" aria-labelledby="found-series-translation">',
+          ).appendTo(DropDownParent);
+
+          for (var i = 0; i < seriesInfo.length; i++) {
+            const translation = seriesInfo[i].trans.smart_title;
+            const translationID = i;
+
+            $('<li>')
+              .attr('id', `translation-option-${i}`)
+              .html(`<a>${translation}</a>`)
+              .appendTo(List)
+              .on('click', function () {
+                that.createSeriesSeasons(seriesInfo, translationID);
+              });
+          }
+        };
+
+        this.createSeriesSeasons = (seriesInfo, translationID) => {
+          // Remove old elements
+          $('#found-series-seasons-dropdown').remove();
+          $('#found-series-episodes-dropdown').remove();
+          $('#found-series-qualities-dropdown').remove();
+
+          // Create new elements
+          const DropDownParent = $(
+            '<div id="found-series-seasons-dropdown" class="dropdown col-lg-6 col-md-6">',
+          ).appendTo('#foundMovieInfo');
+          const Button = $(
+            '<button class="btn btn-default dropdown-toggle col-lg-12 col-md-12" type="button" id="found-series-seasons" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">',
+          )
+            .html(`Сезон <span class="caret"></span>`)
+            .appendTo(DropDownParent);
+
+          const List = $(
+            '<ul class="dropdown-menu pull-right" aria-labelledby="found-series-seasons">',
+          ).appendTo(DropDownParent);
+
+          // Get seasons
+          const seasons = seriesInfo[translationID].seasons;
+
+          for (var i = 0; i < seasons.length; i++) {
+            const season_num = seasons[i].num;
+            const season = i;
+
+            $('<li>')
+              .attr('id', `translation-option-${i}`)
+              .html(`<a>${season_num} Сезон</a>`)
+              .appendTo(List)
+              .on('click', function () {
+                that.createSeriesEpisodes(seriesInfo, translationID, season);
+              });
+          }
+        };
+
+        this.createSeriesEpisodes = (seriesInfo, translationID, season) => {
+          // Remove old elements
+          $('#found-series-episodes-dropdown').remove();
+          $('#found-series-qualities-dropdown').remove();
+
+          // Create new elements
+          const DropDownParent = $(
+            '<div id="found-series-episodes-dropdown" class="dropdown col-lg-6 col-md-6">',
+          ).appendTo('#foundMovieInfo');
+          const Button = $(
+            '<button class="btn btn-default dropdown-toggle col-lg-12 col-md-12" type="button" id="found-series-episodes" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">',
+          )
+            .html(`Серия <span class="caret"></span>`)
+            .appendTo(DropDownParent);
+
+          const List = $(
+            '<ul class="dropdown-menu pull-right" aria-labelledby="found-series-episodes">',
+          ).appendTo(DropDownParent);
+
+          // Get episodes
+          const episodes = seriesInfo[translationID].seasons[season].episodes;
+
+          for (var i = 0; i < episodes.length; i++) {
+            const episode_num = episodes[i].num;
+            const episode = i;
+
+            $('<li>')
+              .attr('id', `translation-option-${i}`)
+              .html(`<a>${episode_num} Серия</a>`)
+              .appendTo(List)
+              .on('click', function () {
+                that.createSeriesQualities(
+                  seriesInfo,
+                  translationID,
+                  season,
+                  episode,
+                );
+              });
+          }
+        };
+
+        this.createSeriesQualities = (
+          seriesInfo,
+          translationID,
+          season,
+          episode,
+        ) => {
+          // Remove old elements
+          $('#found-series-qualities-dropdown').remove();
+
+          // Create new elements
+          const DropDownParent = $(
+            '<div id="found-series-qualities-dropdown" class="dropdown col-lg-6 col-md-6">',
+          ).appendTo('#foundMovieInfo');
+          const Button = $(
+            '<button class="btn btn-default dropdown-toggle col-lg-12 col-md-12" type="button" id="found-series-qualities" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">',
+          )
+            .html(`Качество <span class="caret"></span>`)
+            .appendTo(DropDownParent);
+
+          const List = $(
+            '<ul class="dropdown-menu pull-right" aria-labelledby="found-series-qualities">',
+          ).appendTo(DropDownParent);
+
+          // Get episodes
+          const qualities =
+            seriesInfo[translationID].seasons[season].episodes[episode].links;
+          console.log('qualities');
+          console.log(qualities);
+
+          for (var i = 0; i < qualities.length; i++) {
+            const title = qualities[i].quality;
+            const link = qualities[i].movieLinks;
+
+            $('<li>')
+              .attr('id', `translation-option-${i}`)
+              .html(`<a>${title}</a>`)
+              .appendTo(List)
+              .on('click', function () {
+                that.createFoundMovieLink(link);
+              });
+          }
+        };
+
+        //////////////////////////////////////////////////////////////
+
+        this.createMovieLinks = movieInfo => {
+          that.createTranslations(movieInfo);
+        };
+
+        this.createTranslations = movieInfo => {
+          // Remove old elements
+          $('#found-movie-translation-dropdown').remove();
+          $('#foundMovieInfo').empty();
+
+          // Create new elements
+          const DropDownParent = $(
+            '<div id="found-movie-translation-dropdown" class="dropdown col-lg-6 col-md-6">',
+          ).appendTo('#foundMovieInfo');
+          const Button = $(
+            '<button class="btn btn-default dropdown-toggle col-lg-12 col-md-12" type="button" id="found-movie-translation" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">',
+          )
+            .html(`Перевод <span class="caret"></span>`)
+            .appendTo(DropDownParent);
+
+          const List = $(
+            '<ul class="dropdown-menu pull-left" aria-labelledby="found-movie-translation">',
+          ).appendTo(DropDownParent);
+
+          for (var i = 0; i < movieInfo.length; i++) {
+            const translation = movieInfo[i].translation;
+            const translationID = i;
+
+            $('<li>')
+              .attr('id', `translation-option-${i}`)
+              .html(`<a>${translation}</a>`)
+              .appendTo(List)
+              .on('click', function () {
+                that.createQualities(movieInfo, translationID);
+              });
+          }
+        };
+
+        this.createQualities = (movieInfo, translationID) => {
+          // Remove old elements
+          $('#found-movie-qualities-dropdown').remove();
+          $('#foundMovieLinkContent').empty();
+
+          // Create new elements
+          const DropDownParent = $(
+            '<div id="found-movie-qualities-dropdown" class="dropdown col-lg-6 col-md-6">',
+          ).appendTo('#foundMovieInfo');
+          const Button = $(
+            '<button class="btn btn-default dropdown-toggle col-lg-12 col-md-12" type="button" id="found-movie-qualities" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">',
+          )
+            .html(`Качество <span class="caret"></span>`)
+            .appendTo(DropDownParent);
+
+          const List = $(
+            '<ul class="dropdown-menu pull-right" aria-labelledby="found-movie-translation">',
+          ).appendTo(DropDownParent);
+
+          // Get links
+          const qualities = movieInfo[translationID].qualities;
+
+          for (let i = 0; i < qualities.length; i++) {
+            const link = qualities[i].movieLinks;
+            const label = qualities[i].quality;
+
+            $('<li>')
+              .attr('id', `translation-option-${i}`)
+              .html(`<a>${label}</a>`)
+              .appendTo(List)
+              .on('click', function () {
+                that.createFoundMovieLink(link);
+              });
+          }
+        };
+
+        this.createFoundMovieLink = movieLink => {
+          // Remove old elements
+          $('#foundMovieLinkContent').empty();
+
+          // Create new elements
+          const movieLinkInput = $(
+            '<input disabled="true" class="form-control not-contained" type="text" id="found-movie-link-input">',
+          )
+            .appendTo('#foundMovieLinkContent')
+            .val(movieLink);
+
+          const movieLinkCopy = $('<div class="c-wrap">')
+            .html(
+              `<span id="found-movie-link-copy-btn" class="btn btn-md btn-info" title="Скопировать ссылку"><span class="glyphicon glyphicon-copy"></span></span>`,
+            )
+            .insertAfter('#found-movie-link-input')
+            .on('click', () => {
+              navigator.clipboard.writeText(movieLink).then(
+                () => {
+                  if (!$('#found-movie-link-copy-btn').hasClass('btn-info')) {
+                    return;
+                  }
+
+                  $('#found-movie-link-copy-btn').removeClass('btn-info');
+                  $('#found-movie-link-copy-btn').addClass('btn-success');
+
+                  window.setTimeout(() => {
+                    $('#found-movie-link-copy-btn').removeClass('btn-success');
+                    $('#found-movie-link-copy-btn').addClass('btn-info');
+                  }, 1000);
+                },
+                err => {
+                  if (!$('#found-movie-link-copy-btn').hasClass('btn-info')) {
+                    return;
+                  }
+
+                  $('#found-movie-link-copy-btn').removeClass('btn-info');
+                  $('#found-movie-link-copy-btn').addClass('btn-danger');
+
+                  window.setTimeout(() => {
+                    $('#found-movie-link-copy-btn').removeClass('btn-danger');
+                    $('#found-movie-link-copy-btn').addClass('btn-info');
+                  }, 1000);
+                },
+              );
+            });
+
+          const movieLinkWatch = $('<div class="c-wrap">')
+            .html(
+              `<span id="found-movie-link-watch-btn" class="btn btn-md btn-success" title="Добавить в плейлист"><span class="glyphicon glyphicon-send"></span></span>`,
+            )
+            .insertAfter(movieLinkCopy)
+            .on('click', () => {
+              $('#mediaurl').val(movieLink);
+            });
+
+          const movieRemove = $('<div class="c-wrap">')
+            .html(
+              `<span id="found-movie-remove-btn" class="btn btn-md btn-danger" title="Удалить ссылку"><span class="glyphicon glyphicon-remove"></span></span>`,
+            )
+            .insertAfter(movieLinkWatch)
+            .on('click', () => {
+              $('#foundMovieInfo').empty();
+              $('#foundMovieLinkContent').empty();
+            });
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.appendCSS = function () {
+          $(`<style>`).appendTo('head').text(`
+
+				#findMoviePanelToggle {
+					background: url(https://i.imgur.com/zXIOGGM.png) no-repeat;
+					height: 40px !important;
+					width: 40px !important;
+					text-indent: -9999px;
+					outline: none;
+					border: none;
+					opacity: 0.8;
+					background-size: contain !important;
+				}
+
+				.c-wrap{
+					height: 0px
+				}
+
+				#findMovieKPInput {
+					width: calc(100% - 36px);
+				}
+
+				#findMovieKPBtn {
+					margin-left: calc(100% - 38px);
+					z-index: 0;
+					position: relative;
+					top: -38px;
+				}
+
+
+
+
+				#found-movie-link-input {
+					width: calc(100% - 120px);
+					margin-left: 40px;
+				}
+
+				#found-movie-link-copy-btn {
+					margin-left: calc(100% - 120px);
+					z-index: 0;
+					position: relative;
+					top: -38px;
+				}
+
+				#found-movie-link-watch-btn {
+					margin-left: calc(100% - 42px);
+					z-index: 0;
+					position: relative;
+					top: -38px;
+				}
+
+				#found-movie-remove-btn {
+					margin-right: 100%;
+					z-index: 0;
+					position: relative;
+					top: -38px;
+				}
+			`);
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.init();
+      });
+
+      /***/
+    },
     
 ]));
