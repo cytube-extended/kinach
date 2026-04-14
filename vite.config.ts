@@ -12,8 +12,7 @@ export default defineConfig({
     emptyOutDir: true,
 
     lib: {
-      entry: "src/index.ts",
-      fileName: "index",
+      entry: ["src/index.ts", "src/lazy.ts"],
       formats: ["es"],
     },
   },
