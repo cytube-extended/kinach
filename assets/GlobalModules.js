@@ -27414,5 +27414,134 @@
 
       /***/
     },
+    /* 57 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule('snow', function (app) {
+        'use strict';
+        const that = this;
+
+        this.init = () => {
+          if ($('#snow').length !== 0) {
+            return;
+          }
+
+          let snowflakeCount = 32;
+
+          that.createParent();
+          that.spawn_snow(snowflakeCount);
+          that.spawnSnowCSS(snowflakeCount);
+
+          that.appendCSS();
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // Create parent
+        this.createParent = () => {
+          $('<div id="snow" />').prependTo('#wrap');
+        };
+
+        // Creating snowflakes
+        this.spawn_snow = (snow_density = 200) => {
+          snow_density -= 1;
+
+          for (let x = 0; x < snow_density; x++) {
+            let board = document.createElement('div');
+            board.className = 'snowflake';
+
+            document.getElementById('snow').appendChild(board);
+          }
+        };
+
+        // Append style for each snowflake to the head
+        this.add_css = rule => {
+          let css = document.createElement('style');
+          css.type = 'text/css';
+          css.appendChild(document.createTextNode(rule)); // Support for the rest
+          document.getElementsByTagName('head')[0].appendChild(css);
+        };
+
+        // Math
+        this.random_int = (value = 100) => {
+          return Math.floor(Math.random() * value) + 1;
+        };
+
+        this.random_range = (min, max) => {
+          min = Math.ceil(min);
+          max = Math.floor(max);
+          return Math.floor(Math.random() * (max - min + 1)) + min;
+        };
+
+        // Create style for snowflake
+        this.spawnSnowCSS = (snow_density = 200) => {
+          let snowflake_name = 'snowflake';
+          let rule = ``;
+          if (typeof base_css !== 'undefined') {
+            rule = base_css;
+          }
+
+          for (let i = 1; i < snow_density; i++) {
+            let random_x = Math.random() * 100; // vw
+            let random_offset = that.random_range(-100000, 100000) * 0.0001; // vw;
+            let random_x_end = random_x + random_offset;
+            let random_x_end_yoyo = random_x + random_offset / 2;
+            let random_yoyo_time = that.random_range(30000, 80000) / 100000;
+            let random_yoyo_y = random_yoyo_time * 100; // vh
+            let random_scale = Math.random();
+            let fall_duration = that.random_range(10, 30) * 1; // s
+            let fall_delay = that.random_int(30) * -1; // s
+            let opacity_ = Math.random();
+
+            let rotation = that.random_range(0, 360);
+
+            rule += `
+				.${snowflake_name}:nth-child(${i}) {
+					opacity: ${opacity_};
+					transform: translate(${random_x}vw, -10px) scale(${random_scale}) rotate(${rotation}deg);
+					animation: fall-${i} ${fall_duration}s ${fall_delay}s linear infinite;
+				}
+
+				@keyframes fall-${i} {
+					${random_yoyo_time * 100}% {
+						transform: translate(${random_x_end}vw, ${random_yoyo_y}vh) scale(${random_scale});
+					}
+
+					to {
+						transform: translate(${random_x_end_yoyo}vw, 100vh) scale(${random_scale});
+					}
+
+				}
+				`;
+          }
+
+          that.add_css(rule);
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.appendCSS = function () {
+          $(`<style>`).appendTo('head').text(`
+				.snowflake {
+					position: absolute;
+					width: 24px;
+					height: 24px;
+					content: url(https://i.imgur.com/NpGhQYQ.png);
+				}
+			`);
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.init();
+      });
+
+      /***/
+    },
     
 ]));
