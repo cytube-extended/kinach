@@ -73,7 +73,7 @@
       __webpack_require__(47);
       __webpack_require__(48);
       __webpack_require__(49);
-      ////__webpack_require__(50);
+      __webpack_require__(50);
       ////__webpack_require__(51);
       ////__webpack_require__(52);
       ////__webpack_require__(53);
@@ -26140,6 +26140,42 @@
           };
 
           this.setup();
+        },
+      );
+
+      /***/
+    },
+    /* 50 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule(
+        'playerMuteButton',
+        function (app, settings) {
+          'use strict';
+          var that = this;
+
+          this.init = function () {
+            if ($('#playerMuteBtn').length === 0) {
+              $(
+                '<button class="btn btn-sm btn-default" id="playerMuteBtn"><span class="glyphicon glyphicon-volume-up"></span></button>',
+              )
+                .on('click', function () {
+                  that.toggleMute();
+                })
+                .appendTo('#plcontrol');
+            }
+          };
+
+          this.toggleMute = function () {
+            window.PLAYER.getVolume(v => {
+              if (v > 0) {
+                window.PLAYER.setVolume(0);
+              } else {
+                window.PLAYER.setVolume(1);
+              }
+            });
+          };
+
+          this.init();
         },
       );
 
