@@ -74,7 +74,7 @@
       __webpack_require__(48);
       __webpack_require__(49);
       __webpack_require__(50);
-      ////__webpack_require__(51);
+      __webpack_require__(51);
       ////__webpack_require__(52);
       ////__webpack_require__(53);
       // __webpack_require__(54);
@@ -26178,6 +26178,170 @@
           this.init();
         },
       );
+
+      /***/
+    },
+    /* 51 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule('emoteList', function (app, settings) {
+        'use strict';
+        const that = this;
+
+        const defaultSettings = {
+          visibleAmount: 276,
+        };
+        settings = $.extend({}, defaultSettings, settings);
+
+        this.init = () => {
+          that.setupVisible();
+          that.setupHidden();
+          that.emoteEditCallbacks();
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.refreshVisibleEmotes = () => {
+          // Clear
+          $('#visibleEmotesList').empty();
+
+          // Fill
+          for (var i = 0; i < settings.visibleAmount; i++) {
+            $('<img class="panelemote">')
+              .attr({
+                src: CHANNEL.emotes[i].image,
+                title: CHANNEL.emotes[i].name,
+              })
+              .on('click', e =>
+                app.Helpers.addMessageToChatInput(
+                  ' ' + $(e.target).attr('title') + ' ',
+                  'end',
+                ),
+              )
+              .bind('contextmenu', () => {
+                return false;
+              })
+              .on('contextmenu', e =>
+                app.Helpers.addMessageToChatInput(
+                  ' [f] ' + $(e.target).attr('title') + ' [/f] ',
+                  'end',
+                ),
+              )
+              .appendTo('#visibleEmotesList');
+          }
+        };
+
+        this.setupVisible = () => {
+          // Create panel
+          $('<div class="row" id="visibleEmotes">')
+            .html(
+              '<div class="col-lg-12 col-md-12"><div class="well" id="visibleEmotesList" style="display: none;"></div></div>',
+            )
+            .insertBefore('#playlistrow');
+
+          // Fill in emotes
+          //that.refreshVisibleEmotes();
+
+          // Assign click event
+          $('#emotelistbtn').on('click', () => {
+            if ($('#visibleEmotesList').children().length === 0) {
+              that.refreshVisibleEmotes();
+            }
+
+            $('#visibleEmotesList').slideToggle(200);
+          });
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.refreshHiddenEmotes = () => {
+          // Clear
+          $('#hiddenEmotesList').empty();
+
+          // Fill
+          for (var i = settings.visibleAmount; i < CHANNEL.emotes.length; i++) {
+            $('<img class="panelemote">')
+              .attr({
+                src: CHANNEL.emotes[i].image,
+                title: CHANNEL.emotes[i].name,
+              })
+              .on('click', e =>
+                app.Helpers.addMessageToChatInput(
+                  ' ' + $(e.target).attr('title') + ' ',
+                  'end',
+                ),
+              )
+              .bind('contextmenu', () => {
+                return false;
+              })
+              .on('contextmenu', e =>
+                app.Helpers.addMessageToChatInput(
+                  ' [f] ' + $(e.target).attr('title') + ' [/f] ',
+                  'end',
+                ),
+              )
+              .appendTo('#hiddenEmotesList');
+          }
+        };
+
+        this.setupHidden = () => {
+          // Create hidden panel
+          $('<div class="row" id="hiddenEmotes">')
+            .html(
+              '<div class="col-lg-12 col-md-12"><div class="well" id="hiddenEmotesList" style="display: none;"></div></div>',
+            )
+            .insertAfter('#visibleEmotes');
+
+          // Fill in emotes
+          //that.refreshHiddenEmotes();
+
+          // Remove default callback
+          $('#emotelistbtn').bind('contextmenu', () => {
+            return false;
+          });
+          // Assign click event
+          $('#emotelistbtn').on('contextmenu', () => {
+            if ($('#hiddenEmotesList').children().length === 0) {
+              that.refreshHiddenEmotes();
+            }
+
+            $('#hiddenEmotesList').slideToggle(200);
+          });
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.handleEmoteEdit = () => {
+          that.refreshVisibleEmotes();
+          that.refreshHiddenEmotes();
+        };
+
+        this.emoteEditCallbacks = () => {
+          window.socket.on('updateEmote', function () {
+            that.handleEmoteEdit();
+          });
+          window.socket.on('importEmotes', function () {
+            that.handleEmoteEdit();
+          });
+          window.socket.on('removeEmote', function () {
+            that.handleEmoteEdit();
+          });
+          window.socket.on('emoteList', function () {
+            that.handleEmoteEdit();
+          });
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.init();
+      });
 
       /***/
     },
