@@ -88,7 +88,7 @@
       //__webpack_require__(62);
       __webpack_require__(63);
       __webpack_require__(64);
-      ////__webpack_require__(65);
+      __webpack_require__(65);
       // __webpack_require__(66);
       // __webpack_require__(67);
       ////__webpack_require__(68);
@@ -29266,6 +29266,97 @@
 
 			`);
         };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.init();
+      });
+
+      /***/
+    },
+    /* 65 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule('ignoredWords', function (app) {
+        'use strict';
+        const that = this;
+
+        this.init = () => {
+          that.setupButton();
+          that.removeIgnoredWordsFromChat();
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.setupButton = () => {
+          if ($('#ignored-words-chat-btn').length == 0) {
+            $(
+              '<span id="user-clear-chat-btn" class="label label-default pull-right pointer glyphicon glyphicon-ban-circle">',
+            )
+              .text(' ')
+              .attr('title', 'Редактировать список игнорируемых слов')
+              .appendTo('#chatheader')
+              .on('click', () => {
+                that.editIgnoredWords();
+              });
+          }
+        };
+
+        this.editIgnoredWords = () => {
+          const ignored_words =
+            JSON.parse(localStorage.getItem('ignored_words')) || [];
+          const new_ignored_words = prompt(
+            'Список игнорируемых слов:',
+            ignored_words,
+          )
+            .replace(/\s/g, '')
+            .trim()
+            .split(',');
+
+          if (new_ignored_words.length < 1) {
+            return;
+          }
+
+          localStorage.setItem(
+            'ignored_words',
+            JSON.stringify(new_ignored_words),
+          );
+
+          that.removeIgnoredWordsFromChat();
+        };
+
+        this.removeIgnoredWordsFromChat = () => {
+          const ignored_words =
+            JSON.parse(localStorage.getItem('ignored_words')) || [];
+
+          console.log(`kek: ${ignored_words.length}`);
+          if (ignored_words.length < 1) {
+            return;
+          }
+
+          const messages = $('#messagebuffer').children();
+
+          messages.toArray().forEach(e => {
+            const ee = $(e);
+
+            ignored_words.forEach(e => {
+              if (e === '') {
+                return;
+              }
+
+              if (ee.text().includes(e)) {
+                ee.hide();
+              }
+            });
+          });
+        };
+
+        window.socket.on('chatMsg', () => {
+          that.removeIgnoredWordsFromChat();
+        });
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
