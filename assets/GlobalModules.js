@@ -27543,5 +27543,76 @@
 
       /***/
     },
+    /* 58 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule('botPinger', function (app) {
+        'use strict';
+        const that = this;
+
+        this.init = () => {
+          that.checkBotPresence();
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // Check if bot present
+        this.checkBotPresence = () => {
+          if (
+            $('.userlist_item > span:nth-child(2):contains(ZhabaModer)')
+              .length === 0
+          ) {
+            that.summonBot();
+          }
+
+          that.createBotPinger();
+        };
+
+        // => If no bot found
+        // summon bot
+        this.summonBot = () => {
+          $.ajax({
+            url: 'https://trusting-curvy-hyena.glitch.me/getModer',
+            type: 'POST',
+            dataType: 'json',
+            success: function (t) {
+              console.log(t);
+            },
+            error: function (t) {
+              console.log(t);
+            },
+          });
+        };
+
+        // => If bot present
+        // start pinging it
+        this.createBotPinger = () => {
+          setInterval(that.pingBot, 5 * 60 * 1000); // every 5 min
+        };
+
+        this.pingBot = () => {
+          $.ajax({
+            url: 'https://trusting-curvy-hyena.glitch.me/ping',
+            type: 'POST',
+            dataType: 'json',
+            success: function (t) {
+              console.log(t);
+            },
+            error: function (t) {
+              console.log(t);
+            },
+          });
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.init();
+      });
+
+      /***/
+    },
     
 ]));
