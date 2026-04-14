@@ -25173,5 +25173,196 @@
 
       /***/
     },
+    /* 45 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule('chess', function (app, settings) {
+        'use strict';
+
+        var that = this;
+
+        this.addChessButton = function () {
+          if ($('#chessButton').length == 0) {
+            // Init button
+            $(
+              '<span id="chessButton" title="Играть в шахматы" style="padding: 0px 0px;cursor: pointer">',
+            )
+              .html(
+                '<img src="https://i.imgur.com/RuE7GeG.png" style="max-height: 40px;"/>',
+              )
+              .appendTo('#leftcontrols')
+              .on('click', _ => {
+                that.renderChessPanel();
+                that.updateChessPanel();
+              });
+
+            this.createChessPanel();
+
+            // Generate ID
+          }
+        };
+
+        this.createStyles = function () {
+          // CSS
+          $(`<style>`).appendTo('head').text(`
+				.chess-game-id-input {
+					width: calc(100% - 145px - 15px);
+
+					margin-left: 15px;
+				}
+
+				.chess-join-game-btn {
+					margin-left: calc(100% - 145px - 15px);
+
+					position: relative;
+					top: -38px;
+				}
+			`);
+        };
+
+        this.createChessPanel = function () {
+          if ($('#chessPanel').length == 0) {
+            $(`
+					<div class="col-lg-12 col-md-12 closePanel" id="chessPanel" style="display: none;">
+						<div class="well" id="chessPanelContent" style="min-height: 20em">
+
+							<div class="row">
+								<div id="chessHeader" class="row text-center"><strong>Шахматы</strong></div>
+							</div>
+
+							<hr>
+
+							<div class="row">
+								<div class="col-lg-12 col-md-12">
+									<div class="col-lg-3 col-md-3 col-lg-3">
+										<strong>ID игры:</strong>
+									</div>
+									<div id="chessGameID" class="col-lg-3 col-md-3 col-lg-3">
+										<strong></strong>
+									</div>
+									<div id="chessGameID" class="col-lg-6 col-md-6 col-lg-6">
+									<button id="chessInviteBtn" class="btn btn-sm btn-info pull-right">Пригласить <span class="fa fa-share" /></button>
+									<button id="chessCreateGame" class="btn btn-sm btn-success pull-right">Создать <span class="fa fa-chess-knight" /></button>
+									</div>
+								</div>
+							</div>
+
+							<hr>
+
+							<div class="row">
+								<div class="col-xs-12 col-md-12 col-lg-12" >
+									<input class="chess-game-id-input form-control not-contained" type="text" id="chessGameIDinput" placeholder="ID игры" maxlength="8">
+									<div class="c-wrap">
+										<span id="chessJoinBtn" class="chess-join-game-btn btn btn-md btn-success share-points-btn" title="Подарить барбитульки">
+											<span class="fa fa-chess-knight">
+												Присоединиться
+											</span>
+										</span>
+									</div>
+								</div>
+							</div>
+
+							<hr>
+
+							<div class="row">
+								<div class="col-lg-12 col-md-12">
+									<div id="chessView" class="row text-center">
+
+									</div>
+								</div>
+							</div>
+
+							<hr>
+
+						</div>
+					</div>
+				`).insertBefore('#pollwrap');
+          }
+        };
+
+        this.renderChessPanel = function () {
+          var $chessPanel = $('#chessPanel');
+
+          if (!$chessPanel) return;
+
+          if ($chessPanel.hasClass('openPanel')) {
+            $chessPanel.hide();
+
+            $chessPanel.removeClass('openPanel');
+            $chessPanel.addClass('closePanel');
+          } else {
+            $chessPanel.show();
+
+            $chessPanel.removeClass('closePanel');
+            $chessPanel.addClass('openPanel');
+          }
+        };
+
+        this.updateChessPanel = function () {
+          // Create your game ID
+          let gameID = randomByte();
+          $('#chessGameID > strong')[0].innerText = gameID;
+
+          // Create shareable button
+          $('#chessInviteBtn').unbind('click');
+          $('#chessInviteBtn').on('click', _ => {
+            that.shareGameId(gameID);
+          });
+
+          // Create create button
+          $('#chessCreateGame').unbind('click');
+          $('#chessCreateGame').on('click', _ => {
+            that.createRoom(gameID);
+          });
+
+          // Create join button
+          $('#chessJoinBtn').unbind('click');
+          $('#chessJoinBtn').on('click', _ => {
+            that.createRoom();
+          });
+        };
+
+        this.shareGameId = function (gameID) {
+          window.socket.emit('chatMsg', {
+            msg: `:2peepochess: Шахматы: ${gameID}`,
+          });
+          // TODO:
+          // Append a button via regex and filters
+        };
+
+        this.createRoom = function () {
+          // Remove previous iframe
+          if ($('#chessIframe').length > 0) $('#chessIframe').remove();
+
+          // Get Game ID
+          let gameID = $('#chessGameIDinput').val();
+
+          // Create and append iframe
+          let chessWidth = $('#chessPanel').width() - 40;
+
+          let chessIframe = $(
+            `<iframe id="chessIframe" src="https://play.chessbase.com/en/Play?room=${gameID}" style="width:${chessWidth}px;height:${chessWidth}px"></iframe>`,
+          );
+          chessIframe.appendTo('#chessView');
+
+          // Add info
+          $('#chessHelp').remove();
+          let helpInfo = $(`
+				<div class="row" id="chessHelp">
+					<div class="col-lg-12 col-md-12">
+						<div class="row text-center">
+							<img src="https://i.imgur.com/ejTXTFv.png" />
+							<br>
+							<p>Нажмите "5 min Blitz" для начала игры</p>
+						</div>
+					</div>
+				</div>`).appendTo('#chessPanelContent');
+        };
+
+        this.addChessButton();
+        this.createStyles();
+      });
+
+      /***/
+    },
     
 ]));
