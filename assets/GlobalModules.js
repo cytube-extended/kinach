@@ -29537,5 +29537,621 @@
 
       /***/
     },
+    /* 67 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule('youtubeShorts', function (app) {
+        'use strict';
+        const that = this;
+
+        this.init = () => {
+          that.createCustomIterator();
+
+          that.createShortsToggle();
+          that.createShortsPanel();
+
+          that.appendCSS();
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.createCustomIterator = () => {
+          class CustomIterator {
+            arr = [];
+            current_id = -1;
+            populate_cb = () => {};
+
+            constructor(cb) {
+              this.populate_cb = cb;
+            }
+
+            populate(new_arr) {
+              this.arr.push(...new_arr);
+            }
+
+            next() {
+              if (this.current_id + 1 >= this.arr.length) {
+                this.populate_cb();
+
+                this.current_id = this.arr.length - 1;
+                return this.arr[this.current_id];
+              }
+
+              this.current_id++;
+
+              const next_item = this.arr[this.current_id];
+
+              return next_item;
+            }
+
+            previous() {
+              if (this.current_id <= 0) {
+                this.current_id = 0;
+                return this.arr[this.current_id];
+              }
+
+              this.current_id--;
+
+              const previous_item = this.arr[this.current_id];
+
+              return previous_item;
+            }
+
+            current() {
+              return this.arr[this.current_id];
+            }
+
+            after_next() {
+              return this.arr[this.current_id + 1];
+            }
+
+            before_current() {
+              return this.arr[this.current_id - 1];
+            }
+          }
+
+          window.CustomIterator = CustomIterator;
+        };
+
+        this.formatDate = d => {
+          function pad(n) {
+            return n < 10 ? '0' + n : n;
+          }
+          return (
+            d.getUTCFullYear() +
+            '-' +
+            pad(d.getUTCMonth() + 1) +
+            '-' +
+            pad(d.getUTCDate()) +
+            'T' +
+            pad(d.getUTCHours()) +
+            ':' +
+            pad(d.getUTCMinutes()) +
+            ':' +
+            pad(d.getUTCSeconds()) +
+            'Z'
+          );
+        };
+
+        this.randomInt = (min, max) => {
+          min = Math.ceil(min);
+          max = Math.floor(max);
+          return Math.floor(Math.random() * (max - min + 1)) + min;
+        };
+
+        Array.prototype.shuffle = function () {
+          var i = this.length,
+            j,
+            temp;
+          if (i == 0) return this;
+          while (--i) {
+            j = Math.floor(Math.random() * (i + 1));
+            temp = this[i];
+            this[i] = this[j];
+            this[j] = temp;
+          }
+          return this;
+        };
+
+        this.getPastDate = (days_min, days_max) => {
+          var d = new Date();
+          d.setDate(d.getDate() - that.randomInt(14, 90));
+          return that.formatDate(d);
+        };
+
+        this.togglePanelCB = () => {
+          if (that.shorts === null) {
+            that.init_first_populate();
+            setTimeout(() => {
+              $('#shorts-panel').slideToggle(200);
+            }, 2000);
+          } else {
+            $('#shorts-panel').slideToggle(200);
+          }
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.createShortsToggle = () => {
+          if ($('#shorts-panel-toggle').length === 0) {
+            $('<button>')
+              .attr('id', 'shorts-panel-toggle')
+              .attr('title', 'Открыть / Закрыть YouTube Shorts')
+              .addClass('btn')
+              .addClass('btn-sm')
+              .addClass('btn-default')
+              .appendTo('#leftcontrols')
+              .on('click', e => {
+                that.togglePanelCB();
+              });
+          }
+        };
+
+        this.createShortsPanel = () => {
+          const shorts_panel = $('<div>')
+            .attr('id', 'shorts-panel')
+            .hide()
+            .insertBefore('#pollwrap');
+
+          const shorts_panel_content = $('<div>')
+            .attr('id', 'shorts-panel-content')
+            .addClass('well')
+            .addClass('text-center')
+            .css({
+              'margin-bottom': '0 !important',
+              'min-height': '200px',
+            })
+            .appendTo(shorts_panel);
+
+          // Fill with elements
+
+          // Title
+          const shorts_panel_title = $('<div>')
+            .html('<strong>Шортики</strong>')
+            .css('padding', '10px 0')
+            .appendTo(shorts_panel_content);
+
+          const shorts_container = $('<div>')
+            .attr('id', 'shorts-container')
+            .appendTo(shorts_panel_content);
+
+          // Players
+          const shorts_side_previews = $('<div>')
+            .attr('id', 'shorts_side_previews')
+            .appendTo(shorts_container);
+
+          const shorts_player_prev = $('<div>')
+            .css('pointer-events', 'none')
+            .appendTo(shorts_side_previews);
+          const shorts_player_next = $('<div">')
+            .css('pointer-events', 'none')
+            .appendTo(shorts_side_previews);
+
+          const shorts_thumb_prev = $('<img>')
+            .addClass('shorts_item_preview')
+            .attr('src', 'https://i.ytimg.com/vi/dy78qcJlNk8/frame0.jpg')
+            .attr({
+              id: 'shorts_thumb_prev',
+              src: 'https://i.ytimg.com/vi/dy78qcJlNk8/frame0.jpg',
+            })
+            .css('left', '-25%')
+            .appendTo(shorts_player_prev);
+          const shorts_thumb_next = $('<img>')
+            .addClass('shorts_item_preview')
+            .attr({
+              id: 'shorts_thumb_next',
+              src: 'https://i.ytimg.com/vi/n4glQfBiSUY/frame0.jpg',
+            })
+            .css('left', '25%')
+            .appendTo(shorts_player_next);
+
+          const shorts_player_main = $('<div>')
+            .attr('id', 'shorts_player_main')
+            .appendTo(shorts_container);
+
+          // SHORTS Main Player
+          const shorts_player = $('<div>')
+            .attr('id', 'shorts-player')
+            .css({
+              width: '270px',
+              height: '480px',
+              overflow: 'hidden',
+              'border-radius': '25px',
+              'z-index': '2',
+            })
+            .appendTo(shorts_player_main);
+
+          // IFRAME
+
+          $('<div>').attr('id', 'yt_shorts_iframe').appendTo(shorts_player);
+
+          // SHORTS Controls
+          const shorts_controls = $('<div>')
+            .attr('id', 'shorts_controls')
+            .appendTo(shorts_container);
+
+          const arrow_prev = $('<div>')
+            .addClass('pull-left')
+            .addClass('pointer')
+            .addClass('shorts_arrow')
+            .html('<span class="glyphicon glyphicon-step-backward">')
+            .on('click', () => {
+              that.handle_arrow_previous();
+            })
+            .appendTo(shorts_controls);
+
+          const arrow_next = $('<div>')
+            .addClass('pull-right')
+            .addClass('pointer')
+            .addClass('shorts_arrow')
+            .html('<span class="glyphicon glyphicon-step-forward">')
+            .on('click', () => {
+              that.handle_arrow_next();
+            })
+            .appendTo(shorts_controls);
+
+          // BOTTOM BAR
+          const shorts_bottom_bar = $('<div>')
+            .attr('id', 'shorts_bottom_bar')
+            .appendTo(shorts_container);
+
+          // Mute
+          const mute_glyph = $('<span>')
+            .addClass('glyphicon')
+            .addClass('glyphicon-volume-up');
+          const mute_toggle = $('<div>')
+            .addClass('pull-left')
+            .addClass('pointer')
+            .addClass('shorts_bottom_bar_button')
+            .css({
+              'background-color': 'red',
+              color: 'black',
+            })
+            .append(mute_glyph)
+            .on('click', () => {
+              mute_glyph.toggleClass(
+                'glyphicon-volume-up glyphicon-volume-off',
+              );
+
+              if (that.shorts_player.isMuted()) {
+                that.shorts_player.unMute();
+              } else {
+                that.shorts_player.mute();
+              }
+            })
+            .attr({
+              id: 'shorts_mute_toggle',
+              title: 'Вкл / Выкл звук',
+            })
+            .appendTo(shorts_bottom_bar);
+
+          // Play
+          const play_glyph = $('<span>')
+            .addClass('glyphicon')
+            .addClass('glyphicon-play')
+            .attr('id', 'shorts_play_toggle_glyph');
+          const play_toggle = $('<div>')
+            .addClass('pull-left')
+            .addClass('pointer')
+            .addClass('shorts_bottom_bar_button')
+            .css({
+              'background-color': 'red',
+              color: 'black',
+            })
+            .append(play_glyph)
+            .on('click', () => {
+              const state = that.shorts_player.getPlayerState();
+
+              if (state === 1) {
+                that.shorts_player.pauseVideo();
+              }
+
+              if (state === 2) {
+                that.shorts_player.playVideo();
+              }
+            })
+            .attr({
+              id: 'shorts_play_toggle',
+              title: 'Play / Pause',
+            })
+            .appendTo(shorts_bottom_bar);
+
+          // Share
+          const share_button = $('<div>')
+            .addClass('pull-left')
+            .addClass('pointer')
+            .addClass('shorts_bottom_bar_button')
+            .css({
+              'background-color': 'green',
+              color: 'white',
+            })
+            .html('<span class="glyphicon glyphicon-share">')
+            .on('click', () => {
+              $('#chatline')
+                .val(
+                  `${$(
+                    '#chatline',
+                  ).val()} ${that.shorts_player.getVideoUrl()} `,
+                )
+                .focus();
+            })
+            .attr({
+              title: 'Добавить к сообщению в чате',
+            })
+            .appendTo(shorts_bottom_bar);
+        };
+
+        this.consctructShortsPlayer = short_id => {
+          // const short_id = 'iRMbTmJlVaQ';
+          const on_shorts_iframe_ready = event => {
+            if ($('#shorts-panel').is(':hidden')) {
+              event.target.stopVideo();
+            } else {
+              event.target.playVideo();
+            }
+          };
+
+          const on_shorts_iframe_change = event => {
+            const state = that.shorts_player.getPlayerState();
+
+            if (state === 1) {
+              $('#shorts_play_toggle_glyph').toggleClass(
+                'glyphicon-play glyphicon-pause',
+              );
+            }
+
+            if (state === 2) {
+              $('#shorts_play_toggle_glyph').toggleClass(
+                'glyphicon-play glyphicon-pause',
+              );
+            }
+          };
+
+          that.shorts_player = new YT.Player('yt_shorts_iframe', {
+            height: '480',
+            width: '270',
+            videoId: short_id,
+            playerVars: {
+              playlist: short_id,
+              origin: window.location.href,
+              enablejsapi: 1,
+              autoplay: 1,
+              loop: 1,
+              showinfo: 0,
+              controls: 0,
+              fs: 0,
+              hl: 'ru',
+              iv_load_policy: 3,
+              modestbranding: 1,
+            },
+            events: {
+              onReady: on_shorts_iframe_ready,
+              onStateChange: on_shorts_iframe_change,
+            },
+          });
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.appendCSS = function () {
+          $(`<style>`).appendTo('head').text(`
+				#shorts-panel-toggle {
+					background: url(https://i.imgur.com/BKmlyhH.png) no-repeat;
+					height: 40px !important;
+					width: 40px !important;
+					outline: none;
+					border: none;
+					opacity: 0.8;
+					background-size: contain !important;
+				}
+
+				#shorts_side_previews {
+					display: flex;
+					flex-direction: row;
+					flex-wrap: nowrap;
+					align-content: center;
+					justify-content: center;
+					align-items: center;
+					height: 0;
+				}
+
+				.shorts_item_preview {
+					width: 135px;
+					height: 240px;
+					position: relative;
+					top: 240px;
+					z-index: -1;
+					opacity: .75;
+					border-radius: 15px;
+					pointer-events: none
+				}
+
+				#shorts_player_main {
+					display: flex;
+					flex-direction: row;
+					flex-wrap: nowrap;
+					align-content: center;
+					justify-content: center;
+					align-items: flex-start;
+				}
+
+				#shorts_controls {
+					height: 0px;
+					position: relative;
+					bottom: 240px;
+					z-index: 3;
+				}
+
+				.shorts_arrow {
+					width: 40px;
+					height: 40px;
+					border-radius: 100%;
+					background-color: red;
+					color: black;
+					line-height: 40px;
+					font-size: 14pt;
+				}
+
+				/* ==== */
+
+				#shorts_bottom_bar {
+					height: 0px;
+					width: 100%;
+					z-index: 3;
+
+					display: flex;
+					flex-direction: row;
+					flex-wrap: nowrap;
+					align-content: center;
+					justify-content: space-evenly;
+					align-items: center;
+
+					margin-bottom: 20px;
+				}
+
+				.shorts_bottom_bar_button {
+					width: 40px;
+					height: 40px;
+					border-radius: 100%;
+					line-height: 42px;
+					font-size: 14pt;
+				}
+
+			`);
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.shorts = null;
+        this.page_token = '';
+        this.shorts_player = null;
+
+        this.populateShorts = page_token => {
+          $.ajax({
+            error: err => console.log(err),
+            success: result => that.handle_loaded_shorts(result),
+            dataType: 'jsonp',
+            type: 'GET',
+            url: `https://www.googleapis.com/youtube/v3/search`,
+            data: {
+              key: `${atob('QUl6YVN5QUxvRXZBMVlKdWhpU0haSC1TMTNLQmxQaDNpZDBxWGhz')}`,
+              type: 'video',
+              maxResults: 50,
+              videoCaption: 'any',
+              videoDefinition: 'any',
+              videoDimension: '2d',
+              videoDuration: 'short',
+              videoEmbeddable: 'true',
+              videoLicense: 'any',
+              videoSyndicated: 'true',
+              regionCode: 'RU',
+              relevanceLanguage: 'en',
+              location: `${that.randomInt(40, 90)}, ${that.randomInt(
+                -180,
+                40,
+              )}`,
+              locationRadius: '900km',
+              part: 'snippet',
+              order: 'relevance',
+              q: '##shorts',
+              type: 'video',
+              publishedAfter: that.getPastDate(14, 90),
+              pageToken: page_token,
+            },
+          });
+        };
+
+        this.populate_cb = () => {
+          that.populateShorts(that.page_token);
+        };
+
+        ////////////////////////////////////
+
+        this.init_first_populate = () => {
+          // Generate shorts iterator
+          that.shorts = new window.CustomIterator(that.populate_cb);
+
+          // Load Shorts
+          that.populate_cb();
+        };
+
+        this.handle_loaded_shorts = data => {
+          const { items, nextPageToken } = data;
+
+          const temp_shorts = [];
+          for (const item of items) {
+            temp_shorts.push(item.id.videoId);
+          }
+          temp_shorts.shuffle();
+
+          that.page_token = nextPageToken;
+          that.shorts.populate(temp_shorts);
+
+          that.handle_arrow_next();
+        };
+
+        this.set_current_short = short_id => {
+          if (that.shorts_player === null) {
+            that.consctructShortsPlayer(short_id);
+          } else {
+            that.shorts_player.loadPlaylist({
+              playlist: short_id,
+              index: 0,
+              startSeconds: 0,
+            });
+            that.shorts_player.setLoop({ loopPlaylists: true });
+          }
+        };
+
+        this.set_next_short_preview = short_id => {
+          $('#shorts_thumb_next').attr(
+            'src',
+            `https://i.ytimg.com/vi/${short_id}/frame0.jpg`,
+          );
+        };
+
+        this.set_previous_short_preview = () => {
+          const e = $('#shorts_thumb_prev');
+
+          if (that.shorts.current_id < 2) {
+            e.attr('src', `https://i.imgur.com/Zi0QCXb.png`);
+          } else {
+            e.attr(
+              'src',
+              `https://i.ytimg.com/vi/${that.shorts.before_current()}/frame0.jpg`,
+            );
+          }
+        };
+
+        //////////////////////////////////////////
+
+        this.handle_arrow_previous = () => {
+          that.set_next_short_preview(that.shorts.current());
+          that.set_current_short(that.shorts.previous());
+          that.set_previous_short_preview();
+        };
+
+        this.handle_arrow_next = () => {
+          that.set_current_short(that.shorts.next());
+          that.set_next_short_preview(that.shorts.after_next());
+          that.set_previous_short_preview();
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.init();
+      });
+
+      /***/
+    },
     
 ]));
