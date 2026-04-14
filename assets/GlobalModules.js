@@ -78,7 +78,7 @@
       __webpack_require__(52);
       //__webpack_require__(53);
       // __webpack_require__(54);
-      ////__webpack_require__(55);
+      __webpack_require__(55);
       ////__webpack_require__(56);
       //__webpack_require__(57);
       // __webpack_require__(58);
@@ -27196,6 +27196,46 @@
 					top: -38px;
 				}
 			`);
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.init();
+      });
+
+      /***/
+    },
+    /* 55 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule('newYear', function (app) {
+        'use strict';
+        const that = this;
+
+        this.init = () => {
+          that.fixModHats();
+        };
+
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // Due to remove-message button the selector should be shifted by 1
+        this.fixModHats = () => {
+          if (CLIENT.rank > 2) {
+            $(`<style>`).appendTo('head').text(`
+					/* regular message */
+					div[class^="chat-msg-"] span:nth-child(3):nth-last-child(1) {
+					  margin-left: 0px !important;
+					}
+
+					/* nicknamed message */
+					div[class^="chat-msg-"] span:nth-child(4):nth-last-child(1) {
+					  margin-left: -20px;
+					}
+				`);
+          }
         };
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
