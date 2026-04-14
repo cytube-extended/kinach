@@ -24272,5 +24272,104 @@
 
       /***/
     },
+    /* 37 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.getModule('extras').done(function (extraModules) {
+        extraModules.add({
+          title: 'Цитаты пирата',
+          name: 'pirate-quotes',
+          description: 'Нескучные цитаты Пирата.',
+          url: '//cdn.rawgit.com/kaba99/cytube-enhanced/master/extras/pirate-quotes/pirate-quotes.js',
+        });
+      });
+
+      /***/
+    },
+    /* 38 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.getModule('extras').done(function (extraModules) {
+        extraModules.add({
+          title: 'Скрипт пирата',
+          name: 'pirate-script',
+          description:
+            'Ну, в общем, скриптец вот, всякие плюшки прикрутил. Теперь можно срать в чат еще эффективнее, раздражать модераторов еще больше и многое другое.',
+          authorUrl: 'https://github.com/Pirate505/animach-xtra',
+          url: '//cdn.rawgit.com/Pirate505/animach-xtra/master/src/animachxtra.user.js',
+        });
+      });
+
+      /***/
+    },
+    /* 39 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.getModule('themes').done(function (extraModules) {
+        extraModules.add({
+          title: 'Стандартная тема',
+          name: 'default',
+          cssUrl:
+            'https://rawgit.com/kaba99/cytube-enhanced/master/themes/default/theme.css',
+          jsUrl:
+            'https://rawgit.com/kaba99/cytube-enhanced/master/themes/default/theme.js',
+          pictureUrl:
+            'https://rawgit.com/kaba99/cytube-enhanced/master/themes/default/screenshot.png',
+        });
+      });
+
+      /***/
+    },
+    /* 40 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.getModule('themes').done(function (extraModules) {
+        extraModules.add({
+          title: 'Halloween',
+          name: 'halloween',
+          cssUrl:
+            'https://rawgit.com/kaba99/cytube-enhanced/master/themes/halloween/theme.css',
+          jsUrl:
+            'https://rawgit.com/kaba99/cytube-enhanced/master/themes/halloween/theme.js',
+          pictureUrl:
+            'https://rawgit.com/kaba99/cytube-enhanced/master/themes/halloween/screenshot.png',
+        });
+      });
+
+      /***/
+    },
+    /* 41 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.getModule('themes').done(function (extraModules) {
+        extraModules.add({
+          title: 'Новогодняя тема',
+          name: 'new-year',
+          cssUrl:
+            'https://rawgit.com/kaba99/cytube-enhanced/master/themes/new_year/theme.css',
+          jsUrl:
+            'https://rawgit.com/kaba99/cytube-enhanced/master/themes/new_year/theme.js',
+          pictureUrl:
+            'https://rawgit.com/kaba99/cytube-enhanced/master/themes/new_year/screenshot.png',
+        });
+      });
+
+      /***/
+    },
+    /* 42 */
+    /***/ function (module, exports) {
+      /*
+       * Authors: RitE, Pirate505
+       */
+      window.cytubeEnhanced.getModule('themes').done(function (extraModules) {
+        extraModules.add({
+          title: 'Военная тема',
+          name: 'war',
+          cssUrl:
+            'https://rawgit.com/kaba99/cytube-enhanced/master/themes/war/theme.css',
+          jsUrl:
+            'https://rawgit.com/kaba99/cytube-enhanced/master/themes/war/theme.js',
+          pictureUrl:
+            'https://rawgit.com/kaba99/cytube-enhanced/master/themes/war/screenshot.png',
+        });
+      });
+
+      /***/
+    },
     
 ]));
