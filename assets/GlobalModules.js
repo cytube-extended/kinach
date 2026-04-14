@@ -75,7 +75,7 @@
       __webpack_require__(49);
       __webpack_require__(50);
       __webpack_require__(51);
-      ////__webpack_require__(52);
+      __webpack_require__(52);
       ////__webpack_require__(53);
       // __webpack_require__(54);
       ////__webpack_require__(55);
@@ -26339,6 +26339,92 @@
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        this.init();
+      });
+
+      /***/
+    },
+    /* 52 */
+    /***/ function (module, exports) {
+      window.cytubeEnhanced.addModule('enchancedIgnore', function () {
+        'use strict';
+        const that = this;
+
+        this.init = function () {
+          // Load ignore list on page load
+          that.loadIgnoreList();
+
+          // Update dropdown function
+          that.updateUserDropdown();
+
+          // Reload dropdown on all users
+          that.reloadUersDropdown();
+        };
+
+        // Load ignored list from the storage into the default variable
+        this.loadIgnoreList = () => {
+          window.IGNORED = JSON.parse(localStorage.getItem('IGNORED')) || [];
+          return window.IGNORED;
+        };
+
+        // Override user dropdown function
+        this.updateUserDropdown = function () {
+          window.addUserDropdown = (function (oldAddUserDropdown) {
+            return function (entry) {
+              var functionResponse = oldAddUserDropdown(entry);
+
+              // get user name
+              const userName = entry.data('name');
+
+              // get the first button
+              const ignoredButton = $(
+                entry.find('.user-dropdown > .btn-group-vertical')[0]
+                  .firstChild,
+              );
+
+              // add check if no button found?
+
+              // Add click handler
+              ignoredButton.on('click', () => {
+                // load ignore list from storage
+                const ignoreList = that.loadIgnoreList();
+
+                // check if user name in the ignore list
+                const isIgnored = ignoreList.indexOf(userName) != -1;
+
+                // handle
+                if (isIgnored) {
+                  // REMOVE
+
+                  // Remove from list
+                  ignoreList.splice(ignoreList.indexOf(userName), 1);
+
+                  // Save list back
+                  localStorage.setItem('IGNORED', JSON.stringify(ignoreList));
+                } else {
+                  // ADD
+
+                  // Add to the list
+                  ignoreList.push(userName);
+
+                  // Save list back
+                  localStorage.setItem('IGNORED', JSON.stringify(ignoreList));
+                }
+              });
+
+              return functionResponse;
+            };
+          })(window.addUserDropdown);
+        };
+
+        // Reload user dropdowns
+        this.reloadUersDropdown = () => {
+          const users = $('#userlist').children();
+          for (var i = 0; i < users.length; i++) {
+            window.addUserDropdown($(users[i]));
+          }
+        };
 
         this.init();
       });
