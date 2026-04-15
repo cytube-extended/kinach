@@ -1551,7 +1551,7 @@ var Wn = /* @__PURE__ */ new WeakMap();
 typeof window < "u" && ((window.__svelte ??= {}).v ??= /* @__PURE__ */ new Set()).add("5");
 //#endregion
 //#region src/Counter.svelte
-var Gn = /* @__PURE__ */ Rn("<div class=\"svelte-counter\"><p>Svelte counter: <strong> </strong></p> <button>-</button> <button>+</button></div>");
+var Gn = /* @__PURE__ */ Rn("<div class=\"svelte-counter\"><p>Svelte counter: <strong> </strong></p> <button>-</button> <button>+</button> <button class=\"px-4 py-2 bg-blue-500 text-white rounded\">Click me</button></div>");
 function Kn(e, t) {
 	Fe(t, !0);
 	let n = /* @__PURE__ */ F(0);
@@ -1567,7 +1567,7 @@ function Kn(e, t) {
 	}, o = Gn(), s = zt(o), c = Bt(zt(s)), l = zt(c, !0);
 	Oe(c), Oe(s);
 	var u = Bt(s, 2), d = Bt(u, 2);
-	return Oe(o), Zt(() => Bn(l, $(n))), An("click", u, () => Ot(n, -1)), An("click", d, () => Ot(n)), zn(e, o), Ie(a);
+	return ke(2), Oe(o), Zt(() => Bn(l, $(n))), An("click", u, () => Ot(n, -1)), An("click", d, () => Ot(n)), zn(e, o), Ie(a);
 }
 jn(["click"]);
 //#endregion
