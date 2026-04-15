@@ -33,7 +33,7 @@ var e = (e) => {
 	};
 }, a = () => {
 	let e = new URL("resources/favicon.ico", window.BASE_URL), t = document.createElement("link");
-	t.href = e.toString(), t.type = "image/x-icon", document.head.append(t);
+	t.href = e.toString(), t.type = "image/x-icon", t.rel = "shortcut icon", document.head.append(t);
 }, o = async () => {
 	i(), a();
 };
