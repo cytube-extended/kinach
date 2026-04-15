@@ -10,6 +10,7 @@
     "isolatedModules": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
+    "verbatimModuleSyntax": true,
     "types": ["vite/client", "jquery"]
   },
   "include": ["src"]
