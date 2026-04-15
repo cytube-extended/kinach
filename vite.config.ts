@@ -5,9 +5,10 @@ export default defineConfig({
     target: "esnext",
     outDir: "assets",
     emptyOutDir: true,
+    cssCodeSplit: true,
 
     lib: {
-      entry: ["src/index.ts", "src/main.ts"],
+      entry: ["src/index.ts", "src/main.ts", "src/index.css"],
       formats: ["es"],
     },
   },

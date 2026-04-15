@@ -41,3 +41,13 @@ export const overrideChannelCSS = (newCSS: string) => {
   chanCSS.remove();
   setChannelCSS(newCSS);
 };
+
+export const injectMainStylesheet = () => {
+  const url = new URL("assets/index.css", window.BASE_URL);
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.type = "text/css";
+  link.href = url.toString();
+
+  document.head.appendChild(link);
+};
