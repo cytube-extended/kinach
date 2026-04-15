@@ -2,7 +2,7 @@ import { defineConfig } from "vite";
 
 const org = "cytube-extended";
 const repo = "kinach";
-const version = "main";
+const version = "dev";
 
 export default defineConfig({
   base: `https://cdn.jsdelivr.net/gh/${org}/${repo}@${version}/assets/`,
