@@ -32,10 +32,8 @@ var e = (e) => {
 		e && t(e), n && r(n);
 	};
 }, a = () => {
-	document.addEventListener("DOMContentLoaded", () => {
-		let e = new URL("resources/favicon.ico", window.BASE_URL), t = document.createElement("link");
-		t.href = e.toString(), t.type = "image/x-icon", document.head.append(t);
-	});
+	let e = new URL("resources/favicon.ico", window.BASE_URL), t = document.createElement("link");
+	t.href = e.toString(), t.type = "image/x-icon", document.head.append(t);
 }, o = async () => {
 	i(), a();
 };
