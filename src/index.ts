@@ -1,5 +1,5 @@
 const loadESM = () => {
-  const url = new URL("main.js", window.BASE_URL);
+  const url = new URL("assets/main.js", window.BASE_URL);
   const modPromise: Promise<typeof import("./main")> = import(url.toString());
 
   modPromise
