@@ -1,9 +1,10 @@
 export const overrideFavicon = () => {
   const url = new URL("resources/favicon.ico", window.BASE_URL);
-  const faviconChannel = document.createElement("link");
+  const faviconElement = document.createElement("link");
 
-  faviconChannel.href = url.toString();
-  faviconChannel.type = "image/x-icon";
+  faviconElement.href = url.toString();
+  faviconElement.type = "image/x-icon";
+  faviconElement.rel = "shortcut icon";
 
-  document.head.append(faviconChannel);
+  document.head.append(faviconElement);
 };
