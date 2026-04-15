@@ -12,7 +12,10 @@ var e = (e) => {
 		return;
 	}
 	n.textContent !== t && (n.remove(), e(t));
-}, n = (e) => {
+}, n = () => {
+	let e = new URL("assets/index.css", window.BASE_URL), t = document.createElement("link");
+	t.rel = "stylesheet", t.type = "text/css", t.href = e.toString(), document.head.appendChild(t);
+}, r = (e) => {
 	window.CHANNEL.js = e;
 	let t = document.querySelector("#cs-jstext");
 	if (t && (t.value = e), window.USEROPTS.ignore_channeljs) return;
@@ -20,22 +23,22 @@ var e = (e) => {
 	"" + encodeURIComponent(n);
 	let r = document.createElement("script");
 	r.id = "chanjs", r.type = "text/javascript", r.textContent = e, document.body.append(r);
-}, r = (e) => {
+}, i = (e) => {
 	let t = document.querySelector("#chanjs");
 	if (!t) {
-		n(e);
+		r(e);
 		return;
 	}
-	t.textContent !== e && (t.remove(), n(e));
-}, i = () => {
-	window.Callbacks.channelCSSJS = function({ css: e, js: n }) {
-		e && t(e), n && r(n);
-	};
+	t.textContent !== e && (t.remove(), r(e));
 }, a = () => {
+	window.Callbacks.channelCSSJS = function({ css: e, js: n }) {
+		e && t(e), n && i(n);
+	};
+}, o = () => {
 	let e = new URL("resources/favicon.ico", window.BASE_URL), t = document.createElement("link");
 	t.href = e.toString(), t.type = "image/x-icon", t.rel = "shortcut icon", document.head.append(t);
-}, o = async () => {
-	i(), a();
+}, s = async () => {
+	a(), o(), n();
 };
 //#endregion
-export { o as init };
+export { s as init };
