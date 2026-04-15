@@ -31,8 +31,13 @@ var e = (e) => {
 	window.Callbacks.channelCSSJS = function({ css: e, js: n }) {
 		e && t(e), n && r(n);
 	};
-}, a = async () => {
-	i();
+}, a = () => {
+	document.addEventListener("DOMContentLoaded", () => {
+		let e = new URL("resources/favicon.ico", window.BASE_URL), t = document.createElement("link");
+		t.href = e.toString(), t.type = "image/x-icon", document.head.append(t);
+	});
+}, o = async () => {
+	i(), a();
 };
 //#endregion
-export { a as init };
+export { o as init };
