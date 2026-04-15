@@ -1,0 +1,44 @@
+name: Build project (dev branch)
+
+on:
+  push:
+    branches:
+      - dev
+    paths-ignore:
+      - "assets/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    concurrency:
+      # All runs in this group are queued
+      group: build-dev
+      # Runs wait their turn (sequential execution)
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run build
+        run: node --run build
+
+      - name: Commit & push assets
+        uses: EndBug/add-and-commit@v10
+        with:
+          add: "assets"
+          message: "CI: update assets"
+          default_author: github_actions
