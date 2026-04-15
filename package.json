@@ -9,7 +9,9 @@
     "build": "vite build"
   },
   "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^7.0.0",
     "@types/jquery": "^1.10.27",
+    "svelte": "^5.55.4",
     "typescript": "^6.0.2",
     "vite": "^8.0.8"
   }
