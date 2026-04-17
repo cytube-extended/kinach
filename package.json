@@ -6,7 +6,11 @@
   "type": "module",
   "main": "assets/index.js",
   "scripts": {
-    "build": "vite build"
+    "build": "vite build",
+    "watch": "vite build --watch",
+    "preview": "docker compose up -d",
+    "close": "docker compose down",
+    "dev": "node --run preview && node --run watch"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^7.0.0",

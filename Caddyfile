@@ -1,0 +1,19 @@
+:80 {
+  # Serve locally mounted static content if request has path prefix
+  handle /gh/* {
+    root * /srv
+    file_server
+
+    # Disable cache and serve new files on each network request
+    header {
+      Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+      Pragma "no-cache"
+      Expires "0"
+    }
+  }
+
+  # Fallback to synchtube resolution if request has no static content path prefix
+  handle {
+    reverse_proxy synchtube:8080
+  }
+}

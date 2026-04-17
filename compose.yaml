@@ -1,0 +1,51 @@
+name: Synchtube dev environment
+
+services:
+  # Synchtube database.
+  synchdb:
+    container_name: synchdb
+    image: docker.io/mariadb:12.2
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: synchpw
+      MARIADB_DATABASE: synchdb
+      MARIADB_USER: synchuser
+      MARIADB_PASSWORD: synchpw
+    volumes:
+      - synchdata:/var/lib/mysql
+    networks:
+      - synchnet
+
+  # Main synchtube app.
+  synchtube:
+    container_name: synchtube
+    image: synchtube:latest
+    restart: unless-stopped
+    depends_on:
+      - synchdb
+    build:
+      context: .
+      dockerfile: Containerfile
+    ports:
+      - 1337:1337
+    networks:
+      - synchnet
+
+  # Handles reverse proxy to synchtube service. (to avoid CORS errors for static content)
+  # Serves locally mounted folders as static content.
+  resolver:
+    image: docker.io/library/caddy:2.11-alpine
+    ports:
+      - 8080:80
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./assets:/srv/gh/cytube-extended/kinach@main/assets:ro
+      - ./resources:/srv/gh/cytube-extended/kinach@main/resources:ro
+    networks:
+      - synchnet
+
+volumes:
+  synchdata:
+
+networks:
+  synchnet:
