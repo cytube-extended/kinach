@@ -1,4 +1,3 @@
-import { createAppVersionForm } from "./appVersionForm";
 import { overrideCallbacks } from "./callbacks";
 import { injectMainStylesheet } from "./channelCSS";
 import { overrideFavicon } from "./favicon";
@@ -9,7 +8,6 @@ export const init = async () => {
   overrideFavicon();
 
   injectMainStylesheet();
-  createAppVersionForm();
 
   mountSvelteComponent();
 };

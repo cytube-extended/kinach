@@ -14,27 +14,6 @@ export const setChannelJS = (js: string) => {
     return;
   }
 
-  const sanitizedJS = js
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/\n/g, "<br>")
-    .replace(/\t/g, "    ")
-    .replace(/ /g, "&nbsp;");
-  const encodedJS = encodeURIComponent(sanitizedJS);
-
-  const viewsource =
-    "data:text/html, " +
-    "<body style='font: 9pt monospace; max-width:60rem;margin:0 auto;padding:4rem;'>" +
-    encodedJS +
-    "</body>";
-
-  // TODO
-  // checkScriptAccess(viewsource, "embedded", function (pref) {
-  //   if (pref === "ALLOW") {
-  //   }
-  // });
-
   // Apply JS to page (create channel JS element in DOM)
   const newChanJS = document.createElement("script");
   newChanJS.id = "chanjs";

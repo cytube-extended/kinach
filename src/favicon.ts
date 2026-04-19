@@ -1,5 +1,5 @@
 export const overrideFavicon = () => {
-  const url = new URL("resources/favicon.ico", window.BASE_URL);
+  const url = new URL("dist/favicon.ico", window.BASE_URL);
   const faviconElement = document.createElement("link");
 
   faviconElement.href = url.toString();

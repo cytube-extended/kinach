@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [svelte(), tailwindcss()],
   build: {
     target: "esnext",
-    outDir: "assets",
+    outDir: "dist",
     emptyOutDir: true,
     cssCodeSplit: true,
 

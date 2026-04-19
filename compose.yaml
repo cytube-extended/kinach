@@ -39,8 +39,7 @@ services:
       - 8080:80
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - ./assets:/srv/gh/cytube-extended/kinach@main/assets:ro
-      - ./resources:/srv/gh/cytube-extended/kinach@main/resources:ro
+      - ./dist:/srv/gh/cytube-extended/kinach@main/dist:ro
     networks:
       - synchnet
 
