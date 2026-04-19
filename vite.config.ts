@@ -11,7 +11,7 @@ export default defineConfig({
     cssCodeSplit: true,
 
     lib: {
-      entry: ["src/index.ts", "src/main.ts", "src/index.css"],
+      entry: ["src/index.ts", "src/main.ts", "src/index.css", "src/theme.css"],
       formats: ["es"],
     },
   },
