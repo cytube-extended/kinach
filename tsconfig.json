@@ -11,7 +11,11 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "verbatimModuleSyntax": true,
-    "types": ["vite/client", "jquery"]
+    "types": ["vite/client", "jquery"],
+    "paths": {
+      "$lib": ["./src/lib"],
+      "$lib/*": ["./src/lib/*"]
+    }
   },
   "include": ["src"]
 }

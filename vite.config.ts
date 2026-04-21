@@ -1,3 +1,4 @@
+import path from "path";
 import { defineConfig } from "vite";
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import tailwindcss from "@tailwindcss/vite";
@@ -13,6 +14,11 @@ export default defineConfig({
     lib: {
       entry: ["src/index.ts", "src/main.ts", "src/index.css", "src/theme.css"],
       formats: ["es"],
+    },
+  },
+  resolve: {
+    alias: {
+      $lib: path.resolve("./src/lib"),
     },
   },
 });

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Button from "$lib/components/ui/button/button.svelte";
+
   let count = $state(0);
 
   export function increment() {
@@ -17,4 +19,6 @@
   <button onclick={() => count++}>+</button>
 
   <button class="px-4 py-2 bg-blue-500 text-white rounded"> Click me </button>
+
+  <Button>shadcn button</Button>
 </div>
