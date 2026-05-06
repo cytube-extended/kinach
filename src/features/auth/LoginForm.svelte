@@ -79,7 +79,11 @@
         orientation="responsive"
         class="flex flex-row items-center justify-end selection:bg-primary"
       >
-        <AuthAvatar isLoading={isSubmitting} isGuest={password === ""} />
+        <AuthAvatar
+          isLoading={isSubmitting}
+          isAnon={username === "" && password === ""}
+          isGuest={password === ""}
+        />
         <Input
           required
           id="login-username-input"

@@ -36,7 +36,7 @@
         orientation="responsive"
         class="flex flex-row items-center justify-end selection:bg-primary"
       >
-        <AuthAvatar isLoading={isSubmitting} isGuest={!isUser} />
+        <AuthAvatar isLoading={isSubmitting} isAnon={false} isGuest={!isUser} />
         <Label class="flex-none w-auto">
           {$clientStore.name}
         </Label>

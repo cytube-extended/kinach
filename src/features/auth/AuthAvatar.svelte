@@ -5,14 +5,16 @@
     Loading03Icon,
     UserCircleIcon,
     UserIcon,
+    AnonymousIcon,
   } from "@hugeicons/core-free-icons";
 
   interface Props {
     isLoading: boolean;
+    isAnon: boolean;
     isGuest: boolean;
   }
 
-  let { isLoading, isGuest }: Props = $props();
+  let { isLoading, isAnon, isGuest }: Props = $props();
 </script>
 
 <div>
@@ -24,6 +26,10 @@
         role="status"
         aria-label="Loading"
       />
+    </span>
+  {:else if isAnon}
+    <span transition:fade={{ duration: 250 }}>
+      <HugeiconsIcon icon={AnonymousIcon} class="size-5" />
     </span>
   {:else if isGuest}
     <span transition:fade={{ duration: 250 }}>
