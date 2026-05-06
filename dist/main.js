@@ -1513,31 +1513,42 @@ const initStores = () => {
 	return initPageStore(), initSocketStore(), () => {
 		e(), i();
 	};
+};
+var colorInfo = "solid cyan; background-color: rgba(18, 18, 100, 0.1); color: cyan;", legacyChatNotification = (e, i) => {
+	let a = document.getElementById("messagebuffer");
+	if (!a) return null;
+	let o = document.createElement("div");
+	return o.className = "server-msg-reconnect", o.style = `border: 1px ${i}`, o.textContent = e, a.appendChild(o), o;
+};
+const legacyChatInfo = (e) => legacyChatNotification(e, colorInfo), injectMainStylesheet = async () => new Promise((e, i) => {
+	let a = new URL("dist/index.css", window.BASE_URL), o = document.createElement("link");
+	o.rel = "stylesheet", o.type = "text/css", o.href = a.toString(), o.onload = () => requestAnimationFrame(() => e()), o.onerror = () => requestAnimationFrame(() => i()), document.head.appendChild(o);
+}), removeLegacyStylesheets = () => {
+	for (let e of [
+		"//code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css",
+		"/css/sticky-footer-navbar.css",
+		"/css/videojs-resolution-switcher.css",
+		"/css/video-js.css",
+		"/css/cytube.css"
+	]) {
+		let i = document.querySelector(`link[href="${e}"]`);
+		if (!i) return;
+		i.remove();
+	}
+	document.getElementById("usertheme")?.remove();
+};
+var setChannelJS = (e) => {
+	window.CHANNEL.js = e;
+	let i = document.querySelector("#cs-jstext");
+	if (i && (i.value = e), window.USEROPTS.ignore_channeljs) return;
+	let a = document.createElement("script");
+	a.id = "chanjs", a.type = "text/javascript", a.textContent = e, document.body.append(a);
 }, setChannelCSS = (e) => {
 	window.CHANNEL.css = e;
 	let i = document.querySelector("#cs-csstext");
 	if (i && (i.value = e), window.USEROPTS.ignore_channelcss) return;
 	let a = document.createElement("style");
 	a.id = "chancss", a.textContent = e, document.head.append(a);
-}, overrideChannelCSS = (e) => {
-	let i = document.querySelector("#chancss");
-	if (!i) {
-		setChannelCSS(e);
-		return;
-	}
-	i.textContent !== e && (i.remove(), setChannelCSS(e));
-}, injectThemeStylesheet = () => {
-	let e = new URL("dist/theme.css", window.BASE_URL), i = document.createElement("link");
-	i.rel = "stylesheet", i.type = "text/css", i.href = e.toString(), document.head.appendChild(i);
-}, injectMainStylesheet = () => {
-	let e = new URL("dist/index.css", window.BASE_URL), i = document.createElement("link");
-	i.rel = "stylesheet", i.type = "text/css", i.href = e.toString(), document.head.appendChild(i);
-}, setChannelJS = (e) => {
-	window.CHANNEL.js = e;
-	let i = document.querySelector("#cs-jstext");
-	if (i && (i.value = e), window.USEROPTS.ignore_channeljs) return;
-	let a = document.createElement("script");
-	a.id = "chanjs", a.type = "text/javascript", a.textContent = e, document.body.append(a);
 }, overrideChannelJS = (e) => {
 	let i = document.querySelector("#chanjs");
 	if (!i) {
@@ -1545,13 +1556,26 @@ const initStores = () => {
 		return;
 	}
 	i.textContent !== e && (i.remove(), setChannelJS(e));
+}, overrideChannelCSS = (e) => {
+	let i = document.querySelector("#chancss");
+	if (!i) {
+		setChannelCSS(e);
+		return;
+	}
+	i.textContent !== e && (i.remove(), setChannelCSS(e));
 }, overrideCallbacks = () => {
-	window.Callbacks.channelCSSJS = function({ css: e, js: i }) {
+	window.Callbacks.channelCSSJS = ({ css: e, js: i }) => {
 		e && overrideChannelCSS(e), i && overrideChannelJS(i);
 	};
 }, overrideFavicon = () => {
 	let e = new URL("dist/favicon.ico", window.BASE_URL), i = document.createElement("link");
 	i.href = e.toString(), i.type = "image/x-icon", i.rel = "shortcut icon", document.head.append(i);
+}, overrideStyles = async () => {
+	let e = legacyChatInfo("Loading styles...");
+	await injectMainStylesheet(), removeLegacyStylesheets(), e && e.remove();
+};
+const initOverrides = async () => {
+	overrideCallbacks(), overrideFavicon(), await overrideStyles();
 };
 function is_capture_event(e) {
 	return e.endsWith("capture") && e !== "gotpointercapture" && e !== "lostpointercapture";
@@ -4232,7 +4256,7 @@ const mountSvelteComponent = () => {
 }, init = async () => {
 	let e = initStores();
 	try {
-		overrideCallbacks(), overrideFavicon(), injectThemeStylesheet(), injectMainStylesheet(), mountSvelteComponent();
+		await initOverrides(), mountSvelteComponent();
 	} catch (i) {
 		throw e(), i;
 	}
