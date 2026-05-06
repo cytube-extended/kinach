@@ -4,12 +4,14 @@
 </script>
 
 <script lang="ts">
+  import { Button } from "$lib/components/ui/button";
   import { appStore } from "$stores/appStore";
   import { socketStore } from "$stores/socketStore";
-  import { Button } from "$lib/components/ui/button";
+  import { clientStore } from "$stores/clientStore";
+  import { submitSocketConnect } from "$api/socket";
   import VersionBadge from "$components/common/VersionBadge.svelte";
   import ChannelAvatar from "$components/common/ChannelAvatar.svelte";
-  import { submitSocketConnect } from "$api/socket";
+  import AuthForm from "$features/auth/AuthForm.svelte";
 </script>
 
 <header
@@ -22,7 +24,9 @@
   <div class="w-full flex flex-row items-center justify-between pr-6 py-5">
     <ChannelAvatar imgSrc={logoImgSrc} isConnected={$socketStore.connected} />
 
-    {#if !$socketStore.connected}
+    {#if $socketStore.connected}
+      <AuthForm isLoggedIn={$clientStore.logged_in} />
+    {:else}
       <Button onclick={submitSocketConnect}>Reconnect</Button>
     {/if}
   </div>

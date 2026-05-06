@@ -1,0 +1,47 @@
+<script lang="ts">
+  import { Button } from "$lib/components/ui/button";
+  import { Field, Group } from "$lib/components/ui/field";
+  import { Label } from "$lib/components/ui/label";
+  import { clientStore } from "$stores/clientStore";
+  import { logout } from "./auth";
+  import AuthAvatar from "./AuthAvatar.svelte";
+
+  let isSubmitting = $state(false);
+  let isUser = $derived($clientStore.rank > 0);
+
+  const handleSubmit = async (event: SubmitEvent) => {
+    event.preventDefault();
+    if (isSubmitting) {
+      return;
+    }
+
+    try {
+      isSubmitting = true;
+
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      await logout();
+    } catch (err: unknown) {
+      // TODO: Show alert?
+      console.error(err);
+    } finally {
+      isSubmitting = false;
+    }
+  };
+</script>
+
+<div class="w-full max-w-md ml-auto">
+  <form onsubmit={handleSubmit}>
+    <Group>
+      <Field
+        orientation="responsive"
+        class="flex flex-row items-center justify-end selection:bg-primary"
+      >
+        <AuthAvatar isLoading={isSubmitting} isGuest={!isUser} />
+        <Label class="flex-none w-auto">
+          {$clientStore.name}
+        </Label>
+        <Button type="submit" disabled={isSubmitting}>Logout</Button>
+      </Field>
+    </Group>
+  </form>
+</div>
