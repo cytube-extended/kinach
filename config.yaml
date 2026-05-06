@@ -127,7 +127,7 @@ max-channels-per-user: 5
 # Limit for the number of accounts an IP address can register
 max-accounts-per-ip: 5
 # Minimum number of seconds between guest logins from the same IP
-guest-login-delay: 60
+guest-login-delay: 1
 # Maximum character length of a chat message, capped at 1000 characters
 max-chat-message-length: 320
 
