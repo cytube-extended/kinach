@@ -1,6 +1,28 @@
 import { mount, tick } from "svelte";
 import Header from "$components/layout/Header.svelte";
 
+const removeLegacyModals = () => {
+  const useroptions = document.getElementById("useroptions");
+  if (useroptions) {
+    useroptions.remove();
+  }
+
+  const emotelist = document.getElementById("emotelist");
+  if (emotelist) {
+    emotelist.remove();
+  }
+
+  const channeloptions = document.getElementById("channeloptions");
+  if (channeloptions) {
+    channeloptions.remove();
+  }
+
+  const pmbar = document.getElementById("pmbar");
+  if (pmbar) {
+    pmbar.remove();
+  }
+};
+
 const upgradeBody = () => {
   document.body.classList.add("dark");
   document.body.classList.add("override-theme");
@@ -36,6 +58,8 @@ const upgradeNavbar = async () => {
 };
 
 export const upgradeLegacyElements = async () => {
+  removeLegacyModals();
+
   upgradeBody();
   await upgradeNavbar();
 
