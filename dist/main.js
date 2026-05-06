@@ -934,7 +934,7 @@ function Ht(e, t, n) {
 			var l = (c & b) === 0;
 			if (l && P(s, t), c & 2) {
 				var u = s;
-				I?.delete(u), c & 65536 || (c & 512 && (s.f |= w), Ht(u, x, n));
+				I?.delete(u), c & 65536 || (c & 512 && (U === null || !(U.f & 2097152)) && (s.f |= w), Ht(u, x, n));
 			} else if (l) {
 				var d = s;
 				c & 16 && lt !== null && lt.add(d), n === null ? pt(d) : n.push(d);
