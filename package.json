@@ -12,8 +12,9 @@
     "close": "docker compose down"
   },
   "devDependencies": {
-    "@fontsource-variable/roboto": "^5.2.10",
-    "@lucide/svelte": "^1.8.0",
+    "@fontsource-variable/nunito-sans": "^5.2.7",
+    "@hugeicons/core-free-icons": "^4.1.1",
+    "@hugeicons/svelte": "^1.1.2",
     "@sveltejs/vite-plugin-svelte": "^7.1.0",
     "@tailwindcss/vite": "^4.2.2",
     "@types/node": "^25.6.0",
