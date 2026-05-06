@@ -5,11 +5,11 @@
 Run dev environment in watch mode:
 
 ```sh
-node --run dev
+bun run dev
 ```
 
 Clean up dev environment:
 
 ```sh
-node --run close
+bun run close
 ```

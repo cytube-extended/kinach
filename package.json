@@ -10,7 +10,7 @@
     "watch": "vite build --watch",
     "preview": "docker compose up -d",
     "close": "docker compose down",
-    "dev": "node --run preview && node --run watch"
+    "dev": "docker compose up -d && vite build --watch"
   },
   "devDependencies": {
     "@fontsource-variable/roboto": "^5.2.10",
