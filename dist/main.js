@@ -4230,11 +4230,11 @@ const mountSvelteComponent = () => {
 		i.increment(), i.increment(), i.increment(), i.increment(), i.increment();
 	}), document.body.appendChild(e), document.body.appendChild(a);
 }, init = async () => {
+	let e = initStores();
 	try {
-		initStores();
-	} catch (e) {
-		console.error(e);
+		overrideCallbacks(), overrideFavicon(), injectThemeStylesheet(), injectMainStylesheet(), mountSvelteComponent();
+	} catch (i) {
+		throw e(), i;
 	}
-	overrideCallbacks(), overrideFavicon(), injectThemeStylesheet(), injectMainStylesheet(), mountSvelteComponent();
 };
 export { init };

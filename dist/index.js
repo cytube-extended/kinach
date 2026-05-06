@@ -6,13 +6,10 @@ var notificationTimeout = 5e3, colorInfo = "solid cyan; background-color: rgba(1
 };
 (() => {
 	let i = legacyChatNotification("Loading scripts...", colorInfo);
-	import(new URL("dist/main.js", window.BASE_URL).toString()).then((t) => t.init().then(() => {
+	import(new URL("dist/main.js", window.BASE_URL).toString()).then((e) => e.init().then(() => {
 		i && i.remove();
-	}).catch((t) => {
-		let i = `failed to initialize entry module: ${t}`;
-		console.error(i);
-		let a = legacyChatNotification(i, colorError);
-		a && setTimeout(a.remove, notificationTimeout);
+	}).catch((e) => {
+		throw Error(`failed to initialize entry module: ${e}`);
 	})).catch((t) => {
 		let i = `failed to load entry module: ${t}`;
 		console.error(i);
