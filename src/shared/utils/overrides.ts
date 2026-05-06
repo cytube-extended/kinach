@@ -1,0 +1,131 @@
+import { legacyChatInfo } from "./logger";
+import { injectMainStylesheet, removeLegacyStylesheets } from "./styles";
+
+const setChannelJS = (js: string) => {
+  // Update JS in channel object
+  window.CHANNEL.js = js;
+
+  // Update JS in channel editor
+  const CSJSText = document.querySelector<HTMLTextAreaElement>("#cs-jstext");
+  if (CSJSText) {
+    CSJSText.value = js;
+  }
+
+  // Do not apply if user ignores channel JS
+  const ignoreChannelJS = Boolean(window.USEROPTS.ignore_channeljs);
+  if (ignoreChannelJS) {
+    return;
+  }
+
+  // Apply JS to page (create channel JS element in DOM)
+  const newChanJS = document.createElement("script");
+  newChanJS.id = "chanjs";
+  newChanJS.type = "text/javascript";
+  newChanJS.textContent = js;
+  document.body.append(newChanJS);
+};
+
+const setChannelCSS = (css: string) => {
+  // Update CSS in channel object
+  window.CHANNEL.css = css;
+
+  // Update CSS in channel editor
+  const CSCSSText = document.querySelector<HTMLTextAreaElement>("#cs-csstext");
+  if (CSCSSText) {
+    CSCSSText.value = css;
+  }
+
+  // Do not apply if user ignores channel CSS
+  const ignoreChannelCSS = Boolean(window.USEROPTS.ignore_channelcss);
+  if (ignoreChannelCSS) {
+    return;
+  }
+
+  // Apply CSS to page (create channel CSS element in DOM)
+  const newChanCSS = document.createElement("style");
+  newChanCSS.id = "chancss";
+  newChanCSS.textContent = css;
+  document.head.append(newChanCSS);
+};
+
+const overrideChannelJS = (newJS: string) => {
+  // If no channel JS element found in DOM try to create it
+  const chanJS = document.querySelector<HTMLScriptElement>("#chanjs");
+  if (!chanJS) {
+    setChannelJS(newJS);
+
+    return;
+  }
+
+  // Only apply if new JS has changes
+  const currentJS = chanJS.textContent;
+  const isUnique = currentJS !== newJS;
+  if (!isUnique) {
+    return;
+  }
+
+  // Remove old channel CSS element from DOM
+  chanJS.remove();
+  setChannelJS(newJS);
+};
+
+const overrideChannelCSS = (newCSS: string) => {
+  // If no channel CSS element found in DOM try to create it
+  const chanCSS = document.querySelector<HTMLStyleElement>("#chancss");
+  if (!chanCSS) {
+    setChannelCSS(newCSS);
+
+    return;
+  }
+
+  // Only apply if new CSS has changes
+  const currentCSS = chanCSS.textContent;
+  const isUnique = currentCSS !== newCSS;
+  if (!isUnique) {
+    return;
+  }
+
+  // Remove old channel CSS element from DOM
+  chanCSS.remove();
+  setChannelCSS(newCSS);
+};
+
+const overrideCallbacks = () => {
+  window.Callbacks.channelCSSJS = ({ css, js }) => {
+    if (css) {
+      overrideChannelCSS(css);
+    }
+
+    if (js) {
+      overrideChannelJS(js);
+    }
+  };
+};
+
+const overrideFavicon = () => {
+  const url = new URL("dist/favicon.ico", window.BASE_URL);
+  const faviconElement = document.createElement("link");
+
+  faviconElement.href = url.toString();
+  faviconElement.type = "image/x-icon";
+  faviconElement.rel = "shortcut icon";
+
+  document.head.append(faviconElement);
+};
+
+const overrideStyles = async () => {
+  const stylesNotification = legacyChatInfo("Loading styles...");
+
+  await injectMainStylesheet();
+  removeLegacyStylesheets();
+
+  if (stylesNotification) {
+    stylesNotification.remove();
+  }
+};
+
+export const initOverrides = async () => {
+  overrideCallbacks();
+  overrideFavicon();
+  await overrideStyles();
+};
