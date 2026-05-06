@@ -1,8 +1,7 @@
 const socketClient = window.socket;
-var is_array = Array.isArray, index_of = Array.prototype.indexOf, includes = Array.prototype.includes;
-Array.from, Object.keys, Object.defineProperty;
-var get_descriptor = Object.getOwnPropertyDescriptor, object_prototype = Object.prototype, array_prototype = Array.prototype, get_prototype_of = Object.getPrototypeOf;
-Object.isExtensible;
+var is_array = Array.isArray, index_of = Array.prototype.indexOf, includes = Array.prototype.includes, array_from = Array.from;
+Object.keys;
+var define_property = Object.defineProperty, get_descriptor = Object.getOwnPropertyDescriptor, object_prototype = Object.prototype, array_prototype = Array.prototype, get_prototype_of = Object.getPrototypeOf, is_extensible = Object.isExtensible;
 const noop = () => {};
 function run_all(c) {
 	for (var L = 0; L < c.length; L++) c[L]();
@@ -17,7 +16,7 @@ function deferred() {
 		reject: L
 	};
 }
-const CLEAN = 1024, DIRTY = 2048, MAYBE_DIRTY = 4096, INERT = 8192, REACTION_RAN = 32768, DESTROYING = 1 << 25, EFFECT_TRANSPARENT = 65536, WAS_MARKED = 65536, REACTION_IS_UPDATING = 1 << 21, ERROR_VALUE = 1 << 23, STATE_SYMBOL = Symbol("$state"), STALE_REACTION = new class extends Error {
+const CLEAN = 1024, DIRTY = 2048, MAYBE_DIRTY = 4096, INERT = 8192, REACTION_RAN = 32768, DESTROYING = 1 << 25, EFFECT_TRANSPARENT = 65536, EFFECT_PRESERVED = 1 << 19, WAS_MARKED = 65536, REACTION_IS_UPDATING = 1 << 21, ERROR_VALUE = 1 << 23, STATE_SYMBOL = Symbol("$state"), STALE_REACTION = new class extends Error {
 	name = "StaleReactionError";
 	message = "The reaction that called `getAbortSignal()` was re-run or destroyed";
 }();
@@ -40,13 +39,44 @@ function state_prototype_fixed() {
 function state_unsafe_mutation() {
 	throw Error("https://svelte.dev/e/state_unsafe_mutation");
 }
+function svelte_boundary_reset_onerror() {
+	throw Error("https://svelte.dev/e/svelte_boundary_reset_onerror");
+}
+let legacy_mode_flag = !1;
+function enable_legacy_mode_flag() {
+	legacy_mode_flag = !0;
+}
 const UNINITIALIZED = Symbol();
 let component_context = null;
 function set_component_context(c) {
 	component_context = c;
 }
+function push(c, L = !1, R) {
+	component_context = {
+		p: component_context,
+		i: !1,
+		c: null,
+		e: null,
+		s: c,
+		x: null,
+		r: active_effect,
+		l: legacy_mode_flag && !L ? {
+			s: null,
+			u: null,
+			$: []
+		} : null
+	};
+}
+function pop(c) {
+	var L = component_context, R = L.e;
+	if (R !== null) {
+		L.e = null;
+		for (var z of R) create_user_effect(z);
+	}
+	return c !== void 0 && (L.x = c), L.i = !0, component_context = L.p, c ?? {};
+}
 function is_runes() {
-	return !0;
+	return !legacy_mode_flag || component_context !== null && component_context.l === null;
 }
 var micro_tasks = [];
 function run_micro_tasks() {
@@ -68,18 +98,21 @@ function flush_tasks() {
 function derived_inert() {
 	console.warn("https://svelte.dev/e/derived_inert");
 }
+function svelte_boundary_reset_noop() {
+	console.warn("https://svelte.dev/e/svelte_boundary_reset_noop");
+}
 function proxy(c) {
 	if (typeof c != "object" || !c || STATE_SYMBOL in c) return c;
 	let R = get_prototype_of(c);
 	if (R !== object_prototype && R !== array_prototype) return c;
-	var z = /* @__PURE__ */ new Map(), W = is_array(c), G = /* @__PURE__ */ state(0), K = null, q = update_version, J = (c) => {
+	var z = /* @__PURE__ */ new Map(), B = is_array(c), V = /* @__PURE__ */ state(0), K = null, q = update_version, J = (c) => {
 		if (update_version === q) return c();
 		var L = active_reaction, R = update_version;
 		set_active_reaction(null), set_update_version(q);
 		var z = c();
 		return set_active_reaction(L), set_update_version(R), z;
 	};
-	return W && z.set("length", /* @__PURE__ */ state(c.length, K)), new Proxy(c, {
+	return B && z.set("length", /* @__PURE__ */ state(c.length, K)), new Proxy(c, {
 		defineProperty(c, L, R) {
 			(!("value" in R) || R.configurable === !1 || R.enumerable === !1 || R.writable === !1) && state_descriptors_fixed();
 			var B = z.get(L);
@@ -93,19 +126,19 @@ function proxy(c) {
 			if (R === void 0) {
 				if (L in c) {
 					let c = J(() => /* @__PURE__ */ state(UNINITIALIZED, K));
-					z.set(L, c), increment(G);
+					z.set(L, c), increment(V);
 				}
-			} else set(R, UNINITIALIZED), increment(G);
+			} else set(R, UNINITIALIZED), increment(V);
 			return !0;
 		},
-		get(L, R, V) {
+		get(L, R, B) {
 			if (R === STATE_SYMBOL) return c;
-			var H = z.get(R), U = R in L;
-			if (H === void 0 && (!U || get_descriptor(L, R)?.writable) && (H = J(() => /* @__PURE__ */ state(proxy(U ? L[R] : UNINITIALIZED), K)), z.set(R, H)), H !== void 0) {
-				var W = get(H);
+			var V = z.get(R), U = R in L;
+			if (V === void 0 && (!U || get_descriptor(L, R)?.writable) && (V = J(() => /* @__PURE__ */ state(proxy(U ? L[R] : UNINITIALIZED), K)), z.set(R, V)), V !== void 0) {
+				var W = get(V);
 				return W === UNINITIALIZED ? void 0 : W;
 			}
-			return Reflect.get(L, R, V);
+			return Reflect.get(L, R, B);
 		},
 		getOwnPropertyDescriptor(c, L) {
 			var R = Reflect.getOwnPropertyDescriptor(c, L);
@@ -125,33 +158,33 @@ function proxy(c) {
 		},
 		has(c, L) {
 			if (L === STATE_SYMBOL) return !0;
-			var R = z.get(L), V = R !== void 0 && R.v !== UNINITIALIZED || Reflect.has(c, L);
-			return (R !== void 0 || active_effect !== null && (!V || get_descriptor(c, L)?.writable)) && (R === void 0 && (R = J(() => /* @__PURE__ */ state(V ? proxy(c[L]) : UNINITIALIZED, K)), z.set(L, R)), get(R) === UNINITIALIZED) ? !1 : V;
+			var R = z.get(L), B = R !== void 0 && R.v !== UNINITIALIZED || Reflect.has(c, L);
+			return (R !== void 0 || active_effect !== null && (!B || get_descriptor(c, L)?.writable)) && (R === void 0 && (R = J(() => /* @__PURE__ */ state(B ? proxy(c[L]) : UNINITIALIZED, K)), z.set(L, R)), get(R) === UNINITIALIZED) ? !1 : B;
 		},
-		set(c, L, R, V) {
-			var H = z.get(L), U = L in c;
-			if (W && L === "length") for (var q = R; q < H.v; q += 1) {
+		set(c, L, R, U) {
+			var W = z.get(L), G = L in c;
+			if (B && L === "length") for (var q = R; q < W.v; q += 1) {
 				var Y = z.get(q + "");
 				Y === void 0 ? q in c && (Y = J(() => /* @__PURE__ */ state(UNINITIALIZED, K)), z.set(q + "", Y)) : set(Y, UNINITIALIZED);
 			}
-			if (H === void 0) (!U || get_descriptor(c, L)?.writable) && (H = J(() => /* @__PURE__ */ state(void 0, K)), set(H, proxy(R)), z.set(L, H));
+			if (W === void 0) (!G || get_descriptor(c, L)?.writable) && (W = J(() => /* @__PURE__ */ state(void 0, K)), set(W, proxy(R)), z.set(L, W));
 			else {
-				U = H.v !== UNINITIALIZED;
+				G = W.v !== UNINITIALIZED;
 				var X = J(() => proxy(R));
-				set(H, X);
+				set(W, X);
 			}
 			var Z = Reflect.getOwnPropertyDescriptor(c, L);
-			if (Z?.set && Z.set.call(V, R), !U) {
-				if (W && typeof L == "string") {
+			if (Z?.set && Z.set.call(U, R), !G) {
+				if (B && typeof L == "string") {
 					var Q = z.get("length"), $ = Number(L);
 					Number.isInteger($) && $ >= Q.v && set(Q, $ + 1);
 				}
-				increment(G);
+				increment(V);
 			}
 			return !0;
 		},
 		ownKeys(c) {
-			get(G);
+			get(V);
 			var L = Reflect.ownKeys(c).filter((c) => {
 				var L = z.get(c);
 				return L === void 0 || L.v !== UNINITIALIZED;
@@ -164,10 +197,28 @@ function proxy(c) {
 		}
 	});
 }
-var next_sibling_getter;
+var $window, is_firefox, first_child_getter, next_sibling_getter;
+function init_operations() {
+	if ($window === void 0) {
+		$window = window, document, is_firefox = /Firefox/.test(navigator.userAgent);
+		var c = Element.prototype, L = Node.prototype, R = Text.prototype;
+		first_child_getter = get_descriptor(L, "firstChild").get, next_sibling_getter = get_descriptor(L, "nextSibling").get, is_extensible(c) && (c.__click = void 0, c.__className = void 0, c.__attributes = null, c.__style = void 0, c.__e = void 0), is_extensible(R) && (R.__t = void 0);
+	}
+}
+function create_text(c = "") {
+	return document.createTextNode(c);
+}
+/* @__NO_SIDE_EFFECTS__ */
+function get_first_child(c) {
+	return first_child_getter.call(c);
+}
 /* @__NO_SIDE_EFFECTS__ */
 function get_next_sibling(c) {
 	return next_sibling_getter.call(c);
+}
+function create_element(c, L, R) {
+	let z = R ? { is: R } : void 0;
+	return document.createElementNS(L ?? "http://www.w3.org/1999/xhtml", c, z);
 }
 function handle_error(c) {
 	var L = active_effect;
@@ -220,9 +271,9 @@ function writable(c, L = noop) {
 		B(L(c));
 	}
 	function H(H, U = noop) {
-		let G = [H, U];
-		return z.add(G), z.size === 1 && (R = L(B, V) || noop), H(c), () => {
-			z.delete(G), z.size === 0 && R && (R(), R = null);
+		let W = [H, U];
+		return z.add(W), z.size === 1 && (R = L(B, V) || noop), H(c), () => {
+			z.delete(W), z.size === 0 && R && (R(), R = null);
 		};
 	}
 	return {
@@ -505,6 +556,153 @@ function reset_all(c) {
 	set_signal_status(c, CLEAN);
 	for (var L = c.first; L !== null;) reset_all(L), L = L.next;
 }
+function createSubscriber(c) {
+	let L = 0, R = source(0), z;
+	return () => {
+		effect_tracking() && (get(R), render_effect(() => (L === 0 && (z = untrack(() => c(() => increment(R)))), L += 1, () => {
+			queue_micro_task(() => {
+				--L, L === 0 && (z?.(), z = void 0, increment(R));
+			});
+		})));
+	};
+}
+var flags = EFFECT_TRANSPARENT | EFFECT_PRESERVED;
+function boundary(c, L, R, z) {
+	new Boundary(c, L, R, z);
+}
+var Boundary = class {
+	parent;
+	is_pending = !1;
+	transform_error;
+	#e;
+	#t;
+	#n;
+	#r;
+	#i = null;
+	#a = null;
+	#o = null;
+	#s = null;
+	#c = 0;
+	#l = 0;
+	#u = !1;
+	#d = /* @__PURE__ */ new Set();
+	#f = /* @__PURE__ */ new Set();
+	#p = null;
+	#m = createSubscriber(() => (this.#p = source(this.#c), () => {
+		this.#p = null;
+	}));
+	constructor(c, L, R, z) {
+		this.#e = c, this.#t = L, this.#n = (c) => {
+			var L = active_effect;
+			L.b = this, L.f |= 128, R(c);
+		}, this.parent = active_effect.b, this.transform_error = z ?? this.parent?.transform_error ?? ((c) => c), this.#r = block(() => {
+			this.#h();
+		}, flags);
+	}
+	#h() {
+		try {
+			if (this.is_pending = this.has_pending_snippet(), this.#l = 0, this.#c = 0, this.#i = branch(() => {
+				this.#n(this.#e);
+			}), this.#l > 0) {
+				var c = this.#s = document.createDocumentFragment();
+				move_effect(this.#i, c);
+				let L = this.#t.pending;
+				this.#a = branch(() => L(this.#e));
+			} else this.#g(current_batch);
+		} catch (c) {
+			this.error(c);
+		}
+	}
+	#g(c) {
+		this.is_pending = !1, c.transfer_effects(this.#d, this.#f);
+	}
+	defer_effect(c) {
+		defer_effect(c, this.#d, this.#f);
+	}
+	is_rendered() {
+		return !this.is_pending && (!this.parent || this.parent.is_rendered());
+	}
+	has_pending_snippet() {
+		return !!this.#t.pending;
+	}
+	#_(c) {
+		var L = active_effect, R = active_reaction, z = component_context;
+		set_active_effect(this.#r), set_active_reaction(this.#r), set_component_context(this.#r.ctx);
+		try {
+			return Batch.ensure(), c();
+		} catch (c) {
+			return handle_error(c), null;
+		} finally {
+			set_active_effect(L), set_active_reaction(R), set_component_context(z);
+		}
+	}
+	#v(c, L) {
+		if (!this.has_pending_snippet()) {
+			this.parent && this.parent.#v(c, L);
+			return;
+		}
+		this.#l += c, this.#l === 0 && (this.#g(L), this.#a && pause_effect(this.#a, () => {
+			this.#a = null;
+		}), this.#s &&= (this.#e.before(this.#s), null));
+	}
+	update_pending_count(c, L) {
+		this.#v(c, L), this.#c += c, !(!this.#p || this.#u) && (this.#u = !0, queue_micro_task(() => {
+			this.#u = !1, this.#p && internal_set(this.#p, this.#c);
+		}));
+	}
+	get_effect_pending() {
+		return this.#m(), get(this.#p);
+	}
+	error(c) {
+		if (!this.#t.onerror && !this.#t.failed) throw c;
+		current_batch?.is_fork ? (this.#i && current_batch.skip_effect(this.#i), this.#a && current_batch.skip_effect(this.#a), this.#o && current_batch.skip_effect(this.#o), current_batch.on_fork_commit(() => {
+			this.#y(c);
+		})) : this.#y(c);
+	}
+	#y(c) {
+		this.#i &&= (destroy_effect(this.#i), null), this.#a &&= (destroy_effect(this.#a), null), this.#o &&= (destroy_effect(this.#o), null);
+		var L = this.#t.onerror;
+		let R = this.#t.failed;
+		var z = !1, B = !1;
+		let V = () => {
+			if (z) {
+				svelte_boundary_reset_noop();
+				return;
+			}
+			z = !0, B && svelte_boundary_reset_onerror(), this.#o !== null && pause_effect(this.#o, () => {
+				this.#o = null;
+			}), this.#_(() => {
+				this.#h();
+			});
+		}, H = (c) => {
+			try {
+				B = !0, L?.(c, V), B = !1;
+			} catch (c) {
+				invoke_error_boundary(c, this.#r && this.#r.parent);
+			}
+			R && (this.#o = this.#_(() => {
+				try {
+					return branch(() => {
+						var L = active_effect;
+						L.b = this, L.f |= 128, R(this.#e, () => c, () => V);
+					});
+				} catch (c) {
+					return invoke_error_boundary(c, this.#r.parent), null;
+				}
+			}));
+		};
+		queue_micro_task(() => {
+			var L;
+			try {
+				L = this.transform_error(c);
+			} catch (c) {
+				invoke_error_boundary(c, this.#r && this.#r.parent);
+				return;
+			}
+			typeof L == "object" && L && typeof L.then == "function" ? L.then(H, (c) => invoke_error_boundary(c, this.#r && this.#r.parent)) : H(L);
+		});
+	}
+};
 function destroy_derived_effects(c) {
 	var L = c.effects;
 	if (L !== null) {
@@ -751,8 +949,77 @@ function depends_on_old_values(c) {
 	for (let L of c.deps) if (old_values.has(L) || L.f & 2 && depends_on_old_values(L)) return !0;
 	return !1;
 }
+function untrack(c) {
+	var L = untracking;
+	try {
+		return untracking = !0, c();
+	} finally {
+		untracking = L;
+	}
+}
+function push_effect(c, L) {
+	var R = L.last;
+	R === null ? L.last = L.first = c : (R.next = c, c.prev = R, L.last = c);
+}
+function create_effect(c, L) {
+	var R = active_effect;
+	R !== null && R.f & 8192 && (c |= INERT);
+	var z = {
+		ctx: component_context,
+		deps: null,
+		nodes: null,
+		f: c | 2560,
+		first: null,
+		fn: L,
+		last: null,
+		next: null,
+		parent: R,
+		b: R && R.b,
+		prev: null,
+		teardown: null,
+		wv: 0,
+		ac: null
+	};
+	current_batch?.register_created_effect(z);
+	var B = z;
+	if (c & 4) collected_effects === null ? Batch.ensure().schedule(z) : collected_effects.push(z);
+	else if (L !== null) {
+		try {
+			update_effect(z);
+		} catch (c) {
+			throw destroy_effect(z), c;
+		}
+		B.deps === null && B.teardown === null && B.nodes === null && B.first === B.last && !(B.f & 524288) && (B = B.first, c & 16 && c & 65536 && B !== null && (B.f |= EFFECT_TRANSPARENT));
+	}
+	if (B !== null && (B.parent = R, R !== null && push_effect(B, R), active_reaction !== null && active_reaction.f & 2 && !(c & 64))) {
+		var V = active_reaction;
+		(V.effects ??= []).push(B);
+	}
+	return z;
+}
 function effect_tracking() {
 	return active_reaction !== null && !untracking;
+}
+function create_user_effect(c) {
+	return create_effect(1048580, c);
+}
+function component_root(c) {
+	Batch.ensure();
+	let L = create_effect(64 | EFFECT_PRESERVED, c);
+	return (c = {}) => new Promise((R) => {
+		c.outro ? pause_effect(L, () => {
+			destroy_effect(L), R(void 0);
+		}) : (destroy_effect(L), R(void 0));
+	});
+}
+function render_effect(c, L = 0) {
+	return create_effect(8 | L, c);
+}
+function block(c, L = 0) {
+	return create_effect(16 | L, c);
+}
+function branch(c) {
+	return create_effect(32 | EFFECT_PRESERVED, c);
 }
 function execute_effect_teardown(c) {
 	var L = c.teardown;
@@ -802,9 +1069,20 @@ function unlink_effect(c) {
 	var L = c.parent, R = c.prev, z = c.next;
 	R !== null && (R.next = z), z !== null && (z.prev = R), L !== null && (L.first === c && (L.first = z), L.last === c && (L.last = R));
 }
+function pause_effect(c, L, R = !0) {
+	var z = [];
+	pause_children(c, z, !0);
+	var B = () => {
+		R && destroy_effect(c), L && L();
+	}, V = z.length;
+	if (V > 0) {
+		var H = () => --V || B();
+		for (var U of z) U.out(H);
+	} else B();
+}
 function pause_children(c, L, R) {
 	if (!(c.f & 8192)) {
-		c.f ^= 8192;
+		c.f ^= INERT;
 		var z = c.nodes && c.nodes.t;
 		if (z !== null) for (let c of z) (c.is_global || R) && L.push(c);
 		for (var B = c.first; B !== null;) {
@@ -815,6 +1093,12 @@ function pause_children(c, L, R) {
 			}
 			B = V;
 		}
+	}
+}
+function move_effect(c, L) {
+	if (c.nodes) for (var R = c.nodes.start, z = c.nodes.end; R !== null;) {
+		var B = R === z ? null : /* @__PURE__ */ get_next_sibling(R);
+		L.append(R), R = B;
 	}
 }
 var defaultAppState = { version: "" };
@@ -1003,12 +1287,154 @@ var setChannelJS = (c) => {
 const initOverrides = async () => {
 	overrideCallbacks(), overrideFavicon(), await overrideStyles();
 };
-[.../* @__PURE__ */ "allowfullscreen.async.autofocus.autoplay.checked.controls.default.disabled.formnovalidate.indeterminate.inert.ismap.loop.multiple.muted.nomodule.novalidate.open.playsinline.readonly.required.reversed.seamless.selected.webkitdirectory.defer.disablepictureinpicture.disableremoteplayback".split(".")], globalThis?.window?.trustedTypes;
+[.../* @__PURE__ */ "allowfullscreen.async.autofocus.autoplay.checked.controls.default.disabled.formnovalidate.indeterminate.inert.ismap.loop.multiple.muted.nomodule.novalidate.open.playsinline.readonly.required.reversed.seamless.selected.webkitdirectory.defer.disablepictureinpicture.disableremoteplayback".split(".")];
+var PASSIVE_EVENTS = ["touchstart", "touchmove"];
+function is_passive_event(c) {
+	return PASSIVE_EVENTS.includes(c);
+}
+const event_symbol = Symbol("events"), all_registered_events = /* @__PURE__ */ new Set(), root_event_handles = /* @__PURE__ */ new Set();
+var last_propagated_event = null;
+function handle_event_propagation(c) {
+	var L = this, R = L.ownerDocument, z = c.type, B = c.composedPath?.() || [], H = B[0] || c.target;
+	last_propagated_event = c;
+	var U = 0, W = last_propagated_event === c && c[event_symbol];
+	if (W) {
+		var G = B.indexOf(W);
+		if (G !== -1 && (L === document || L === window)) {
+			c[event_symbol] = L;
+			return;
+		}
+		var K = B.indexOf(L);
+		if (K === -1) return;
+		G <= K && (U = G);
+	}
+	if (H = B[U] || c.target, H !== L) {
+		define_property(c, "currentTarget", {
+			configurable: !0,
+			get() {
+				return H || R;
+			}
+		});
+		var q = active_reaction, J = active_effect;
+		set_active_reaction(null), set_active_effect(null);
+		try {
+			for (var Y, X = []; H !== null;) {
+				var Z = H.assignedSlot || H.parentNode || H.host || null;
+				try {
+					var Q = H[event_symbol]?.[z];
+					Q != null && (!H.disabled || c.target === H) && Q.call(H, c);
+				} catch (c) {
+					Y ? X.push(c) : Y = c;
+				}
+				if (c.cancelBubble || Z === L || Z === null) break;
+				H = Z;
+			}
+			if (Y) {
+				for (let c of X) queueMicrotask(() => {
+					throw c;
+				});
+				throw Y;
+			}
+		} finally {
+			c[event_symbol] = L, delete c.currentTarget, set_active_reaction(q), set_active_effect(J);
+		}
+	}
+}
+var policy = globalThis?.window?.trustedTypes && /* @__PURE__ */ globalThis.window.trustedTypes.createPolicy("svelte-trusted-html", { createHTML: (c) => c });
+function create_trusted_html(c) {
+	return policy?.createHTML(c) ?? c;
+}
+function create_fragment_from_html(c) {
+	var L = create_element("template");
+	return L.innerHTML = create_trusted_html(c.replaceAll("<!>", "<!---->")), L.content;
+}
+function assign_nodes(c, L) {
+	var R = active_effect;
+	R.nodes === null && (R.nodes = {
+		start: c,
+		end: L,
+		a: null,
+		t: null
+	});
+}
+/* @__NO_SIDE_EFFECTS__ */
+function from_html(c, L) {
+	var R = (L & 1) != 0, z = (L & 2) != 0, B, V = !c.startsWith("<!>");
+	return () => {
+		B === void 0 && (B = create_fragment_from_html(V ? c : "<!>" + c), R || (B = /* @__PURE__ */ get_first_child(B)));
+		var L = z || is_firefox ? document.importNode(B, !0) : B.cloneNode(!0);
+		if (R) {
+			var H = /* @__PURE__ */ get_first_child(L), U = L.lastChild;
+			assign_nodes(H, U);
+		} else assign_nodes(L, L);
+		return L;
+	};
+}
+function append(c, L) {
+	c !== null && c.before(L);
+}
+function mount(c, L) {
+	return _mount(c, L);
+}
+var listeners = /* @__PURE__ */ new Map();
+function _mount(c, { target: L, anchor: R, props: z = {}, events: V, context: H, intro: U = !0, transformError: W }) {
+	init_operations();
+	var G = void 0, K = component_root(() => {
+		var U = R ?? L.appendChild(create_text());
+		boundary(U, { pending: () => {} }, (L) => {
+			push({});
+			var R = component_context;
+			H && (R.c = H), V && (z.$$events = V), G = c(L, z) || {}, pop();
+		}, W);
+		var K = /* @__PURE__ */ new Set(), q = (c) => {
+			for (var R = 0; R < c.length; R++) {
+				var z = c[R];
+				if (!K.has(z)) {
+					K.add(z);
+					var B = is_passive_event(z);
+					for (let c of [L, document]) {
+						var V = listeners.get(c);
+						V === void 0 && (V = /* @__PURE__ */ new Map(), listeners.set(c, V));
+						var H = V.get(z);
+						H === void 0 ? (c.addEventListener(z, handle_event_propagation, { passive: B }), V.set(z, 1)) : V.set(z, H + 1);
+					}
+				}
+			}
+		};
+		return q(array_from(all_registered_events)), root_event_handles.add(q), () => {
+			for (var c of K) for (let R of [L, document]) {
+				var z = listeners.get(R), B = z.get(c);
+				--B == 0 ? (R.removeEventListener(c, handle_event_propagation), z.delete(c), z.size === 0 && listeners.delete(R)) : z.set(c, B);
+			}
+			root_event_handles.delete(q), U !== R && U.parentNode?.removeChild(U);
+		};
+	});
+	return mounted_components.set(G, K), G;
+}
+var mounted_components = /* @__PURE__ */ new WeakMap();
+typeof window < "u" && ((window.__svelte ??= {}).v ??= /* @__PURE__ */ new Set()).add("5"), enable_legacy_mode_flag();
+var root = /* @__PURE__ */ from_html("<header>Header</header>");
+function Header(c) {
+	append(c, root());
+}
 var upgradeBody = () => {
 	document.body.classList.add("dark"), document.body.classList.add("override-theme");
+}, upgradeNavbar = async () => {
+	let c = document.getElementsByTagName("nav");
+	if (!c) throw Error("no nav element found");
+	if (c.length < 1) throw Error("no nav elements found");
+	let [L] = c;
+	if (!L) throw Error("empty nav collection");
+	let R = L.parentElement;
+	if (!R) throw Error("no nav parent found");
+	let z = R.childNodes.length > 1 && R.firstChild;
+	L.remove(), mount(Header, {
+		target: R,
+		anchor: z ? R.firstChild : void 0
+	});
 };
 const upgradeLegacyElements = async () => {
-	upgradeBody(), await tick();
+	upgradeBody(), await upgradeNavbar(), await tick();
 }, init = async () => {
 	let c = initStores();
 	try {
