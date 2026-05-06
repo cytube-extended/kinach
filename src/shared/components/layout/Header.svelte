@@ -6,8 +6,10 @@
 <script lang="ts">
   import { appStore } from "$stores/appStore";
   import { socketStore } from "$stores/socketStore";
+  import { Button } from "$lib/components/ui/button";
   import VersionBadge from "$components/common/VersionBadge.svelte";
   import ChannelAvatar from "$components/common/ChannelAvatar.svelte";
+  import { submitSocketConnect } from "$api/socket";
 </script>
 
 <header
@@ -19,5 +21,9 @@
 
   <div class="w-full flex flex-row items-center justify-between pr-6 py-5">
     <ChannelAvatar imgSrc={logoImgSrc} isConnected={$socketStore.connected} />
+
+    {#if !$socketStore.connected}
+      <Button onclick={submitSocketConnect}>Reconnect</Button>
+    {/if}
   </div>
 </header>
