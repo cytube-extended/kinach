@@ -6,11 +6,10 @@
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
-    "build": "vite build",
-    "watch": "vite build --watch",
-    "preview": "docker compose up -d",
-    "close": "docker compose down",
-    "dev": "docker compose up -d && vite build --watch"
+    "build": "vite build --mode production",
+    "build:dev": "vite build --mode development",
+    "dev": "docker compose up -d && vite build --mode development --watch",
+    "close": "docker compose down"
   },
   "devDependencies": {
     "@fontsource-variable/roboto": "^5.2.10",

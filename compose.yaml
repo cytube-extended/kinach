@@ -21,6 +21,7 @@ services:
     container_name: synchtube
     image: synchtube:latest
     restart: unless-stopped
+    stop_grace_period: 5s
     depends_on:
       - synchdb
     build:
@@ -39,7 +40,7 @@ services:
       - 8080:80
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - ./dist:/srv/gh/cytube-extended/kinach@main/dist:ro
+      - ./build:/srv/gh/cytube-extended/kinach@main/dist:ro
     networks:
       - synchnet
 
