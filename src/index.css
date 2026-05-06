@@ -46,7 +46,8 @@ body {
 }
 
 .dark {
-  --background: oklch(0.148 0.004 228.8);
+  /* --background: oklch(0.148 0.004 228.8); */
+  --background: oklch(0.21 0.01 277.88);
   --foreground: oklch(0.987 0.002 197.1);
   --card: oklch(0.218 0.008 223.9);
   --card-foreground: oklch(0.987 0.002 197.1);
@@ -131,5 +132,11 @@ body {
   }
   html {
     @apply font-sans;
+  }
+
+  /* Show pointer cursor on button hover */
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
   }
 }
