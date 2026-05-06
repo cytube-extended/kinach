@@ -5,17 +5,19 @@ import { overrideFavicon } from "./favicon";
 import { mountSvelteComponent } from "./mount";
 
 export const init = async () => {
+  const unsubStores = initStores();
+
   try {
-    initStores();
+    overrideCallbacks();
+    overrideFavicon();
+
+    injectThemeStylesheet();
+    injectMainStylesheet();
+
+    mountSvelteComponent();
   } catch (err) {
-    console.error(err);
+    unsubStores();
+
+    throw err;
   }
-
-  overrideCallbacks();
-  overrideFavicon();
-
-  injectThemeStylesheet();
-  injectMainStylesheet();
-
-  mountSvelteComponent();
 };
