@@ -16,18 +16,23 @@ export default defineConfig(({ mode }) => {
       cssCodeSplit: true,
 
       lib: {
+        formats: ["es"],
         entry: [
           "src/index.ts",
           "src/main.ts",
           "src/index.css",
           "src/theme.css",
         ],
-        formats: ["es"],
       },
     },
     resolve: {
       alias: {
+        $features: path.resolve("./src/features"),
         $lib: path.resolve("./src/lib"),
+        $api: path.resolve("./src/shared/api"),
+        $components: path.resolve("./src/shared/components"),
+        $stores: path.resolve("./src/shared/stores"),
+        $utils: path.resolve("./src/shared/utils"),
       },
     },
   };

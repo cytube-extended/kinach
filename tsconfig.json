@@ -13,8 +13,18 @@
     "verbatimModuleSyntax": true,
     "types": ["vite/client"],
     "paths": {
+      "$features": ["./src/features"],
+      "$features/*": ["./src/features/*"],
       "$lib": ["./src/lib"],
-      "$lib/*": ["./src/lib/*"]
+      "$lib/*": ["./src/lib/*"],
+      "$api": ["./src/shared/api"],
+      "$api/*": ["./src/shared/api/*"],
+      "$components": ["./src/shared/components"],
+      "$components/*": ["./src/shared/components/*"],
+      "$stores": ["./src/shared/stores"],
+      "$stores/*": ["./src/shared/stores/*"],
+      "$utils": ["./src/shared/utils"],
+      "$utils/*": ["./src/shared/utils/*"]
     }
   },
   "include": ["./src"]
