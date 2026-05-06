@@ -40,32 +40,17 @@ const loadESM = () => {
           }
         })
         .catch((err) => {
-          const modInitErrMsg = `failed to initialize entry module: ${err}`;
-
-          console.error(modInitErrMsg);
-
-          const modInitNotification = legacyChatNotification(
-            modInitErrMsg,
-            colorError,
-          );
-
-          if (modInitNotification) {
-            setTimeout(modInitNotification.remove, notificationTimeout);
-          }
+          throw new Error(`failed to initialize entry module: ${err}`);
         }),
     )
     .catch((err) => {
-      const modLoadErrMsg = `failed to load entry module: ${err}`;
+      const errMsg = `failed to load entry module: ${err}`;
 
-      console.error(modLoadErrMsg);
+      console.error(errMsg);
 
-      const modLoadNotification = legacyChatNotification(
-        modLoadErrMsg,
-        colorError,
-      );
-
-      if (modLoadNotification) {
-        setTimeout(modLoadNotification.remove, notificationTimeout);
+      const errNotification = legacyChatNotification(errMsg, colorError);
+      if (errNotification) {
+        setTimeout(errNotification.remove, notificationTimeout);
       }
     });
 };
