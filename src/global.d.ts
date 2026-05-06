@@ -5,7 +5,7 @@ export {};
 
 declare global {
   interface Window {
-    APP_VERSION: string;
+    VERSION: string;
     BASE_URL: string;
     CHANNEL: {
       css?: string;
