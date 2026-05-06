@@ -18,10 +18,10 @@ export default defineConfig(({ mode }) => {
       lib: {
         formats: ["es"],
         entry: [
-          "src/index.ts",
-          "src/main.ts",
-          "src/index.css",
-          "src/theme.css",
+          "./src/index.ts",
+          "./src/main.ts",
+          "./src/index.css",
+          "./src/theme.css",
         ],
       },
     },
