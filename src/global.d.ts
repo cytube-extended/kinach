@@ -1,3 +1,5 @@
+import type { SocketClient } from "$api/socket";
+
 export {};
 
 declare global {
@@ -12,6 +14,7 @@ declare global {
       ignore_channelcss?: boolean;
       ignore_channeljs?: boolean;
     };
+    socket: SocketClient;
     Callbacks: {
       channelCSSJS: (data: { css?: string; js?: string }) => void;
     };
