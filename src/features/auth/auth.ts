@@ -1,4 +1,4 @@
-import { get } from "svelte/store";
+import { get, writable } from "svelte/store";
 import { clientStore } from "$stores/clientStore";
 import { pageStore } from "$stores/pageStore";
 import { httpGet, httpPostUrlEncodedForm } from "$api/http";
@@ -7,6 +7,12 @@ import {
   submitSocketConnect,
   submitSocketDisconnect,
 } from "$api/socket";
+
+export type AuthState = {
+  status: boolean;
+  username: string;
+  password?: string;
+};
 
 type LoginHTTPData = {
   _csrf: string;
@@ -40,6 +46,34 @@ type LoginOutputSocketData =
 
 type RankOutputSocketEvent = "rank";
 type RankOutputSocketData = number;
+
+const defaultAuthState: AuthState = {
+  status: false,
+  username: "",
+};
+
+const createAuthStore = (authStateOverrides?: Partial<AuthState>) => {
+  const initialAuthState = {
+    ...defaultAuthState,
+    ...authStateOverrides,
+  };
+
+  const { subscribe, set, update } = writable<AuthState>(initialAuthState);
+
+  return {
+    subscribe,
+    set,
+    init: (state: AuthState) => set(state),
+    updateStatus: (status: boolean) =>
+      update((state) => ({ ...state, status })),
+    resetStatus: () =>
+      update((state) => ({ ...state, status: defaultAuthState.status })),
+    updateUsername: (username: string) =>
+      update((state) => ({ ...state, username })),
+    resetUsername: () =>
+      update((state) => ({ ...state, username: defaultAuthState.username })),
+  };
+};
 
 const submitSocketLogin = async (data: LoginInputSocketData): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -138,3 +172,5 @@ export const logout = async () => {
     await submitSocketConnect();
   }
 };
+
+export const authStore = createAuthStore();

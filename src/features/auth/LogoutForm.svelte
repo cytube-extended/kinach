@@ -4,10 +4,10 @@
   import { Label } from "$lib/components/ui/label";
   import { cn } from "$lib/utils";
   import { clientStore } from "$stores/clientStore";
-  import { logout } from "./auth";
+  import { authStore, logout } from "./auth";
   import AuthAvatar from "./AuthAvatar.svelte";
 
-  let isSubmitting = $state(false);
+  let isSubmitting = $derived($authStore.status);
   let isUser = $derived($clientStore.rank > 0);
 
   const handleSubmit = async (event: SubmitEvent) => {
@@ -17,7 +17,7 @@
     }
 
     try {
-      isSubmitting = true;
+      $authStore.status = true;
 
       await new Promise((resolve) => setTimeout(resolve, 500));
       await logout();
@@ -25,7 +25,9 @@
       // TODO: Show alert?
       console.error(err);
     } finally {
-      isSubmitting = false;
+      $authStore.status = false;
+      $authStore.username = "";
+      $authStore.password = undefined;
     }
   };
 </script>

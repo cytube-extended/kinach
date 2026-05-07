@@ -22,13 +22,13 @@
   import { Button } from "$lib/components/ui/button";
   import { Field, Group } from "$lib/components/ui/field";
   import { Input } from "$lib/components/ui/input";
-  import { login } from "./auth";
+  import { authStore, login } from "./auth";
   import AuthAvatar from "./AuthAvatar.svelte";
   import { cn } from "$lib/utils";
 
-  let isSubmitting = $state(false);
+  let isSubmitting = $derived($authStore.status);
 
-  let username = $state("");
+  let username = $derived($authStore.username);
   let usernameParseResult = $derived(safeParse(usernameSchema, username));
   let isValidUsername = $derived(usernameParseResult.success);
   let showUsernameError = $derived(username !== "" && !isValidUsername);
@@ -38,7 +38,7 @@
       : "",
   );
 
-  let password = $state("");
+  let password = $derived($authStore.password || "");
   let disablePassword = $derived(!isValidUsername || isSubmitting);
   let passwordParseResult = $derived(safeParse(passwordSchema, password));
   let isValidPassword = $derived(passwordParseResult.success);
@@ -60,7 +60,7 @@
     }
 
     try {
-      isSubmitting = true;
+      $authStore.status = true;
 
       await new Promise((resolve) => setTimeout(resolve, 500));
       await login(username, password);
@@ -68,7 +68,9 @@
       // TODO: Show alert?
       console.error(err);
     } finally {
-      isSubmitting = false;
+      $authStore.status = false;
+      $authStore.username = "";
+      $authStore.password = undefined;
     }
   };
 </script>
@@ -78,7 +80,7 @@
     <Group>
       <Field
         orientation="responsive"
-        class="flex flex-row items-center justify-end selection:bg-primary"
+        class="flex flex-row items-center justify-end"
       >
         <AuthAvatar
           isLoading={isSubmitting}
@@ -87,11 +89,10 @@
         />
         <Input
           required
-          id="login-username-input"
           type="text"
           autocomplete="name"
           placeholder="Username"
-          bind:value={username}
+          bind:value={$authStore.username}
           aria-invalid={showUsernameError}
           title={showUsernameError ? usernameError : ""}
           disabled={isSubmitting}
@@ -104,7 +105,7 @@
           type="password"
           autocomplete="current-password"
           placeholder="Password"
-          bind:value={password}
+          bind:value={$authStore.password}
           aria-invalid={showPasswordError}
           title={showPasswordError ? passwordError : ""}
           disabled={disablePassword}
