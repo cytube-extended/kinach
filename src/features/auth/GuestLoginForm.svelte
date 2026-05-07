@@ -44,7 +44,7 @@
       <Button
         type="submit"
         class="flex-2 rounded-none border-none"
-        disabled={$authStore.username === ""}
+        disabled={username === ""}
       >
         Guest Login
       </Button>
