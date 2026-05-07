@@ -41,7 +41,11 @@
       orientation="horizontal"
       class="flex flex-row items-start justify-start gap-0"
     >
-      <Button type="submit" class="flex-2 rounded-none border-none">
+      <Button
+        type="submit"
+        class="flex-2 rounded-none border-none"
+        disabled={$authStore.username === ""}
+      >
         Guest Login
       </Button>
 
