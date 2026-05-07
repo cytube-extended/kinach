@@ -127,6 +127,8 @@
   }
   html {
     @apply font-sans;
+
+    @apply selection:bg-primary;
   }
 
   /* Show pointer cursor on button hover */
