@@ -1,5 +1,13 @@
 import { mount, tick } from "svelte";
 import Header from "$components/layout/Header.svelte";
+import Main from "$components/layout/Main.svelte";
+
+const removeLegacyWrap = () => {
+  const wrap = document.getElementById("wrap");
+  if (wrap) {
+    wrap.remove();
+  }
+};
 
 const removeLegacyModals = () => {
   const useroptions = document.getElementById("useroptions");
@@ -23,45 +31,39 @@ const removeLegacyModals = () => {
   }
 };
 
-const upgradeBody = () => {
-  document.body.classList.add("dark");
-  document.body.classList.add("override-theme");
+const removeLegacyFooter = () => {
+  const footer = document.getElementById("footer");
+  if (footer) {
+    footer.remove();
+  }
 };
 
-const upgradeNavbar = async () => {
-  const navCol = document.getElementsByTagName("nav");
-  if (!navCol) {
-    throw new Error("no nav element found");
-  }
+const upgradeBody = () => {
+  document.body.className = `dark override-theme min-h-screen flex flex-col`;
+};
 
-  if (navCol.length < 1) {
-    throw new Error("no nav elements found");
-  }
-
-  const [navEl] = navCol;
-  if (!navEl) {
-    throw new Error("empty nav collection");
-  }
-
-  const navParent = navEl.parentElement;
-  if (!navParent) {
-    throw new Error("no nav parent found");
-  }
-
-  const toPrepend = navParent.childNodes.length > 1 && navParent.firstChild;
-
-  navEl.remove();
+const addHeader = async () => {
   mount(Header, {
-    target: navParent,
-    anchor: toPrepend ? navParent.firstChild : undefined,
+    target: document.body,
+    anchor: document.body.firstChild ? document.body.firstChild : undefined,
+  });
+};
+
+const addMain = async () => {
+  mount(Main, {
+    target: document.body,
+    anchor: document.body.firstChild ? document.body.firstChild : undefined,
   });
 };
 
 export const upgradeLegacyElements = async () => {
+  removeLegacyWrap();
   removeLegacyModals();
+  removeLegacyFooter();
 
   upgradeBody();
-  await upgradeNavbar();
+  await addMain();
+  await addHeader();
 
   await tick();
 };
