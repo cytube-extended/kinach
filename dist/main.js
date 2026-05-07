@@ -8190,14 +8190,21 @@ function GuestLoginForm(t, i) {
 				class: "flex flex-row items-start justify-start gap-0",
 				children: (t, i) => {
 					var o = root_2(), s = first_child(o);
-					Button(s, {
-						type: "submit",
-						class: "flex-2 rounded-none border-none",
-						children: (t, i) => {
-							next(), append(t, text("Guest Login"));
-						},
-						$$slots: { default: !0 }
-					}), Input(sibling(s, 2), {
+					{
+						let t = /* @__PURE__ */ user_derived(() => get$1(c) === "");
+						Button(s, {
+							type: "submit",
+							class: "flex-2 rounded-none border-none",
+							get disabled() {
+								return get$1(t);
+							},
+							children: (t, i) => {
+								next(), append(t, text("Guest Login"));
+							},
+							$$slots: { default: !0 }
+						});
+					}
+					Input(sibling(s, 2), {
 						required: !0,
 						class: "flex-8 rounded-none border-none",
 						type: "text",
@@ -8301,7 +8308,7 @@ function CytubeFluidLayout(t, i) {
 		$$slots: { default: !0 }
 	}), pop(), s();
 }
-var root = /* @__PURE__ */ from_html("<main class=\"flex flex-col flex-1 selection:bg-primary\"><!></main>");
+var root = /* @__PURE__ */ from_html("<main class=\"flex flex-col flex-1\"><!></main>");
 function Main(t) {
 	var i = root();
 	CytubeFluidLayout(child(i), {}), reset(i), append(t, i);
