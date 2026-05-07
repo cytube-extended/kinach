@@ -24,6 +24,7 @@
   import { Input } from "$lib/components/ui/input";
   import { login } from "./auth";
   import AuthAvatar from "./AuthAvatar.svelte";
+  import { cn } from "$lib/utils";
 
   let isSubmitting = $state(false);
 
@@ -94,6 +95,9 @@
           aria-invalid={showUsernameError}
           title={showUsernameError ? usernameError : ""}
           disabled={isSubmitting}
+          class={cn({
+            "md:cursor-not-allowed": isSubmitting,
+          })}
         />
         <Input
           name="password"
@@ -104,8 +108,19 @@
           aria-invalid={showPasswordError}
           title={showPasswordError ? passwordError : ""}
           disabled={disablePassword}
+          class={cn({
+            "md:cursor-not-allowed": disablePassword,
+          })}
         />
-        <Button type="submit" disabled={disableSubmit}>Login</Button>
+        <Button
+          type="submit"
+          disabled={disableSubmit}
+          class={cn({
+            "md:cursor-not-allowed": disableSubmit,
+          })}
+        >
+          Login
+        </Button>
       </Field>
     </Group>
   </form>

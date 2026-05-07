@@ -2,6 +2,7 @@
   import { Button } from "$lib/components/ui/button";
   import { Field, Group } from "$lib/components/ui/field";
   import { Label } from "$lib/components/ui/label";
+  import { cn } from "$lib/utils";
   import { clientStore } from "$stores/clientStore";
   import { logout } from "./auth";
   import AuthAvatar from "./AuthAvatar.svelte";
@@ -40,7 +41,15 @@
         <Label class="flex-none w-auto">
           {$clientStore.name}
         </Label>
-        <Button type="submit" disabled={isSubmitting}>Logout</Button>
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          class={cn({
+            "md:cursor-not-allowed": isSubmitting,
+          })}
+        >
+          Logout
+        </Button>
       </Field>
     </Group>
   </form>
