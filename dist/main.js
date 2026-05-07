@@ -485,6 +485,7 @@ function get(t) {
 	let i;
 	return subscribe_to_store(t, (t) => i = t)(), i;
 }
+let legacy_is_updating_store = !1;
 var is_store_binding = !1, IS_UNMOUNTED = Symbol();
 function store_get(t, i, a) {
 	let o = a[i] ??= {
@@ -513,6 +514,17 @@ function setup_stores() {
 		});
 	}
 	return [t, i];
+}
+function update_with_flag(t, i) {
+	legacy_is_updating_store = !0;
+	try {
+		t.set(i);
+	} finally {
+		legacy_is_updating_store = !1;
+	}
+}
+function store_mutate(t, i, a) {
+	return update_with_flag(t, a), i;
 }
 function capture_store_binding(t) {
 	var i = is_store_binding;
@@ -716,7 +728,7 @@ var flush_count = 0, uid = 1, Batch = class t {
 		for (var i = t; i.parent !== null;) {
 			i = i.parent;
 			var a = i.f;
-			if (collected_effects !== null && i === active_effect && (active_reaction === null || !(active_reaction.f & 2))) return;
+			if (collected_effects !== null && i === active_effect && (active_reaction === null || !(active_reaction.f & 2)) && !legacy_is_updating_store) return;
 			if (a & 96) {
 				if (!(a & 1024)) return;
 				i.f ^= CLEAN;
@@ -4737,7 +4749,7 @@ const buttonVariants = tv$1({
 		size: "default"
 	}
 });
-var root_1$6 = /* @__PURE__ */ from_html("<a><!></a>"), root_2$12 = /* @__PURE__ */ from_html("<button><!></button>");
+var root_1$6 = /* @__PURE__ */ from_html("<a><!></a>"), root_2$13 = /* @__PURE__ */ from_html("<button><!></button>");
 function Button(t, i) {
 	push(i, !0);
 	let a = prop(i, "variant", 3, "default"), o = prop(i, "size", 3, "default"), s = prop(i, "ref", 15, null), c = prop(i, "href", 3, void 0), l = prop(i, "type", 3, "button"), u = /* @__PURE__ */ rest_props(i, [
@@ -4768,7 +4780,7 @@ function Button(t, i) {
 			size: o()
 		}), i.class)]), snippet(child(l), () => i.children ?? noop$1), reset(l), bind_this(l, (t) => s(t), () => s()), append(t, l);
 	}, m = (t) => {
-		var c = root_2$12();
+		var c = root_2$13();
 		attribute_effect(c, (t) => ({
 			"data-slot": "button",
 			class: t,
@@ -4784,10 +4796,10 @@ function Button(t, i) {
 		c() ? t(p) : t(m, -1);
 	}), append(t, d), pop();
 }
-var root$17 = /* @__PURE__ */ from_html("<div class=\"relative w-15 h-15 shrink-0 overflow-hidden\"><div class=\"absolute top-[18%] left-[-75%] w-[250%] py-[0.25em] pr-[1.5em] -rotate-45 bg-primary text-white text-[0.6rem] font-bold text-center shadow-md leading-none pointer-events-none\"> </div></div>");
+var root$18 = /* @__PURE__ */ from_html("<div class=\"relative w-15 h-15 shrink-0 overflow-hidden\"><div class=\"absolute top-[18%] left-[-75%] w-[250%] py-[0.25em] pr-[1.5em] -rotate-45 bg-primary text-white text-[0.6rem] font-bold text-center shadow-md leading-none pointer-events-none\"> </div></div>");
 function VersionBadge(t, i) {
 	let a = prop(i, "version", 3, "main");
-	var o = root$17(), s = child(o), c = child(s, !0);
+	var o = root$18(), s = child(o), c = child(s, !0);
 	reset(s), reset(o), template_effect(() => set_text(c, a())), append(t, o);
 }
 function isObject$1(t) {
@@ -5413,7 +5425,7 @@ var avatarAttrs = createBitsAttrs({
 	set props(t) {
 		set(this.#t, t);
 	}
-}, root_2$11 = /* @__PURE__ */ from_html("<div><!></div>");
+}, root_2$12 = /* @__PURE__ */ from_html("<div><!></div>");
 function Avatar$1(t, i) {
 	let a = props_id();
 	push(i, !0);
@@ -5440,14 +5452,14 @@ function Avatar$1(t, i) {
 		var a = comment();
 		snippet(first_child(a), () => i.child, () => ({ props: get$1(f) })), append(t, a);
 	}, g = (t) => {
-		var a = root_2$11();
+		var a = root_2$12();
 		attribute_effect(a, () => ({ ...get$1(f) })), snippet(child(a), () => i.children ?? noop$1), reset(a), append(t, a);
 	};
 	if_block(m, (t) => {
 		i.child ? t(h) : t(g, -1);
 	}), append(t, p), pop();
 }
-var root_2$10 = /* @__PURE__ */ from_html("<img/>");
+var root_2$11 = /* @__PURE__ */ from_html("<img/>");
 function Avatar_image$1(t, i) {
 	let a = props_id();
 	push(i, !0);
@@ -5472,7 +5484,7 @@ function Avatar_image$1(t, i) {
 		var a = comment();
 		snippet(first_child(a), () => i.child, () => ({ props: get$1(f) })), append(t, a);
 	}, g = (t) => {
-		var a = root_2$10();
+		var a = root_2$11();
 		attribute_effect(a, () => ({
 			...get$1(f),
 			src: i.src
@@ -5482,7 +5494,7 @@ function Avatar_image$1(t, i) {
 		i.child ? t(h) : t(g, -1);
 	}), append(t, p), pop();
 }
-var root_2$9 = /* @__PURE__ */ from_html("<span><!></span>");
+var root_2$10 = /* @__PURE__ */ from_html("<span><!></span>");
 function Avatar_fallback$1(t, i) {
 	let a = props_id();
 	push(i, !0);
@@ -5502,7 +5514,7 @@ function Avatar_fallback$1(t, i) {
 		var a = comment();
 		snippet(first_child(a), () => i.child, () => ({ props: get$1(u) })), append(t, a);
 	}, m = (t) => {
-		var a = root_2$9();
+		var a = root_2$10();
 		attribute_effect(a, () => ({ ...get$1(u) })), snippet(child(a), () => i.children ?? noop$1), reset(a), append(t, a);
 	};
 	if_block(f, (t) => {
@@ -5536,7 +5548,7 @@ var labelAttrs = createBitsAttrs({
 	set props(t) {
 		set(this.#e, t);
 	}
-}, root_2$8 = /* @__PURE__ */ from_html("<label><!></label>");
+}, root_2$9 = /* @__PURE__ */ from_html("<label><!></label>");
 function Label$1(t, i) {
 	let a = props_id();
 	push(i, !0);
@@ -5557,7 +5569,7 @@ function Label$1(t, i) {
 		var a = comment();
 		snippet(first_child(a), () => i.child, () => ({ props: get$1(u) })), append(t, a);
 	}, m = (t) => {
-		var a = root_2$8();
+		var a = root_2$9();
 		attribute_effect(a, () => ({
 			...get$1(u),
 			for: i.for
@@ -5668,7 +5680,7 @@ function Avatar_fallback(t, i) {
 	}
 	append(t, s), pop();
 }
-var root$16 = /* @__PURE__ */ from_html("<span><!></span>");
+var root$17 = /* @__PURE__ */ from_html("<span><!></span>");
 function Avatar_badge(t, i) {
 	push(i, !0);
 	let a = prop(i, "ref", 15, null), o = /* @__PURE__ */ rest_props(i, [
@@ -5679,7 +5691,7 @@ function Avatar_badge(t, i) {
 		"class",
 		"children"
 	]);
-	var s = root$16();
+	var s = root$17();
 	attribute_effect(s, (t) => ({
 		"data-slot": "avatar-badge",
 		class: t,
@@ -5888,7 +5900,7 @@ const fieldVariants = tv$1({
 	} },
 	defaultVariants: { orientation: "vertical" }
 });
-var root$13 = /* @__PURE__ */ from_html("<div><!></div>");
+var root$14 = /* @__PURE__ */ from_html("<div><!></div>");
 function Field(t, i) {
 	push(i, !0);
 	let a = prop(i, "ref", 15, null), o = prop(i, "orientation", 3, "vertical"), s = /* @__PURE__ */ rest_props(i, [
@@ -5900,7 +5912,7 @@ function Field(t, i) {
 		"orientation",
 		"children"
 	]);
-	var c = root$13();
+	var c = root$14();
 	attribute_effect(c, (t) => ({
 		role: "group",
 		"data-slot": "field",
@@ -5909,7 +5921,7 @@ function Field(t, i) {
 		...s
 	}), [() => cn(fieldVariants({ orientation: o() }), i.class)]), snippet(child(c), () => i.children ?? noop$1), reset(c), bind_this(c, (t) => a(t), () => a()), append(t, c), pop();
 }
-var root$10 = /* @__PURE__ */ from_html("<div><!></div>");
+var root$11 = /* @__PURE__ */ from_html("<div><!></div>");
 function Field_group(t, i) {
 	push(i, !0);
 	let a = prop(i, "ref", 15, null), o = /* @__PURE__ */ rest_props(i, [
@@ -5920,7 +5932,7 @@ function Field_group(t, i) {
 		"class",
 		"children"
 	]);
-	var s = root$10();
+	var s = root$11();
 	attribute_effect(s, (t) => ({
 		"data-slot": "field-group",
 		class: t,
@@ -5957,7 +5969,7 @@ function Label(t, i) {
 	}
 	append(t, s), pop();
 }
-var root_1$2 = /* @__PURE__ */ from_html("<input/>"), root_2$7 = /* @__PURE__ */ from_html("<input/>");
+var root_1$2 = /* @__PURE__ */ from_html("<input/>"), root_2$8 = /* @__PURE__ */ from_html("<input/>");
 function Input(t, i) {
 	push(i, !0);
 	let a = prop(i, "ref", 15, null), o = prop(i, "value", 15), s = prop(i, "files", 15), c = prop(i, "data-slot", 3, "input"), l = /* @__PURE__ */ rest_props(i, [
@@ -5980,7 +5992,7 @@ function Input(t, i) {
 			...l
 		}), [() => cn("dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 disabled:bg-input/50 dark:disabled:bg-input/80 h-8 rounded-lg border bg-transparent px-2.5 py-1 text-base transition-colors file:h-6 file:text-sm file:font-medium focus-visible:ring-3 aria-invalid:ring-3 md:text-sm file:text-foreground placeholder:text-muted-foreground w-full min-w-0 outline-none file:inline-flex file:border-0 file:bg-transparent disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50", i.class)], void 0, void 0, void 0, !0), bind_this(u, (t) => a(t), () => a()), bind_files(u, s), bind_value(u, o), append(t, u);
 	}, p = (t) => {
-		var s = root_2$7();
+		var s = root_2$8();
 		attribute_effect(s, (t) => ({
 			"data-slot": c(),
 			class: t,
@@ -5999,7 +6011,36 @@ const httpGet = async (t) => fetch(t), httpPostUrlEncodedForm = async (t, i) => 
 	headers: { "Content-Type": "application/x-www-form-urlencoded" },
 	body: i
 });
-var submitSocketLogin = async (t) => new Promise((i, o) => {
+var defaultAuthState = {
+	status: !1,
+	username: ""
+}, createAuthStore = (t) => {
+	let { subscribe: i, set: a, update: o } = writable({
+		...defaultAuthState,
+		...t
+	});
+	return {
+		subscribe: i,
+		set: a,
+		init: (t) => a(t),
+		updateStatus: (t) => o((i) => ({
+			...i,
+			status: t
+		})),
+		resetStatus: () => o((t) => ({
+			...t,
+			status: defaultAuthState.status
+		})),
+		updateUsername: (t) => o((i) => ({
+			...i,
+			username: t
+		})),
+		resetUsername: () => o((t) => ({
+			...t,
+			username: defaultAuthState.username
+		}))
+	};
+}, submitSocketLogin = async (t) => new Promise((i, o) => {
 	socketClient.once("login", (t) => {
 		if (t.success) {
 			i(t.name);
@@ -6039,7 +6080,7 @@ const login = async (i, o) => {
 	socketClient.connected && await submitSocketDisconnect();
 	let { csrf: o } = get(pageStore);
 	await submitHTTPLogout({ _csrf: o }), clientStore.resetName(), clientStore.resetLoggedIn(), clientStore.resetRank(), socketClient.disconnected && await submitSocketConnect();
-};
+}, authStore = createAuthStore();
 var linear = (t) => t;
 function fade(t, { delay: i = 0, duration: a = 400, easing: o = linear } = {}) {
 	let s = +getComputedStyle(t).opacity;
@@ -6083,7 +6124,7 @@ function createHugeiconSingleton(t, i) {
 		};
 	} };
 }
-var root$5 = /* @__PURE__ */ from_svg("<svg></svg>");
+var root$6 = /* @__PURE__ */ from_svg("<svg></svg>");
 function HugeiconsIcon(t, i) {
 	push(i, !0);
 	let a = prop(i, "size", 3, 24), o = prop(i, "absoluteStrokeWidth", 3, !1), s = prop(i, "color", 3, "currentColor"), c = prop(i, "showAlt", 3, !1), l = prop(i, "class", 3, ""), u = prop(i, "className", 3, ""), d = /* @__PURE__ */ rest_props(i, [
@@ -6115,7 +6156,7 @@ function HugeiconsIcon(t, i) {
 	}), user_effect(() => {
 		get$1(m) && p && get$1(h) && get$1(h).update(get$1(g));
 	});
-	var _ = root$5();
+	var _ = root$6();
 	attribute_effect(_, () => ({
 		xmlns: "http://www.w3.org/2000/svg",
 		width: a(),
@@ -6263,9 +6304,9 @@ var ht = [
 	strokeLinejoin: "round",
 	strokeWidth: "1.5",
 	key: "1"
-}]], root_1$1 = /* @__PURE__ */ from_html("<span><!></span>"), root_2$6 = /* @__PURE__ */ from_html("<span><!></span>"), root_3$1 = /* @__PURE__ */ from_html("<span><!></span>"), root_4$1 = /* @__PURE__ */ from_html("<span><!></span>"), root$4 = /* @__PURE__ */ from_html("<div><!></div>");
+}]], root_1$1 = /* @__PURE__ */ from_html("<span><!></span>"), root_2$7 = /* @__PURE__ */ from_html("<span><!></span>"), root_3$1 = /* @__PURE__ */ from_html("<span><!></span>"), root_4$1 = /* @__PURE__ */ from_html("<span><!></span>"), root$5 = /* @__PURE__ */ from_html("<div><!></div>");
 function AuthAvatar(t, i) {
-	var a = root$4(), o = child(a), s = (t) => {
+	var a = root$5(), o = child(a), s = (t) => {
 		var i = root_1$1();
 		HugeiconsIcon(child(i), {
 			get icon() {
@@ -6276,7 +6317,7 @@ function AuthAvatar(t, i) {
 			"aria-label": "Loading"
 		}), reset(i), transition(3, i, () => fade, () => ({ duration: 250 })), append(t, i);
 	}, c = (t) => {
-		var i = root_2$6();
+		var i = root_2$7();
 		HugeiconsIcon(child(i), {
 			get icon() {
 				return ht;
@@ -6304,31 +6345,31 @@ function AuthAvatar(t, i) {
 		i.isLoading ? t(s) : i.isAnon ? t(c, 1) : i.isGuest ? t(l, 2) : t(u, -1);
 	}), reset(a), append(t, a);
 }
-var usernameSchema = /* @__PURE__ */ pipe(/* @__PURE__ */ string(), /* @__PURE__ */ minLength(1, "Min 1 character"), /* @__PURE__ */ maxLength(20, "Max 20 characters"), /* @__PURE__ */ regex(/^[A-Za-zА-Яа-я0-9_-]+$/, "Only letters, numbers, -, or _")), passwordSchema = /* @__PURE__ */ pipe(/* @__PURE__ */ string(), /* @__PURE__ */ maxLength(100, "Max 100 characters")), root_2$5 = /* @__PURE__ */ from_html("<!> <!> <!> <!>", 1), root$3 = /* @__PURE__ */ from_html("<div class=\"w-full max-w-md ml-auto\"><form><!></form></div>");
+var usernameSchema = /* @__PURE__ */ pipe(/* @__PURE__ */ string(), /* @__PURE__ */ minLength(1, "Min 1 character"), /* @__PURE__ */ maxLength(20, "Max 20 characters"), /* @__PURE__ */ regex(/^[A-Za-zА-Яа-я0-9_-]+$/, "Only letters, numbers, -, or _")), passwordSchema = /* @__PURE__ */ pipe(/* @__PURE__ */ string(), /* @__PURE__ */ maxLength(100, "Max 100 characters")), root_2$6 = /* @__PURE__ */ from_html("<!> <!> <!> <!>", 1), root$4 = /* @__PURE__ */ from_html("<div class=\"w-full max-w-md ml-auto\"><form><!></form></div>");
 function LoginForm(t, i) {
 	push(i, !0);
-	let a = /* @__PURE__ */ state(!1), o = /* @__PURE__ */ state(""), s = /* @__PURE__ */ user_derived(() => /* @__PURE__ */ safeParse(usernameSchema, get$1(o))), c = /* @__PURE__ */ user_derived(() => get$1(s).success), l = /* @__PURE__ */ user_derived(() => get$1(o) !== "" && !get$1(c)), u = /* @__PURE__ */ user_derived(() => get$1(s).success ? "" : get$1(s).issues.map((t) => t.message).join(", ")), d = /* @__PURE__ */ state(""), f = /* @__PURE__ */ user_derived(() => !get$1(c) || get$1(a)), p = /* @__PURE__ */ user_derived(() => /* @__PURE__ */ safeParse(passwordSchema, get$1(d))), m = /* @__PURE__ */ user_derived(() => get$1(p).success), h = /* @__PURE__ */ user_derived(() => get$1(d) !== "" && !get$1(m)), g = /* @__PURE__ */ user_derived(() => get$1(p).success ? "" : get$1(p).issues.map((t) => t.message).join(", ")), _ = /* @__PURE__ */ user_derived(() => get$1(a) || !get$1(c) || get$1(c) && !get$1(m)), v = async (t) => {
-		if (t.preventDefault(), !get$1(_)) try {
-			set(a, !0), await new Promise((t) => setTimeout(t, 500)), await login(get$1(o), get$1(d));
+	let a = () => store_get(authStore, "$authStore", o), [o, s] = setup_stores(), c = /* @__PURE__ */ user_derived(() => a().status), l = /* @__PURE__ */ user_derived(() => a().username), u = /* @__PURE__ */ user_derived(() => /* @__PURE__ */ safeParse(usernameSchema, get$1(l))), d = /* @__PURE__ */ user_derived(() => get$1(u).success), f = /* @__PURE__ */ user_derived(() => get$1(l) !== "" && !get$1(d)), p = /* @__PURE__ */ user_derived(() => get$1(u).success ? "" : get$1(u).issues.map((t) => t.message).join(", ")), m = /* @__PURE__ */ user_derived(() => a().password || ""), h = /* @__PURE__ */ user_derived(() => !get$1(d) || get$1(c)), g = /* @__PURE__ */ user_derived(() => /* @__PURE__ */ safeParse(passwordSchema, get$1(m))), _ = /* @__PURE__ */ user_derived(() => get$1(g).success), v = /* @__PURE__ */ user_derived(() => get$1(m) !== "" && !get$1(_)), y = /* @__PURE__ */ user_derived(() => get$1(g).success ? "" : get$1(g).issues.map((t) => t.message).join(", ")), b = /* @__PURE__ */ user_derived(() => get$1(c) || !get$1(d) || get$1(d) && !get$1(_)), x = async (t) => {
+		if (t.preventDefault(), !get$1(b)) try {
+			store_mutate(authStore, untrack(a).status = !0, untrack(a)), await new Promise((t) => setTimeout(t, 500)), await login(get$1(l), get$1(m));
 		} catch (t) {
 			console.error(t);
 		} finally {
-			set(a, !1);
+			store_mutate(authStore, untrack(a).status = !1, untrack(a)), store_mutate(authStore, untrack(a).username = "", untrack(a)), store_mutate(authStore, untrack(a).password = void 0, untrack(a));
 		}
 	};
-	var y = root$3(), b = child(y);
-	Field_group(child(b), {
+	var S = root$4(), C = child(S);
+	Field_group(child(C), {
 		children: (t, i) => {
 			Field(t, {
 				orientation: "responsive",
-				class: "flex flex-row items-center justify-end selection:bg-primary",
+				class: "flex flex-row items-center justify-end",
 				children: (t, i) => {
-					var s = root_2$5(), c = first_child(s);
+					var o = root_2$6(), s = first_child(o);
 					{
-						let t = /* @__PURE__ */ user_derived(() => get$1(o) === "" && get$1(d) === ""), i = /* @__PURE__ */ user_derived(() => get$1(d) === "");
-						AuthAvatar(c, {
+						let t = /* @__PURE__ */ user_derived(() => get$1(l) === "" && get$1(m) === ""), i = /* @__PURE__ */ user_derived(() => get$1(m) === "");
+						AuthAvatar(s, {
 							get isLoading() {
-								return get$1(a);
+								return get$1(c);
 							},
 							get isAnon() {
 								return get$1(t);
@@ -6338,70 +6379,69 @@ function LoginForm(t, i) {
 							}
 						});
 					}
-					var p = sibling(c, 2);
+					var u = sibling(s, 2);
 					{
-						let t = /* @__PURE__ */ user_derived(() => get$1(l) ? get$1(u) : ""), i = /* @__PURE__ */ user_derived(() => cn({ "md:cursor-not-allowed": get$1(a) }));
-						Input(p, {
+						let t = /* @__PURE__ */ user_derived(() => get$1(f) ? get$1(p) : ""), i = /* @__PURE__ */ user_derived(() => cn({ "md:cursor-not-allowed": get$1(c) }));
+						Input(u, {
 							required: !0,
-							id: "login-username-input",
 							type: "text",
 							autocomplete: "name",
 							placeholder: "Username",
 							get "aria-invalid"() {
-								return get$1(l);
+								return get$1(f);
 							},
 							get title() {
 								return get$1(t);
 							},
 							get disabled() {
-								return get$1(a);
+								return get$1(c);
 							},
 							get class() {
 								return get$1(i);
 							},
 							get value() {
-								return get$1(o);
+								return a().username;
 							},
 							set value(t) {
-								set(o, t, !0);
+								store_mutate(authStore, untrack(a).username = t, untrack(a));
 							}
 						});
 					}
-					var m = sibling(p, 2);
+					var d = sibling(u, 2);
 					{
-						let t = /* @__PURE__ */ user_derived(() => get$1(h) ? get$1(g) : ""), i = /* @__PURE__ */ user_derived(() => cn({ "md:cursor-not-allowed": get$1(f) }));
-						Input(m, {
+						let t = /* @__PURE__ */ user_derived(() => get$1(v) ? get$1(y) : ""), i = /* @__PURE__ */ user_derived(() => cn({ "md:cursor-not-allowed": get$1(h) }));
+						Input(d, {
 							name: "password",
 							type: "password",
 							autocomplete: "current-password",
 							placeholder: "Password",
 							get "aria-invalid"() {
-								return get$1(h);
+								return get$1(v);
 							},
 							get title() {
 								return get$1(t);
 							},
 							get disabled() {
-								return get$1(f);
+								return get$1(h);
 							},
 							get class() {
 								return get$1(i);
 							},
 							get value() {
-								return get$1(d);
+								return a().password;
 							},
 							set value(t) {
-								set(d, t, !0);
+								store_mutate(authStore, untrack(a).password = t, untrack(a));
 							}
 						});
 					}
-					var v = sibling(m, 2);
+					var g = sibling(d, 2);
 					{
-						let t = /* @__PURE__ */ user_derived(() => cn({ "md:cursor-not-allowed": get$1(_) }));
-						Button(v, {
+						let t = /* @__PURE__ */ user_derived(() => cn({ "md:cursor-not-allowed": get$1(b) }));
+						Button(g, {
 							type: "submit",
 							get disabled() {
-								return get$1(_);
+								return get$1(b);
 							},
 							get class() {
 								return get$1(t);
@@ -6412,39 +6452,39 @@ function LoginForm(t, i) {
 							$$slots: { default: !0 }
 						});
 					}
-					append(t, s);
+					append(t, o);
 				},
 				$$slots: { default: !0 }
 			});
 		},
 		$$slots: { default: !0 }
-	}), reset(b), reset(y), event("submit", b, v), append(t, y), pop();
+	}), reset(C), reset(S), event("submit", C, x), append(t, S), pop(), s();
 }
-var root_2$4 = /* @__PURE__ */ from_html("<!> <!> <!>", 1), root$2 = /* @__PURE__ */ from_html("<div class=\"w-full max-w-md ml-auto\"><form><!></form></div>");
+var root_2$5 = /* @__PURE__ */ from_html("<!> <!> <!>", 1), root$3 = /* @__PURE__ */ from_html("<div class=\"w-full max-w-md ml-auto\"><form><!></form></div>");
 function LogoutForm(t, i) {
 	push(i, !0);
-	let a = () => store_get(clientStore, "$clientStore", o), [o, s] = setup_stores(), c = /* @__PURE__ */ state(!1), l = /* @__PURE__ */ user_derived(() => a().rank > 0), u = async (t) => {
-		if (t.preventDefault(), !get$1(c)) try {
-			set(c, !0), await new Promise((t) => setTimeout(t, 500)), await logout();
+	let a = () => store_get(authStore, "$authStore", s), o = () => store_get(clientStore, "$clientStore", s), [s, c] = setup_stores(), l = /* @__PURE__ */ user_derived(() => a().status), u = /* @__PURE__ */ user_derived(() => o().rank > 0), d = async (t) => {
+		if (t.preventDefault(), !get$1(l)) try {
+			store_mutate(authStore, untrack(a).status = !0, untrack(a)), await new Promise((t) => setTimeout(t, 500)), await logout();
 		} catch (t) {
 			console.error(t);
 		} finally {
-			set(c, !1);
+			store_mutate(authStore, untrack(a).status = !1, untrack(a)), store_mutate(authStore, untrack(a).username = "", untrack(a)), store_mutate(authStore, untrack(a).password = void 0, untrack(a));
 		}
 	};
-	var d = root$2(), f = child(d);
-	Field_group(child(f), {
+	var f = root$3(), p = child(f);
+	Field_group(child(p), {
 		children: (t, i) => {
 			Field(t, {
 				orientation: "responsive",
 				class: "flex flex-row items-center justify-end selection:bg-primary",
 				children: (t, i) => {
-					var o = root_2$4(), s = first_child(o);
+					var a = root_2$5(), s = first_child(a);
 					{
-						let t = /* @__PURE__ */ user_derived(() => !get$1(l));
+						let t = /* @__PURE__ */ user_derived(() => !get$1(u));
 						AuthAvatar(s, {
 							get isLoading() {
-								return get$1(c);
+								return get$1(l);
 							},
 							isAnon: !1,
 							get isGuest() {
@@ -6452,23 +6492,23 @@ function LogoutForm(t, i) {
 							}
 						});
 					}
-					var u = sibling(s, 2);
-					Label(u, {
+					var c = sibling(s, 2);
+					Label(c, {
 						class: "flex-none w-auto",
 						children: (t, i) => {
 							next();
-							var o = text();
-							template_effect(() => set_text(o, a().name)), append(t, o);
+							var a = text();
+							template_effect(() => set_text(a, o().name)), append(t, a);
 						},
 						$$slots: { default: !0 }
 					});
-					var d = sibling(u, 2);
+					var d = sibling(c, 2);
 					{
-						let t = /* @__PURE__ */ user_derived(() => cn({ "md:cursor-not-allowed": get$1(c) }));
+						let t = /* @__PURE__ */ user_derived(() => cn({ "md:cursor-not-allowed": get$1(l) }));
 						Button(d, {
 							type: "submit",
 							get disabled() {
-								return get$1(c);
+								return get$1(l);
 							},
 							get class() {
 								return get$1(t);
@@ -6479,13 +6519,13 @@ function LogoutForm(t, i) {
 							$$slots: { default: !0 }
 						});
 					}
-					append(t, o);
+					append(t, a);
 				},
 				$$slots: { default: !0 }
 			});
 		},
 		$$slots: { default: !0 }
-	}), reset(f), reset(d), event("submit", f, u), append(t, d), pop(), s();
+	}), reset(p), reset(f), event("submit", p, d), append(t, f), pop(), c();
 }
 function AuthForm(t, i) {
 	var a = comment(), o = first_child(a), s = (t) => {
@@ -6497,12 +6537,12 @@ function AuthForm(t, i) {
 		i.isLoggedIn ? t(s) : t(c, -1);
 	}), append(t, a);
 }
-var logoImgSrc = new URL("dist/logo.png", window.BASE_URL).toString(), root$1 = /* @__PURE__ */ from_html("<header class=\"sticky w-full flex flex-row items-center justify-start h-15 mx-auto top-0 z-50 bg-background md:bg-background/80 md:backdrop-blur-md\"><!> <div class=\"w-full flex flex-row items-center justify-between pr-6 py-5\"><!> <!></div></header>");
+var logoImgSrc = new URL("dist/logo.png", window.BASE_URL).toString(), root$2 = /* @__PURE__ */ from_html("<header class=\"sticky w-full flex flex-row items-center justify-start h-15 mx-auto top-0 z-50 bg-background md:bg-background/80 md:backdrop-blur-md\"><!> <div class=\"w-full flex flex-row items-center justify-between pr-6 py-5\"><!> <!></div></header>");
 function Header(i, a) {
 	push(a, !1);
 	let o = () => store_get(appStore, "$appStore", l), s = () => store_get(socketStore, "$socketStore", l), c = () => store_get(clientStore, "$clientStore", l), [l, u] = setup_stores();
 	init$1();
-	var d = root$1(), f = child(d), p = (t) => {
+	var d = root$2(), f = child(d), p = (t) => {
 		VersionBadge(t, { get version() {
 			return o().version;
 		} });
@@ -7931,7 +7971,7 @@ var PaneGroupContext = new Context("PaneGroup"), PaneGroupState = class t {
 	set props(t) {
 		set(this.#o, t);
 	}
-}, root_2$3 = /* @__PURE__ */ from_html("<div><!></div>");
+}, root_2$4 = /* @__PURE__ */ from_html("<div><!></div>");
 function Pane_group(t, i) {
 	let a = props_id();
 	push(i, !0);
@@ -7965,14 +8005,14 @@ function Pane_group(t, i) {
 		var a = comment();
 		snippet(first_child(a), () => i.child, () => ({ props: get$1(_) })), append(t, a);
 	}, C = (t) => {
-		var a = root_2$3();
+		var a = root_2$4();
 		attribute_effect(a, () => ({ ...get$1(_) })), snippet(child(a), () => i.children ?? noop$1), reset(a), append(t, a);
 	};
 	return if_block(x, (t) => {
 		i.child ? t(S) : t(C, -1);
 	}), append(t, b), pop(y);
 }
-var root_2$2 = /* @__PURE__ */ from_html("<div><!></div>");
+var root_2$3 = /* @__PURE__ */ from_html("<div><!></div>");
 function Pane(t, i) {
 	let a = props_id();
 	push(i, !0);
@@ -8018,14 +8058,14 @@ function Pane(t, i) {
 		var a = comment();
 		snippet(first_child(a), () => i.child, () => ({ props: get$1(x) })), append(t, a);
 	}, E = (t) => {
-		var a = root_2$2();
+		var a = root_2$3();
 		attribute_effect(a, () => ({ ...get$1(x) })), snippet(child(a), () => i.children ?? noop$1), reset(a), append(t, a);
 	};
 	return if_block(w, (t) => {
 		i.child ? t(T) : t(E, -1);
 	}), append(t, C), pop(S);
 }
-var root_2$1 = /* @__PURE__ */ from_html("<div><!></div>");
+var root_2$2 = /* @__PURE__ */ from_html("<div><!></div>");
 function Pane_resizer(t, i) {
 	let a = props_id();
 	push(i, !0);
@@ -8051,14 +8091,14 @@ function Pane_resizer(t, i) {
 		var a = comment();
 		snippet(first_child(a), () => i.child, () => ({ props: get$1(p) })), append(t, a);
 	}, _ = (t) => {
-		var a = root_2$1();
+		var a = root_2$2();
 		attribute_effect(a, () => ({ ...get$1(p) })), snippet(child(a), () => i.children ?? noop$1), reset(a), append(t, a);
 	};
 	if_block(h, (t) => {
 		i.child ? t(g) : t(_, -1);
 	}), append(t, m), pop();
 }
-var root_2 = /* @__PURE__ */ from_html("<div class=\"bg-border h-6 w-1 rounded-lg z-10 flex shrink-0\"></div>");
+var root_2$1 = /* @__PURE__ */ from_html("<div class=\"bg-border h-6 w-1 rounded-lg z-10 flex shrink-0\"></div>");
 function Resizable_handle(t, i) {
 	push(i, !0);
 	let a = prop(i, "ref", 15, null), o = prop(i, "withHandle", 3, !1), s = /* @__PURE__ */ rest_props(i, [
@@ -8087,7 +8127,7 @@ function Resizable_handle(t, i) {
 				},
 				children: (t, i) => {
 					var a = comment(), s = first_child(a), c = (t) => {
-						append(t, root_2());
+						append(t, root_2$1());
 					};
 					if_block(s, (t) => {
 						o() && t(c);
@@ -8130,14 +8170,66 @@ function Resizable_pane_group(t, i) {
 	}
 	append(t, c), pop();
 }
-var root_4 = /* @__PURE__ */ from_html("<div class=\"flex flex-row h-full items-center justify-center p-6\"><span class=\"font-semibold\">Chat</span></div>"), root_5 = /* @__PURE__ */ from_html("<div class=\"flex flex-col h-full items-center justify-center p-6\"><span class=\"font-semibold\">Features</span></div>"), root_3 = /* @__PURE__ */ from_html("<!> <!> <!>", 1), root_8 = /* @__PURE__ */ from_html("<div class=\"flex flex-row h-full items-center justify-center p-6\"><span class=\"font-semibold\">Player</span></div>"), root_9 = /* @__PURE__ */ from_html("<div class=\"flex flex-col h-full items-center justify-center p-6\"><span class=\"font-semibold\">Playlist</span></div>"), root_7 = /* @__PURE__ */ from_html("<!> <!> <!>", 1), root_1 = /* @__PURE__ */ from_html("<!> <!> <!>", 1);
-function CytubeFluidLayout(t) {
-	Resizable_pane_group(t, {
-		direction: "horizontal",
-		class: "w-full flex-1 rounded-lg border-t",
+var root_2 = /* @__PURE__ */ from_html("<!> <!>", 1), root$1 = /* @__PURE__ */ from_html("<form><!></form>");
+function GuestLoginForm(t, i) {
+	push(i, !0);
+	let a = () => store_get(authStore, "$authStore", o), [o, s] = setup_stores(), c = /* @__PURE__ */ user_derived(() => a().username), l = /* @__PURE__ */ user_derived(() => a().status), u = async (t) => {
+		if (t.preventDefault(), !get$1(l)) try {
+			store_mutate(authStore, untrack(a).status = !0, untrack(a)), await new Promise((t) => setTimeout(t, 500)), await login(get$1(c));
+		} catch (t) {
+			console.error(t);
+		} finally {
+			store_mutate(authStore, untrack(a).status = !1, untrack(a)), store_mutate(authStore, untrack(a).username = "", untrack(a)), store_mutate(authStore, untrack(a).password = void 0, untrack(a));
+		}
+	};
+	var d = root$1();
+	Field_group(child(d), {
 		children: (t, i) => {
-			var a = root_1(), o = first_child(a);
-			Pane(o, {
+			Field(t, {
+				orientation: "horizontal",
+				class: "flex flex-row items-start justify-start gap-0",
+				children: (t, i) => {
+					var o = root_2(), s = first_child(o);
+					Button(s, {
+						type: "submit",
+						class: "flex-2 rounded-none border-none",
+						children: (t, i) => {
+							next(), append(t, text("Guest Login"));
+						},
+						$$slots: { default: !0 }
+					}), Input(sibling(s, 2), {
+						required: !0,
+						class: "flex-8 rounded-none border-none",
+						type: "text",
+						autocomplete: "name",
+						placeholder: "Username",
+						get disabled() {
+							return get$1(l);
+						},
+						get value() {
+							return a().username;
+						},
+						set value(t) {
+							store_mutate(authStore, untrack(a).username = t, untrack(a));
+						}
+					}), append(t, o);
+				},
+				$$slots: { default: !0 }
+			});
+		},
+		$$slots: { default: !0 }
+	}), reset(d), template_effect((t) => set_class(d, 1, t), [() => clsx$1(cn(i.class))]), event("submit", d, u), append(t, d), pop(), s();
+}
+var root_4 = /* @__PURE__ */ from_html("<div class=\"flex flex-col h-full\"><div class=\"flex flex-col items-center justify-center h-full\">Chat</div> <!></div>"), root_6 = /* @__PURE__ */ from_html("<div class=\"flex flex-col h-full items-center justify-center p-6\"><span class=\"font-semibold\">Features</span></div>"), root_3 = /* @__PURE__ */ from_html("<!> <!> <!>", 1), root_9 = /* @__PURE__ */ from_html("<div class=\"flex flex-row h-full items-center justify-center p-6\"><span class=\"font-semibold\">Player</span></div>"), root_10 = /* @__PURE__ */ from_html("<div class=\"flex flex-col h-full items-center justify-center p-6\"><span class=\"font-semibold\">Playlist</span></div>"), root_8 = /* @__PURE__ */ from_html("<!> <!> <!>", 1), root_1 = /* @__PURE__ */ from_html("<!> <!> <!>", 1);
+function CytubeFluidLayout(t, i) {
+	push(i, !1);
+	let a = () => store_get(clientStore, "$clientStore", o), [o, s] = setup_stores();
+	init$1(), Resizable_pane_group(t, {
+		direction: "horizontal",
+		class: "w-full flex-1 border",
+		children: (t, i) => {
+			var o = root_1(), s = first_child(o);
+			Pane(s, {
 				defaultSize: 45,
 				minSize: 25,
 				maxSize: 50,
@@ -8146,30 +8238,35 @@ function CytubeFluidLayout(t) {
 						direction: "vertical",
 						class: "flex-1",
 						children: (t, i) => {
-							var a = root_3(), o = first_child(a);
-							Pane(o, {
+							var o = root_3(), s = first_child(o);
+							Pane(s, {
 								defaultSize: 70,
 								children: (t, i) => {
-									append(t, root_4());
+									var o = root_4(), s = sibling(child(o), 2), c = (t) => {
+										GuestLoginForm(t, { class: "w-full" });
+									};
+									if_block(s, (t) => {
+										a().logged_in || t(c);
+									}), reset(o), append(t, o);
 								},
 								$$slots: { default: !0 }
 							});
-							var s = sibling(o, 2);
-							Resizable_handle(s, {}), Pane(sibling(s, 2), {
+							var c = sibling(s, 2);
+							Resizable_handle(c, {}), Pane(sibling(c, 2), {
 								defaultSize: 30,
 								children: (t, i) => {
-									append(t, root_5());
+									append(t, root_6());
 								},
 								$$slots: { default: !0 }
-							}), append(t, a);
+							}), append(t, o);
 						},
 						$$slots: { default: !0 }
 					});
 				},
 				$$slots: { default: !0 }
 			});
-			var s = sibling(o, 2);
-			Resizable_handle(s, {}), Pane(sibling(s, 2), {
+			var c = sibling(s, 2);
+			Resizable_handle(c, {}), Pane(sibling(c, 2), {
 				defaultSize: 65,
 				minSize: 50,
 				maxSize: 75,
@@ -8178,11 +8275,11 @@ function CytubeFluidLayout(t) {
 						direction: "vertical",
 						class: "flex-1",
 						children: (t, i) => {
-							var a = root_7(), o = first_child(a);
+							var a = root_8(), o = first_child(a);
 							Pane(o, {
 								defaultSize: 70,
 								children: (t, i) => {
-									append(t, root_8());
+									append(t, root_9());
 								},
 								$$slots: { default: !0 }
 							});
@@ -8190,7 +8287,7 @@ function CytubeFluidLayout(t) {
 							Resizable_handle(s, {}), Pane(sibling(s, 2), {
 								defaultSize: 30,
 								children: (t, i) => {
-									append(t, root_9());
+									append(t, root_10());
 								},
 								$$slots: { default: !0 }
 							}), append(t, a);
@@ -8199,12 +8296,12 @@ function CytubeFluidLayout(t) {
 					});
 				},
 				$$slots: { default: !0 }
-			}), append(t, a);
+			}), append(t, o);
 		},
 		$$slots: { default: !0 }
-	});
+	}), pop(), s();
 }
-var root = /* @__PURE__ */ from_html("<main class=\"flex flex-col flex-1 bg-background\"><!></main>");
+var root = /* @__PURE__ */ from_html("<main class=\"flex flex-col flex-1 selection:bg-primary\"><!></main>");
 function Main(t) {
 	var i = root();
 	CytubeFluidLayout(child(i), {}), reset(i), append(t, i);
