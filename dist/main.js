@@ -12232,7 +12232,7 @@ function UserCard(t, r) {
 		r.user.profile.text !== "" && t(d);
 	}), reset(s), reset(i), template_effect(() => set_text(l, r.user.name)), append(t, i), pop();
 }
-var root_3$1 = /* @__PURE__ */ from_html("<li><!></li>"), root_2$1 = /* @__PURE__ */ from_html("<ul class=\"overflow-auto no-scrollbar\"></ul> <!>", 1), root_9$1 = /* @__PURE__ */ from_html("<!> <!>", 1), root$2 = /* @__PURE__ */ from_html("<div><!></div>");
+var siteAdminStyleClass = "text-purple-600", channelAdminStyleClass = "text-red-600", moderatorStyleClass = "text-amber-600", regularStyleClass = "text-white", guestStyleClass = "text-gray-600", rankToClass = (t) => t >= 255 ? siteAdminStyleClass : t >= 3 ? channelAdminStyleClass : t == 2 ? moderatorStyleClass : t >= 1 ? regularStyleClass : guestStyleClass, root_3$1 = /* @__PURE__ */ from_html("<li><!></li>"), root_2$1 = /* @__PURE__ */ from_html("<ul class=\"overflow-auto no-scrollbar\"></ul> <!>", 1), root_9$1 = /* @__PURE__ */ from_html("<!> <!>", 1), root$2 = /* @__PURE__ */ from_html("<div><!></div>");
 function Userlist(t, r) {
 	push(r, !0);
 	let i = () => store_get(userlistStore, "$userlistStore", a), [a, o] = setup_stores(), s = /* @__PURE__ */ user_derived(() => i().userlist), c = /* @__PURE__ */ user_derived(() => get$3(s).length > 0), l = /* @__PURE__ */ state(null);
@@ -12249,7 +12249,7 @@ function Userlist(t, r) {
 							template_effect(() => set_text(a, get$3(r).name)), append(t, a);
 						},
 						$$slots: { default: !0 }
-					}), reset(i), event("mouseenter", i, () => set(l, get$3(r), !0)), animation(i, () => flip, () => ({
+					}), reset(i), template_effect((t) => set_class(i, 1, t), [() => clsx$1(cn(rankToClass(get$3(r).rank), "font-bold"))]), event("mouseenter", i, () => set(l, get$3(r), !0)), animation(i, () => flip, () => ({
 						duration: 200,
 						easing: quintOut
 					})), transition(3, i, () => blur, () => ({ duration: 200 })), append(t, i);
