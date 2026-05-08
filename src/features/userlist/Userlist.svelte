@@ -5,35 +5,52 @@
   import { quintOut } from "svelte/easing";
   import { HugeiconsIcon } from "@hugeicons/svelte";
   import { SpiralsIcon } from "@hugeicons/core-free-icons";
+  import { cn } from "$lib/utils";
   import {
     Header,
     Media,
     Root,
     Title,
   } from "$lib/components/ui/empty/index.js";
-  import { cn } from "$lib/utils";
-  import { userlistStore } from "./userlist";
+  import {
+    Root as HoverCardRoot,
+    Trigger as HoverCardTrigger,
+    Content as HoverCardContent,
+  } from "$lib/components/ui/hover-card/index.js";
+  import { userlistStore, type AddUserOutputSocketData } from "./userlist";
+  import UserCard from "./UserCard.svelte";
 
   type Props = HTMLAttributes<HTMLFormElement>;
 
   let userlist = $derived($userlistStore.userlist);
   let hasUsers = $derived(userlist.length > 0);
+  let userTarget = $state<AddUserOutputSocketData | null>(null);
 
   let { class: className }: Props = $props();
 </script>
 
 <div class={cn(className)}>
   {#if hasUsers}
-    <ul class="overflow-auto no-scrollbar">
-      {#each userlist as user (user.name)}
-        <li
-          animate:flip={{ duration: 200, easing: quintOut }}
-          transition:blur={{ duration: 200 }}
-        >
-          {user.name}
-        </li>
-      {/each}
-    </ul>
+    <HoverCardRoot>
+      <ul class="overflow-auto no-scrollbar">
+        {#each userlist as user (user.name)}
+          <li
+            animate:flip={{ duration: 200, easing: quintOut }}
+            transition:blur={{ duration: 200 }}
+            onmouseenter={() => (userTarget = user)}
+          >
+            <HoverCardTrigger>
+              {user.name}
+            </HoverCardTrigger>
+          </li>
+        {/each}
+      </ul>
+      {#if userTarget}
+        <HoverCardContent>
+          <UserCard user={userTarget} />
+        </HoverCardContent>
+      {/if}
+    </HoverCardRoot>
   {:else}
     <Root>
       <Header>

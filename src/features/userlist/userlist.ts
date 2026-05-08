@@ -2,7 +2,7 @@ import { writable } from "svelte/store";
 import { socketClient } from "$api/socket";
 
 type AddUserOutputSocketEvent = "addUser";
-type AddUserOutputSocketData = {
+export type AddUserOutputSocketData = {
   name: string;
   rank: number;
   profile: {
