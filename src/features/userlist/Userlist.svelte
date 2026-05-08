@@ -1,3 +1,31 @@
+<script lang="ts" module>
+  const siteAdminStyleClass = "text-purple-600";
+  const channelAdminStyleClass = "text-red-600";
+  const moderatorStyleClass = "text-amber-600";
+  const regularStyleClass = "text-white";
+  const guestStyleClass = "text-gray-600";
+
+  const rankToClass = (rank: number) => {
+    if (rank >= 255) {
+      return siteAdminStyleClass;
+    }
+
+    if (rank >= 3) {
+      return channelAdminStyleClass;
+    }
+
+    if (rank == 2) {
+      return moderatorStyleClass;
+    }
+
+    if (rank >= 1) {
+      return regularStyleClass;
+    }
+
+    return guestStyleClass;
+  };
+</script>
+
 <script lang="ts">
   import type { HTMLAttributes } from "svelte/elements";
   import { blur } from "svelte/transition";
@@ -38,6 +66,7 @@
             animate:flip={{ duration: 200, easing: quintOut }}
             transition:blur={{ duration: 200 }}
             onmouseenter={() => (userTarget = user)}
+            class={cn(rankToClass(user.rank), "font-bold")}
           >
             <HoverCardTrigger>
               {user.name}
