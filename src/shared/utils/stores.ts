@@ -1,4 +1,10 @@
 import { socketClient } from "$api/socket";
+import {
+  parseLegacyUserlist,
+  subscribeSocketAddUser,
+  subscribeSocketUserLeave,
+  userlistStore,
+} from "$features/userlist/userlist";
 import { appStore } from "$stores/appStore";
 import { clientStore } from "$stores/clientStore";
 import { pageStore } from "$stores/pageStore";
@@ -58,11 +64,21 @@ const initSocketStore = () => {
   );
 };
 
+const initUserlistStore = () => {
+  const userlist = parseLegacyUserlist();
+
+  userlistStore.init({ userlist });
+
+  subscribeSocketAddUser(userlistStore.addUser);
+  subscribeSocketUserLeave(({ name }) => userlistStore.removeUser(name));
+};
+
 export const initStores = () => {
   const unsubClient = initClientStore();
   const unsubAppStore = initAppStore();
   initPageStore();
   initSocketStore();
+  initUserlistStore();
 
   const unsubAll = () => {
     unsubClient();

@@ -4,6 +4,7 @@
     Pane,
     PaneGroup,
   } from "$lib/components/ui/resizable/index.js";
+  import Userlist from "$features/userlist/Userlist.svelte";
   import GuestLoginForm from "$features/auth/GuestLoginForm.svelte";
   import { clientStore } from "$stores/clientStore";
 </script>
@@ -13,9 +14,22 @@
     <PaneGroup direction="vertical" class="flex-1">
       <Pane defaultSize={70}>
         <div class="flex flex-col h-full">
-          <div class="flex flex-col items-center justify-center h-full">
-            Chat
-          </div>
+          <PaneGroup direction="horizontal">
+            <Pane defaultSize={20}>
+              <Userlist
+                class="flex flex-col items-start justify-start h-full px-1 py-0.5"
+              />
+            </Pane>
+
+            <Handle />
+
+            <Pane
+              defaultSize={80}
+              class="flex flex-col items-center justify-center h-full"
+            >
+              Chat
+            </Pane>
+          </PaneGroup>
           {#if !$clientStore.logged_in}
             <GuestLoginForm class="w-full" />
           {/if}
