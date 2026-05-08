@@ -48,7 +48,7 @@
   import { userlistStore, type AddUserOutputSocketData } from "./userlist";
   import UserCard from "./UserCard.svelte";
 
-  type Props = HTMLAttributes<HTMLFormElement>;
+  type Props = HTMLAttributes<HTMLHtmlElement>;
 
   let userlist = $derived($userlistStore.userlist);
   let hasUsers = $derived(userlist.length > 0);
