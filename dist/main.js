@@ -1218,6 +1218,9 @@ function autofocus(t, r) {
 		});
 	}
 }
+function remove_textarea_child(t) {
+	hydrating && /* @__PURE__ */ get_first_child(t) !== null && clear_text_content(t);
+}
 var listening_to_form_reset = !1;
 function add_form_reset_listener() {
 	listening_to_form_reset || (listening_to_form_reset = !0, document.addEventListener("reset", (t) => {
@@ -5005,7 +5008,7 @@ const buttonVariants = tv({
 		size: "default"
 	}
 });
-var root_1$7 = /* @__PURE__ */ from_html("<a><!></a>"), root_2$16 = /* @__PURE__ */ from_html("<button><!></button>");
+var root_1$7 = /* @__PURE__ */ from_html("<a><!></a>"), root_2$17 = /* @__PURE__ */ from_html("<button><!></button>");
 function Button(t, r) {
 	push(r, !0);
 	let i = prop(r, "variant", 3, "default"), a = prop(r, "size", 3, "default"), o = prop(r, "ref", 15, null), s = prop(r, "href", 3, void 0), c = prop(r, "type", 3, "button"), l = /* @__PURE__ */ rest_props(r, [
@@ -5036,7 +5039,7 @@ function Button(t, r) {
 			size: a()
 		}), r.class)]), snippet(child(c), () => r.children ?? noop$2), reset(c), bind_this(c, (t) => o(t), () => o()), append(t, c);
 	}, p = (t) => {
-		var s = root_2$16();
+		var s = root_2$17();
 		attribute_effect(s, (t) => ({
 			"data-slot": "button",
 			class: t,
@@ -5052,10 +5055,10 @@ function Button(t, r) {
 		s() ? t(f) : t(p, -1);
 	}), append(t, u), pop();
 }
-var root$26 = /* @__PURE__ */ from_html("<div class=\"relative w-15 h-15 shrink-0 overflow-hidden\"><div class=\"absolute top-[18%] left-[-75%] w-[250%] py-[0.25em] pr-[1.5em] -rotate-45 bg-primary text-white text-[0.6rem] font-bold text-center shadow-md leading-none pointer-events-none\"> </div></div>");
+var root$28 = /* @__PURE__ */ from_html("<div class=\"relative w-15 h-15 shrink-0 overflow-hidden\"><div class=\"absolute top-[18%] left-[-75%] w-[250%] py-[0.25em] pr-[1.5em] -rotate-45 bg-primary text-white text-[0.6rem] font-bold text-center shadow-md leading-none pointer-events-none\"> </div></div>");
 function VersionBadge(t, r) {
 	let i = prop(r, "version", 3, "main");
-	var a = root$26(), o = child(a), s = child(o, !0);
+	var a = root$28(), o = child(a), s = child(o, !0);
 	reset(o), reset(a), template_effect(() => set_text(s, i())), append(t, a);
 }
 function isFunction$2(t) {
@@ -6838,7 +6841,7 @@ var avatarAttrs = createBitsAttrs({
 	set props(t) {
 		set(this.#t, t);
 	}
-}, root_2$15 = /* @__PURE__ */ from_html("<div><!></div>");
+}, root_2$16 = /* @__PURE__ */ from_html("<div><!></div>");
 function Avatar$1(t, r) {
 	let i = props_id();
 	push(r, !0);
@@ -6865,14 +6868,14 @@ function Avatar$1(t, r) {
 		var i = comment();
 		snippet(first_child(i), () => r.child, () => ({ props: get$3(d) })), append(t, i);
 	}, h = (t) => {
-		var i = root_2$15();
+		var i = root_2$16();
 		attribute_effect(i, () => ({ ...get$3(d) })), snippet(child(i), () => r.children ?? noop$2), reset(i), append(t, i);
 	};
 	if_block(p, (t) => {
 		r.child ? t(m) : t(h, -1);
 	}), append(t, f), pop();
 }
-var root_2$14 = /* @__PURE__ */ from_html("<img/>");
+var root_2$15 = /* @__PURE__ */ from_html("<img/>");
 function Avatar_image$1(t, r) {
 	let i = props_id();
 	push(r, !0);
@@ -6897,7 +6900,7 @@ function Avatar_image$1(t, r) {
 		var i = comment();
 		snippet(first_child(i), () => r.child, () => ({ props: get$3(d) })), append(t, i);
 	}, h = (t) => {
-		var i = root_2$14();
+		var i = root_2$15();
 		attribute_effect(i, () => ({
 			...get$3(d),
 			src: r.src
@@ -6907,7 +6910,7 @@ function Avatar_image$1(t, r) {
 		r.child ? t(m) : t(h, -1);
 	}), append(t, f), pop();
 }
-var root_2$13 = /* @__PURE__ */ from_html("<span><!></span>");
+var root_2$14 = /* @__PURE__ */ from_html("<span><!></span>");
 function Avatar_fallback$1(t, r) {
 	let i = props_id();
 	push(r, !0);
@@ -6927,7 +6930,7 @@ function Avatar_fallback$1(t, r) {
 		var i = comment();
 		snippet(first_child(i), () => r.child, () => ({ props: get$3(l) })), append(t, i);
 	}, p = (t) => {
-		var i = root_2$13();
+		var i = root_2$14();
 		attribute_effect(i, () => ({ ...get$3(l) })), snippet(child(i), () => r.children ?? noop$2), reset(i), append(t, i);
 	};
 	if_block(d, (t) => {
@@ -8934,7 +8937,7 @@ var SafePolygon = class {
 	set props(t) {
 		set(this.#e, t);
 	}
-}, root_2$12 = /* @__PURE__ */ from_html("<label><!></label>");
+}, root_2$13 = /* @__PURE__ */ from_html("<label><!></label>");
 function Label$1(t, r) {
 	let i = props_id();
 	push(r, !0);
@@ -8955,7 +8958,7 @@ function Label$1(t, r) {
 		var i = comment();
 		snippet(first_child(i), () => r.child, () => ({ props: get$3(l) })), append(t, i);
 	}, p = (t) => {
-		var i = root_2$12();
+		var i = root_2$13();
 		attribute_effect(i, () => ({
 			...get$3(l),
 			for: r.for
@@ -9201,7 +9204,7 @@ function Link_preview(t, r) {
 		});
 	}), append(t, u), pop();
 }
-var root_4$4 = /* @__PURE__ */ from_html("<div><div><!></div></div>"), root_2$11 = /* @__PURE__ */ from_html("<!> <!>", 1), root_8 = /* @__PURE__ */ from_html("<div><div><!></div></div>"), root_6$1 = /* @__PURE__ */ from_html("<!> <!>", 1);
+var root_4$3 = /* @__PURE__ */ from_html("<div><div><!></div></div>"), root_2$12 = /* @__PURE__ */ from_html("<!> <!>", 1), root_8 = /* @__PURE__ */ from_html("<div><div><!></div></div>"), root_6$1 = /* @__PURE__ */ from_html("<!> <!>", 1);
 function Link_preview_content(t, r) {
 	let i = props_id();
 	push(r, !0);
@@ -9260,7 +9263,7 @@ function Link_preview_content(t, r) {
 			},
 			popper: (t, i) => {
 				let a = () => i?.().props, o = () => i?.().wrapperProps, s = /* @__PURE__ */ user_derived(() => mergeProps$1(a(), { style: getFloatingContentCSSVars("link-preview") }, { style: r.style }));
-				var c = root_2$11(), l = first_child(c), u = (t) => {
+				var c = root_2$12(), l = first_child(c), u = (t) => {
 					var i = comment(), a = first_child(i);
 					{
 						let t = /* @__PURE__ */ user_derived(() => ({
@@ -9272,7 +9275,7 @@ function Link_preview_content(t, r) {
 					}
 					append(t, i);
 				}, d = (t) => {
-					var i = root_4$4();
+					var i = root_4$3();
 					attribute_effect(i, () => ({ ...o() }));
 					var a = child(i);
 					attribute_effect(a, () => ({ ...get$3(s) })), snippet(child(a), () => r.children ?? noop$2), reset(a), reset(i), append(t, i);
@@ -9487,7 +9490,7 @@ function Avatar_fallback(t, r) {
 	}
 	append(t, o), pop();
 }
-var root$25 = /* @__PURE__ */ from_html("<span><!></span>");
+var root$27 = /* @__PURE__ */ from_html("<span><!></span>");
 function Avatar_badge(t, r) {
 	push(r, !0);
 	let i = prop(r, "ref", 15, null), a = /* @__PURE__ */ rest_props(r, [
@@ -9498,7 +9501,7 @@ function Avatar_badge(t, r) {
 		"class",
 		"children"
 	]);
-	var o = root$25();
+	var o = root$27();
 	attribute_effect(o, (t) => ({
 		"data-slot": "avatar-badge",
 		class: t,
@@ -9707,7 +9710,7 @@ const fieldVariants = tv({
 	} },
 	defaultVariants: { orientation: "vertical" }
 });
-var root$22 = /* @__PURE__ */ from_html("<div><!></div>");
+var root$24 = /* @__PURE__ */ from_html("<div><!></div>");
 function Field(t, r) {
 	push(r, !0);
 	let i = prop(r, "ref", 15, null), a = prop(r, "orientation", 3, "vertical"), o = /* @__PURE__ */ rest_props(r, [
@@ -9719,7 +9722,7 @@ function Field(t, r) {
 		"orientation",
 		"children"
 	]);
-	var s = root$22();
+	var s = root$24();
 	attribute_effect(s, (t) => ({
 		role: "group",
 		"data-slot": "field",
@@ -9728,7 +9731,7 @@ function Field(t, r) {
 		...o
 	}), [() => cn(fieldVariants({ orientation: a() }), r.class)]), snippet(child(s), () => r.children ?? noop$2), reset(s), bind_this(s, (t) => i(t), () => i()), append(t, s), pop();
 }
-var root$19 = /* @__PURE__ */ from_html("<div><!></div>");
+var root$21 = /* @__PURE__ */ from_html("<div><!></div>");
 function Field_group(t, r) {
 	push(r, !0);
 	let i = prop(r, "ref", 15, null), a = /* @__PURE__ */ rest_props(r, [
@@ -9739,7 +9742,7 @@ function Field_group(t, r) {
 		"class",
 		"children"
 	]);
-	var o = root$19();
+	var o = root$21();
 	attribute_effect(o, (t) => ({
 		"data-slot": "field-group",
 		class: t,
@@ -9776,7 +9779,7 @@ function Label(t, r) {
 	}
 	append(t, o), pop();
 }
-var root_1$2 = /* @__PURE__ */ from_html("<input/>"), root_2$10 = /* @__PURE__ */ from_html("<input/>");
+var root_1$2 = /* @__PURE__ */ from_html("<input/>"), root_2$11 = /* @__PURE__ */ from_html("<input/>");
 function Input(t, r) {
 	push(r, !0);
 	let i = prop(r, "ref", 15, null), a = prop(r, "value", 15), o = prop(r, "files", 15), s = prop(r, "data-slot", 3, "input"), c = /* @__PURE__ */ rest_props(r, [
@@ -9799,7 +9802,7 @@ function Input(t, r) {
 			...c
 		}), [() => cn("dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 disabled:bg-input/50 dark:disabled:bg-input/80 h-8 rounded-lg border bg-transparent px-2.5 py-1 text-base transition-colors file:h-6 file:text-sm file:font-medium focus-visible:ring-3 aria-invalid:ring-3 md:text-sm file:text-foreground placeholder:text-muted-foreground w-full min-w-0 outline-none file:inline-flex file:border-0 file:bg-transparent disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50", r.class)], void 0, void 0, void 0, !0), bind_this(l, (t) => i(t), () => i()), bind_files(l, o), bind_value(l, a), append(t, l);
 	}, f = (t) => {
-		var o = root_2$10();
+		var o = root_2$11();
 		attribute_effect(o, (t) => ({
 			"data-slot": s(),
 			class: t,
@@ -9947,7 +9950,7 @@ function createHugeiconSingleton(t, r) {
 		};
 	} };
 }
-var root$14 = /* @__PURE__ */ from_svg("<svg></svg>");
+var root$16 = /* @__PURE__ */ from_svg("<svg></svg>");
 function HugeiconsIcon(t, r) {
 	push(r, !0);
 	let i = prop(r, "size", 3, 24), a = prop(r, "absoluteStrokeWidth", 3, !1), o = prop(r, "color", 3, "currentColor"), s = prop(r, "showAlt", 3, !1), c = prop(r, "class", 3, ""), l = prop(r, "className", 3, ""), u = /* @__PURE__ */ rest_props(r, [
@@ -9979,7 +9982,7 @@ function HugeiconsIcon(t, r) {
 	}), user_effect(() => {
 		get$3(p) && f && get$3(m) && get$3(m).update(get$3(h));
 	});
-	var g = root$14();
+	var g = root$16();
 	attribute_effect(g, () => ({
 		xmlns: "http://www.w3.org/2000/svg",
 		width: i(),
@@ -10088,6 +10091,31 @@ var ht = [
 		strokeWidth: "1.5",
 		key: "7"
 	}]
+], rsr = [
+	["path", {
+		d: "M9.49811 15L16.9981 7.5",
+		stroke: "currentColor",
+		strokeLinecap: "round",
+		strokeLinejoin: "round",
+		strokeWidth: "1.5",
+		key: "0"
+	}],
+	["path", {
+		d: "M8.00634 7.67888L15.327 4.21881C18.3688 2.78111 19.8897 2.06226 20.8598 2.78341C21.8299 3.50455 21.5527 5.14799 20.9984 8.43486L20.0435 14.0968C19.6811 16.246 19.4998 17.3205 18.6989 17.7891C17.8979 18.2577 16.8574 17.8978 14.7765 17.178L8.41077 14.9762C4.51917 13.6301 2.57337 12.9571 2.50019 11.6365C2.427 10.3159 4.28678 9.43692 8.00634 7.67888Z",
+		stroke: "currentColor",
+		strokeLinecap: "round",
+		strokeLinejoin: "round",
+		strokeWidth: "1.5",
+		key: "1"
+	}],
+	["path", {
+		d: "M9.49811 15.5V17.7274C9.49811 20.101 9.49811 21.2878 10.2083 21.4771C10.9185 21.6663 11.6664 20.6789 13.1622 18.7039L13.9981 17.5",
+		stroke: "currentColor",
+		strokeLinecap: "round",
+		strokeLinejoin: "round",
+		strokeWidth: "1.5",
+		key: "2"
+	}]
 ], Kar = [["path", {
 	d: "M11.9532 2.00004C17.5019 2.00004 22 6.47719 22 12C22 17.5229 17.5019 22 11.9532 22C-0.631103 22 -1.82658 4.01759 11.4985 5.00004C14.8499 5.24714 18.0289 8.41019 18.0289 12C18.0289 16.5 15.2348 18.5 11.4985 18.5C4.5 18.5 3.19042 8.46695 11.0021 9.00004C12.508 9.1028 14.0162 10.3432 14.0162 12C14.0162 13.9279 13 15 11.1211 15",
 	stroke: "currentColor",
@@ -10134,9 +10162,9 @@ var ht = [
 	strokeLinejoin: "round",
 	strokeWidth: "1.5",
 	key: "1"
-}]], root_1$1 = /* @__PURE__ */ from_html("<span><!></span>"), root_2$9 = /* @__PURE__ */ from_html("<span><!></span>"), root_3$2 = /* @__PURE__ */ from_html("<span><!></span>"), root_4$2 = /* @__PURE__ */ from_html("<span><!></span>"), root$13 = /* @__PURE__ */ from_html("<div><!></div>");
+}]], root_1$1 = /* @__PURE__ */ from_html("<span><!></span>"), root_2$10 = /* @__PURE__ */ from_html("<span><!></span>"), root_3$2 = /* @__PURE__ */ from_html("<span><!></span>"), root_4$1 = /* @__PURE__ */ from_html("<span><!></span>"), root$15 = /* @__PURE__ */ from_html("<div><!></div>");
 function AuthAvatar(t, r) {
-	var i = root$13(), a = child(i), o = (t) => {
+	var i = root$15(), a = child(i), o = (t) => {
 		var r = root_1$1();
 		HugeiconsIcon(child(r), {
 			get icon() {
@@ -10147,7 +10175,7 @@ function AuthAvatar(t, r) {
 			"aria-label": "Loading"
 		}), reset(r), transition(3, r, () => fade, () => ({ duration: 250 })), append(t, r);
 	}, s = (t) => {
-		var r = root_2$9();
+		var r = root_2$10();
 		HugeiconsIcon(child(r), {
 			get icon() {
 				return ht;
@@ -10163,7 +10191,7 @@ function AuthAvatar(t, r) {
 			class: "size-5"
 		}), reset(r), transition(3, r, () => fade, () => ({ duration: 250 })), append(t, r);
 	}, l = (t) => {
-		var r = root_4$2();
+		var r = root_4$1();
 		HugeiconsIcon(child(r), {
 			get icon() {
 				return rZr;
@@ -10175,7 +10203,7 @@ function AuthAvatar(t, r) {
 		r.isLoading ? t(o) : r.isAnon ? t(s, 1) : r.isGuest ? t(c, 2) : t(l, -1);
 	}), reset(i), append(t, i);
 }
-var usernameSchema = /* @__PURE__ */ pipe(/* @__PURE__ */ string(), /* @__PURE__ */ minLength(1, "Min 1 character"), /* @__PURE__ */ maxLength(20, "Max 20 characters"), /* @__PURE__ */ regex(/^[A-Za-zА-Яа-я0-9_-]+$/, "Only letters, numbers, -, or _")), passwordSchema = /* @__PURE__ */ pipe(/* @__PURE__ */ string(), /* @__PURE__ */ maxLength(100, "Max 100 characters")), root_2$8 = /* @__PURE__ */ from_html("<!> <!> <!> <!>", 1), root$12 = /* @__PURE__ */ from_html("<div class=\"w-full max-w-md ml-auto\"><form><!></form></div>");
+var usernameSchema = /* @__PURE__ */ pipe(/* @__PURE__ */ string(), /* @__PURE__ */ minLength(1, "Min 1 character"), /* @__PURE__ */ maxLength(20, "Max 20 characters"), /* @__PURE__ */ regex(/^[A-Za-zА-Яа-я0-9_-]+$/, "Only letters, numbers, -, or _")), passwordSchema = /* @__PURE__ */ pipe(/* @__PURE__ */ string(), /* @__PURE__ */ maxLength(100, "Max 100 characters")), root_2$9 = /* @__PURE__ */ from_html("<!> <!> <!> <!>", 1), root$14 = /* @__PURE__ */ from_html("<div class=\"w-full max-w-md ml-auto\"><form><!></form></div>");
 function LoginForm(t, r) {
 	push(r, !0);
 	let i = () => store_get(authStore, "$authStore", a), [a, o] = setup_stores(), s = /* @__PURE__ */ user_derived(() => i().status), c = /* @__PURE__ */ user_derived(() => i().username), l = /* @__PURE__ */ user_derived(() => /* @__PURE__ */ safeParse(usernameSchema, get$3(c))), u = /* @__PURE__ */ user_derived(() => get$3(l).success), d = /* @__PURE__ */ user_derived(() => get$3(c) !== "" && !get$3(u)), f = /* @__PURE__ */ user_derived(() => get$3(l).success ? "" : get$3(l).issues.map((t) => t.message).join(", ")), p = /* @__PURE__ */ user_derived(() => i().password || ""), m = /* @__PURE__ */ user_derived(() => !get$3(u) || get$3(s)), h = /* @__PURE__ */ user_derived(() => /* @__PURE__ */ safeParse(passwordSchema, get$3(p))), g = /* @__PURE__ */ user_derived(() => get$3(h).success), _ = /* @__PURE__ */ user_derived(() => get$3(p) !== "" && !get$3(g)), v = /* @__PURE__ */ user_derived(() => get$3(h).success ? "" : get$3(h).issues.map((t) => t.message).join(", ")), y = /* @__PURE__ */ user_derived(() => get$3(s) || !get$3(u) || get$3(u) && !get$3(g)), b = async (t) => {
@@ -10187,14 +10215,14 @@ function LoginForm(t, r) {
 			store_mutate(authStore, untrack(i).status = !1, untrack(i)), store_mutate(authStore, untrack(i).username = "", untrack(i)), store_mutate(authStore, untrack(i).password = void 0, untrack(i));
 		}
 	};
-	var x = root$12(), S = child(x);
+	var x = root$14(), S = child(x);
 	Field_group(child(S), {
 		children: (t, r) => {
 			Field(t, {
 				orientation: "responsive",
 				class: "flex flex-row items-center justify-end",
 				children: (t, r) => {
-					var a = root_2$8(), o = first_child(a);
+					var a = root_2$9(), o = first_child(a);
 					{
 						let t = /* @__PURE__ */ user_derived(() => get$3(c) === "" && get$3(p) === ""), r = /* @__PURE__ */ user_derived(() => get$3(p) === "");
 						AuthAvatar(o, {
@@ -10290,7 +10318,7 @@ function LoginForm(t, r) {
 		$$slots: { default: !0 }
 	}), reset(S), reset(x), event("submit", S, b), append(t, x), pop(), o();
 }
-var root_2$7 = /* @__PURE__ */ from_html("<!> <!> <!>", 1), root$11 = /* @__PURE__ */ from_html("<div class=\"w-full max-w-md ml-auto\"><form><!></form></div>");
+var root_2$8 = /* @__PURE__ */ from_html("<!> <!> <!>", 1), root$13 = /* @__PURE__ */ from_html("<div class=\"w-full max-w-md ml-auto\"><form><!></form></div>");
 function LogoutForm(t, r) {
 	push(r, !0);
 	let i = () => store_get(authStore, "$authStore", o), a = () => store_get(clientStore, "$clientStore", o), [o, s] = setup_stores(), c = /* @__PURE__ */ user_derived(() => i().status), l = /* @__PURE__ */ user_derived(() => a().rank > 0), u = async (t) => {
@@ -10302,14 +10330,14 @@ function LogoutForm(t, r) {
 			store_mutate(authStore, untrack(i).status = !1, untrack(i)), store_mutate(authStore, untrack(i).username = "", untrack(i)), store_mutate(authStore, untrack(i).password = void 0, untrack(i));
 		}
 	};
-	var d = root$11(), f = child(d);
+	var d = root$13(), f = child(d);
 	Field_group(child(f), {
 		children: (t, r) => {
 			Field(t, {
 				orientation: "responsive",
 				class: "flex flex-row items-center justify-end selection:bg-primary",
 				children: (t, r) => {
-					var i = root_2$7(), o = first_child(i);
+					var i = root_2$8(), o = first_child(i);
 					{
 						let t = /* @__PURE__ */ user_derived(() => !get$3(l));
 						AuthAvatar(o, {
@@ -10367,12 +10395,12 @@ function AuthForm(t, r) {
 		r.isLoggedIn ? t(o) : t(s, -1);
 	}), append(t, i);
 }
-var logoImgSrc = new URL("dist/logo.png", window.BASE_URL).toString(), root$10 = /* @__PURE__ */ from_html("<header class=\"sticky w-full flex flex-row items-center justify-start h-15 mx-auto top-0 z-50 bg-background md:bg-background/80 md:backdrop-blur-md\"><!> <div class=\"w-full flex flex-row items-center justify-between pr-6 py-5\"><!> <!></div></header>");
+var logoImgSrc = new URL("dist/logo.png", window.BASE_URL).toString(), root$12 = /* @__PURE__ */ from_html("<header class=\"sticky w-full flex flex-row items-center justify-start h-15 mx-auto top-0 z-50 bg-background md:bg-background/80 md:backdrop-blur-md\"><!> <div class=\"w-full flex flex-row items-center justify-between pr-6 py-5\"><!> <!></div></header>");
 function Header(r, i) {
 	push(i, !1);
 	let a = () => store_get(appStore, "$appStore", c), o = () => store_get(socketStore, "$socketStore", c), s = () => store_get(clientStore, "$clientStore", c), [c, l] = setup_stores();
 	init$1();
-	var u = root$10(), d = child(u), f = (t) => {
+	var u = root$12(), d = child(u), f = (t) => {
 		VersionBadge(t, { get version() {
 			return a().version;
 		} });
@@ -11801,7 +11829,7 @@ var PaneGroupContext = new Context("PaneGroup"), PaneGroupState = class t {
 	set props(t) {
 		set(this.#o, t);
 	}
-}, root_2$6 = /* @__PURE__ */ from_html("<div><!></div>");
+}, root_2$7 = /* @__PURE__ */ from_html("<div><!></div>");
 function Pane_group(t, r) {
 	let i = props_id();
 	push(r, !0);
@@ -11835,14 +11863,14 @@ function Pane_group(t, r) {
 		var i = comment();
 		snippet(first_child(i), () => r.child, () => ({ props: get$3(g) })), append(t, i);
 	}, S = (t) => {
-		var i = root_2$6();
+		var i = root_2$7();
 		attribute_effect(i, () => ({ ...get$3(g) })), snippet(child(i), () => r.children ?? noop$2), reset(i), append(t, i);
 	};
 	return if_block(b, (t) => {
 		r.child ? t(x) : t(S, -1);
 	}), append(t, y), pop(v);
 }
-var root_2$5 = /* @__PURE__ */ from_html("<div><!></div>");
+var root_2$6 = /* @__PURE__ */ from_html("<div><!></div>");
 function Pane(t, r) {
 	let i = props_id();
 	push(r, !0);
@@ -11888,14 +11916,14 @@ function Pane(t, r) {
 		var i = comment();
 		snippet(first_child(i), () => r.child, () => ({ props: get$3(b) })), append(t, i);
 	}, T = (t) => {
-		var i = root_2$5();
+		var i = root_2$6();
 		attribute_effect(i, () => ({ ...get$3(b) })), snippet(child(i), () => r.children ?? noop$2), reset(i), append(t, i);
 	};
 	return if_block(C, (t) => {
 		r.child ? t(w) : t(T, -1);
 	}), append(t, S), pop(x);
 }
-var root_2$4 = /* @__PURE__ */ from_html("<div><!></div>");
+var root_2$5 = /* @__PURE__ */ from_html("<div><!></div>");
 function Pane_resizer(t, r) {
 	let i = props_id();
 	push(r, !0);
@@ -11921,14 +11949,14 @@ function Pane_resizer(t, r) {
 		var i = comment();
 		snippet(first_child(i), () => r.child, () => ({ props: get$3(f) })), append(t, i);
 	}, g = (t) => {
-		var i = root_2$4();
+		var i = root_2$5();
 		attribute_effect(i, () => ({ ...get$3(f) })), snippet(child(i), () => r.children ?? noop$2), reset(i), append(t, i);
 	};
 	if_block(m, (t) => {
 		r.child ? t(h) : t(g, -1);
 	}), append(t, p), pop();
 }
-var root_2$3 = /* @__PURE__ */ from_html("<div class=\"bg-border h-6 w-1 rounded-lg z-10 flex shrink-0\"></div>");
+var root_2$4 = /* @__PURE__ */ from_html("<div class=\"bg-border h-6 w-1 rounded-lg z-10 flex shrink-0\"></div>");
 function Resizable_handle(t, r) {
 	push(r, !0);
 	let i = prop(r, "ref", 15, null), a = prop(r, "withHandle", 3, !1), o = /* @__PURE__ */ rest_props(r, [
@@ -11957,7 +11985,7 @@ function Resizable_handle(t, r) {
 				},
 				children: (t, r) => {
 					var i = comment(), o = first_child(i), s = (t) => {
-						append(t, root_2$3());
+						append(t, root_2$4());
 					};
 					if_block(o, (t) => {
 						a() && t(s);
@@ -12023,7 +12051,7 @@ function get_zoom(t) {
 	for (var r = t, i = 1; r !== null;) i *= +getComputedStyle(r).zoom, r = r.parentElement;
 	return i;
 }
-var root$9 = /* @__PURE__ */ from_html("<div><!></div>");
+var root$11 = /* @__PURE__ */ from_html("<div><!></div>");
 function Empty(t, r) {
 	push(r, !0);
 	let i = prop(r, "ref", 15, null), a = /* @__PURE__ */ rest_props(r, [
@@ -12034,14 +12062,14 @@ function Empty(t, r) {
 		"class",
 		"children"
 	]);
-	var o = root$9();
+	var o = root$11();
 	attribute_effect(o, (t) => ({
 		"data-slot": "empty",
 		class: t,
 		...a
 	}), [() => cn("gap-4 rounded-xl border-dashed p-6 flex w-full min-w-0 flex-1 flex-col items-center justify-center text-center text-balance", r.class)]), snippet(child(o), () => r.children ?? noop$2), reset(o), bind_this(o, (t) => i(t), () => i()), append(t, o), pop();
 }
-var root$8 = /* @__PURE__ */ from_html("<div><!></div>");
+var root$10 = /* @__PURE__ */ from_html("<div><!></div>");
 function Empty_header(t, r) {
 	push(r, !0);
 	let i = prop(r, "ref", 15, null), a = /* @__PURE__ */ rest_props(r, [
@@ -12052,7 +12080,7 @@ function Empty_header(t, r) {
 		"class",
 		"children"
 	]);
-	var o = root$8();
+	var o = root$10();
 	attribute_effect(o, (t) => ({
 		"data-slot": "empty-header",
 		class: t,
@@ -12067,7 +12095,7 @@ const emptyMediaVariants = tv({
 	} },
 	defaultVariants: { variant: "default" }
 });
-var root$7 = /* @__PURE__ */ from_html("<div><!></div>");
+var root$9 = /* @__PURE__ */ from_html("<div><!></div>");
 function Empty_media(t, r) {
 	push(r, !0);
 	let i = prop(r, "ref", 15, null), a = prop(r, "variant", 3, "default"), o = /* @__PURE__ */ rest_props(r, [
@@ -12079,7 +12107,7 @@ function Empty_media(t, r) {
 		"children",
 		"variant"
 	]);
-	var s = root$7();
+	var s = root$9();
 	attribute_effect(s, (t) => ({
 		"data-slot": "empty-icon",
 		"data-variant": a(),
@@ -12087,7 +12115,7 @@ function Empty_media(t, r) {
 		...o
 	}), [() => cn(emptyMediaVariants({ variant: a() }), r.class)]), snippet(child(s), () => r.children ?? noop$2), reset(s), bind_this(s, (t) => i(t), () => i()), append(t, s), pop();
 }
-var root$6 = /* @__PURE__ */ from_html("<div><!></div>");
+var root$8 = /* @__PURE__ */ from_html("<div><!></div>");
 function Empty_title(t, r) {
 	push(r, !0);
 	let i = prop(r, "ref", 15, null), a = /* @__PURE__ */ rest_props(r, [
@@ -12098,7 +12126,7 @@ function Empty_title(t, r) {
 		"class",
 		"children"
 	]);
-	var o = root$6();
+	var o = root$8();
 	attribute_effect(o, (t) => ({
 		"data-slot": "empty-title",
 		class: t,
@@ -12200,13 +12228,13 @@ function Hover_card_trigger(t, r) {
 		}));
 	}), append(t, o), pop();
 }
-var root_2$2 = /* @__PURE__ */ from_html("<!> <!>", 1), root_4$1 = /* @__PURE__ */ from_html("<p class=\"text-sm\"> </p>"), root$3 = /* @__PURE__ */ from_html("<div class=\"flex justify-between space-x-4\"><!> <div class=\"space-y-1\"><h4 class=\"text-sm font-semibold\"> </h4> <!></div></div>");
+var root_2$3 = /* @__PURE__ */ from_html("<!> <!>", 1), root_4 = /* @__PURE__ */ from_html("<p class=\"text-sm\"> </p>"), root$5 = /* @__PURE__ */ from_html("<div class=\"flex justify-between space-x-4\"><!> <div class=\"space-y-1\"><h4 class=\"text-sm font-semibold\"> </h4> <!></div></div>");
 function UserCard(t, r) {
 	push(r, !0);
-	var i = root$3(), a = child(i), o = (t) => {
+	var i = root$5(), a = child(i), o = (t) => {
 		Avatar(t, {
 			children: (t, i) => {
-				var a = root_2$2(), o = first_child(a);
+				var a = root_2$3(), o = first_child(a);
 				Avatar_image(o, { get src() {
 					return r.user.profile.image;
 				} }), Avatar_fallback(sibling(o, 2), {
@@ -12225,21 +12253,21 @@ function UserCard(t, r) {
 	var s = sibling(a, 2), c = child(s), l = child(c, !0);
 	reset(c);
 	var u = sibling(c, 2), d = (t) => {
-		var i = root_4$1(), a = child(i, !0);
+		var i = root_4(), a = child(i, !0);
 		reset(i), template_effect(() => set_text(a, r.user.profile.text)), append(t, i);
 	};
 	if_block(u, (t) => {
 		r.user.profile.text !== "" && t(d);
 	}), reset(s), reset(i), template_effect(() => set_text(l, r.user.name)), append(t, i), pop();
 }
-var siteAdminStyleClass = "text-purple-600", channelAdminStyleClass = "text-red-600", moderatorStyleClass = "text-amber-600", regularStyleClass = "text-white", guestStyleClass = "text-gray-600", rankToClass = (t) => t >= 255 ? siteAdminStyleClass : t >= 3 ? channelAdminStyleClass : t == 2 ? moderatorStyleClass : t >= 1 ? regularStyleClass : guestStyleClass, root_3$1 = /* @__PURE__ */ from_html("<li><!></li>"), root_2$1 = /* @__PURE__ */ from_html("<ul class=\"overflow-auto no-scrollbar\"></ul> <!>", 1), root_9$1 = /* @__PURE__ */ from_html("<!> <!>", 1), root$2 = /* @__PURE__ */ from_html("<div><!></div>");
+var siteAdminStyleClass = "text-purple-600", channelAdminStyleClass = "text-red-600", moderatorStyleClass = "text-amber-600", regularStyleClass = "text-white", guestStyleClass = "text-gray-600", rankToClass = (t) => t >= 255 ? siteAdminStyleClass : t >= 3 ? channelAdminStyleClass : t == 2 ? moderatorStyleClass : t >= 1 ? regularStyleClass : guestStyleClass, root_3$1 = /* @__PURE__ */ from_html("<li><!></li>"), root_2$2 = /* @__PURE__ */ from_html("<ul class=\"overflow-auto no-scrollbar\"></ul> <!>", 1), root_9 = /* @__PURE__ */ from_html("<!> <!>", 1), root$4 = /* @__PURE__ */ from_html("<div><!></div>");
 function Userlist(t, r) {
 	push(r, !0);
 	let i = () => store_get(userlistStore, "$userlistStore", a), [a, o] = setup_stores(), s = /* @__PURE__ */ user_derived(() => i().userlist), c = /* @__PURE__ */ user_derived(() => get$3(s).length > 0), l = /* @__PURE__ */ state(null);
-	var u = root$2(), d = child(u), f = (t) => {
+	var u = root$4(), d = child(u), f = (t) => {
 		Hover_card(t, {
 			children: (t, r) => {
-				var i = root_2$1(), a = first_child(i);
+				var i = root_2$2(), a = first_child(i);
 				each(a, 29, () => get$3(s), (t) => t.name, (t, r) => {
 					var i = root_3$1();
 					Hover_card_trigger(child(i), {
@@ -12275,7 +12303,7 @@ function Userlist(t, r) {
 			children: (t, r) => {
 				Empty_header(t, {
 					children: (t, r) => {
-						var i = root_9$1(), a = first_child(i);
+						var i = root_9(), a = first_child(i);
 						Empty_media(a, {
 							variant: "icon",
 							children: (t, r) => {
@@ -12304,6 +12332,73 @@ function Userlist(t, r) {
 	if_block(d, (t) => {
 		get$3(c) ? t(f) : t(p, -1);
 	}), reset(u), template_effect((t) => set_class(u, 1, t), [() => clsx$1(cn(r.class))]), append(t, u), pop(), o();
+}
+var root$3 = /* @__PURE__ */ from_html("<textarea></textarea>");
+function Textarea(t, r) {
+	push(r, !0);
+	let i = prop(r, "ref", 15, null), a = prop(r, "value", 15), o = prop(r, "data-slot", 3, "textarea"), s = /* @__PURE__ */ rest_props(r, [
+		"$$slots",
+		"$$events",
+		"$$legacy",
+		"ref",
+		"value",
+		"class",
+		"data-slot"
+	]);
+	var c = root$3();
+	remove_textarea_child(c), attribute_effect(c, (t) => ({
+		"data-slot": o(),
+		class: t,
+		...s
+	}), [() => cn("border-input dark:bg-input/30 focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 disabled:bg-input/50 dark:disabled:bg-input/80 rounded-lg border bg-transparent px-2.5 py-2 text-base transition-colors focus-visible:ring-3 aria-invalid:ring-3 md:text-sm placeholder:text-muted-foreground flex field-sizing-content min-h-16 w-full outline-none disabled:cursor-not-allowed disabled:opacity-50", r.class)]), bind_this(c, (t) => i(t), () => i()), bind_value(c, a), append(t, c), pop();
+}
+var root_2$1 = /* @__PURE__ */ from_html("<!> <!>", 1), root$2 = /* @__PURE__ */ from_html("<form><!></form>");
+function ChatForm(t, r) {
+	push(r, !0);
+	let i = /* @__PURE__ */ state(""), a = async (t) => {
+		t.preventDefault(), console.log(get$3(i)), set(i, "");
+	};
+	var o = root$2();
+	Field_group(child(o), {
+		class: "flex-1 flex flex-row",
+		children: (t, r) => {
+			Field(t, {
+				orientation: "horizontal",
+				class: "flex-1 flex flex-row items-start justify-start gap-0",
+				children: (t, r) => {
+					var a = root_2$1(), o = first_child(a);
+					Textarea(o, {
+						required: !0,
+						class: "flex-9 h-full rounded-none border-none resize-none",
+						autocomplete: "off",
+						placeholder: "Chat message",
+						get value() {
+							return get$3(i);
+						},
+						set value(t) {
+							set(i, t, !0);
+						}
+					}), Button(sibling(o, 2), {
+						type: "submit",
+						class: "flex-1 h-full rounded-none border-none",
+						children: (t, r) => {
+							HugeiconsIcon(t, {
+								get icon() {
+									return rsr;
+								},
+								class: "size-5",
+								role: "button",
+								"aria-label": "Send"
+							});
+						},
+						$$slots: { default: !0 }
+					}), append(t, a);
+				},
+				$$slots: { default: !0 }
+			});
+		},
+		$$slots: { default: !0 }
+	}), reset(o), template_effect((t) => set_class(o, 1, t), [() => clsx$1(cn(r.class, "flex flex-row"))]), event("submit", o, a), append(t, o), pop();
 }
 var root_2 = /* @__PURE__ */ from_html("<!> <!>", 1), root$1 = /* @__PURE__ */ from_html("<form><!></form>");
 function GuestLoginForm(t, r) {
@@ -12362,7 +12457,7 @@ function GuestLoginForm(t, r) {
 		$$slots: { default: !0 }
 	}), reset(u), template_effect((t) => set_class(u, 1, t), [() => clsx$1(cn(r.class))]), event("submit", u, l), append(t, u), pop(), o();
 }
-var root_5 = /* @__PURE__ */ from_html("<!> <!> <!>", 1), root_4 = /* @__PURE__ */ from_html("<div class=\"flex flex-col h-full\"><!> <!></div>"), root_9 = /* @__PURE__ */ from_html("<div class=\"flex flex-col h-full items-center justify-center p-6\"><span class=\"font-semibold\">Features</span></div>"), root_3 = /* @__PURE__ */ from_html("<!> <!> <!>", 1), root_12 = /* @__PURE__ */ from_html("<div class=\"flex flex-row h-full items-center justify-center p-6\"><span class=\"font-semibold\">Player</span></div>"), root_13 = /* @__PURE__ */ from_html("<div class=\"flex flex-col h-full items-center justify-center p-6\"><span class=\"font-semibold\">Playlist</span></div>"), root_11 = /* @__PURE__ */ from_html("<!> <!> <!>", 1), root_1 = /* @__PURE__ */ from_html("<!> <!> <!>", 1);
+var root_7 = /* @__PURE__ */ from_html("<!> <!> <!>", 1), root_5 = /* @__PURE__ */ from_html("<!> <!> <!>", 1), root_13 = /* @__PURE__ */ from_html("<div class=\"flex flex-col h-full items-center justify-center p-6\"><span class=\"font-semibold\">Features</span></div>"), root_3 = /* @__PURE__ */ from_html("<!> <!> <!>", 1), root_16 = /* @__PURE__ */ from_html("<div class=\"flex flex-row h-full items-center justify-center p-6\"><span class=\"font-semibold\">Player</span></div>"), root_17 = /* @__PURE__ */ from_html("<div class=\"flex flex-col h-full items-center justify-center p-6\"><span class=\"font-semibold\">Playlist</span></div>"), root_15 = /* @__PURE__ */ from_html("<!> <!> <!>", 1), root_1 = /* @__PURE__ */ from_html("<!> <!> <!>", 1);
 function CytubeFluidLayout(t, r) {
 	push(r, !1);
 	let i = () => store_get(clientStore, "$clientStore", a), [a, o] = setup_stores();
@@ -12384,36 +12479,62 @@ function CytubeFluidLayout(t, r) {
 							Pane(o, {
 								defaultSize: 70,
 								children: (t, r) => {
-									var a = root_4(), o = child(a);
-									Resizable_pane_group(o, {
-										direction: "horizontal",
+									Resizable_pane_group(t, {
+										direction: "vertical",
+										class: "flex flex-col h-full",
 										children: (t, r) => {
-											var i = root_5(), a = first_child(i);
-											Pane(a, {
-												defaultSize: 20,
+											var a = root_5(), o = first_child(a);
+											Pane(o, {
+												defaultSize: 90,
 												children: (t, r) => {
-													Userlist(t, { class: "flex flex-col items-start justify-start h-full px-1 py-0.5" });
+													Resizable_pane_group(t, {
+														direction: "horizontal",
+														children: (t, r) => {
+															var i = root_7(), a = first_child(i);
+															Pane(a, {
+																defaultSize: 20,
+																children: (t, r) => {
+																	Userlist(t, { class: "flex flex-col items-start justify-start h-full px-1 py-0.5" });
+																},
+																$$slots: { default: !0 }
+															});
+															var o = sibling(a, 2);
+															Resizable_handle(o, {}), Pane(sibling(o, 2), {
+																defaultSize: 80,
+																class: "flex flex-col items-center justify-center h-full",
+																children: (t, r) => {
+																	next(), append(t, text("Chat"));
+																},
+																$$slots: { default: !0 }
+															}), append(t, i);
+														},
+														$$slots: { default: !0 }
+													});
 												},
 												$$slots: { default: !0 }
 											});
-											var o = sibling(a, 2);
-											Resizable_handle(o, {}), Pane(sibling(o, 2), {
-												defaultSize: 80,
-												class: "flex flex-col items-center justify-center h-full",
-												children: (t, r) => {
-													next(), append(t, text("Chat"));
-												},
-												$$slots: { default: !0 }
-											}), append(t, i);
+											var s = sibling(o, 2);
+											Resizable_handle(s, {});
+											var c = sibling(s, 2), l = (t) => {
+												Pane(t, {
+													defaultSize: 10,
+													minSize: 10,
+													maxSize: 80,
+													class: "flex",
+													children: (t, r) => {
+														ChatForm(t, { class: "flex-1 flex-row" });
+													},
+													$$slots: { default: !0 }
+												});
+											}, u = (t) => {
+												GuestLoginForm(t, { class: "w-full" });
+											};
+											if_block(c, (t) => {
+												i().logged_in ? t(l) : t(u, -1);
+											}), append(t, a);
 										},
 										$$slots: { default: !0 }
 									});
-									var s = sibling(o, 2), c = (t) => {
-										GuestLoginForm(t, { class: "w-full" });
-									};
-									if_block(s, (t) => {
-										i().logged_in || t(c);
-									}), reset(a), append(t, a);
 								},
 								$$slots: { default: !0 }
 							});
@@ -12421,7 +12542,7 @@ function CytubeFluidLayout(t, r) {
 							Resizable_handle(s, {}), Pane(sibling(s, 2), {
 								defaultSize: 30,
 								children: (t, r) => {
-									append(t, root_9());
+									append(t, root_13());
 								},
 								$$slots: { default: !0 }
 							}), append(t, a);
@@ -12441,11 +12562,11 @@ function CytubeFluidLayout(t, r) {
 						direction: "vertical",
 						class: "flex-1",
 						children: (t, r) => {
-							var i = root_11(), a = first_child(i);
+							var i = root_15(), a = first_child(i);
 							Pane(a, {
 								defaultSize: 70,
 								children: (t, r) => {
-									append(t, root_12());
+									append(t, root_16());
 								},
 								$$slots: { default: !0 }
 							});
@@ -12453,7 +12574,7 @@ function CytubeFluidLayout(t, r) {
 							Resizable_handle(o, {}), Pane(sibling(o, 2), {
 								defaultSize: 30,
 								children: (t, r) => {
-									append(t, root_13());
+									append(t, root_17());
 								},
 								$$slots: { default: !0 }
 							}), append(t, i);
