@@ -12,22 +12,47 @@
   import VersionBadge from "$components/common/VersionBadge.svelte";
   import ChannelAvatar from "$components/common/ChannelAvatar.svelte";
   import AuthForm from "$features/auth/AuthForm.svelte";
+  import type { HTMLAttributes } from "svelte/elements";
+  import { cn } from "$lib/utils";
+
+  let {
+    children,
+    class: className,
+    ...restProps
+  }: HTMLAttributes<HTMLHeadElement> = $props();
 </script>
 
 <header
-  class="sticky w-full flex flex-row items-center justify-start h-15 mx-auto top-0 z-50 bg-background md:bg-background/80 md:backdrop-blur-md"
+  class={cn(
+    "sticky w-full flex flex-row items-center justify-between px-10 py-5 bg-background md:bg-background/80 md:backdrop-blur-md",
+    className,
+  )}
+  {...restProps}
 >
   {#if $appStore.version}
-    <VersionBadge version={$appStore.version} />
+    <div class="fixed left-0 top-0">
+      <VersionBadge version={$appStore.version} />
+    </div>
   {/if}
 
-  <div class="w-full flex flex-row items-center justify-between pr-6 py-5">
-    <ChannelAvatar imgSrc={logoImgSrc} isConnected={$socketStore.connected} />
+  <ChannelAvatar
+    class="flex-4"
+    imgSrc={logoImgSrc}
+    isConnected={$socketStore.connected}
+  />
 
-    {#if $socketStore.connected}
-      <AuthForm isLoggedIn={$clientStore.logged_in} />
-    {:else}
-      <Button onclick={submitSocketConnect}>Reconnect</Button>
-    {/if}
-  </div>
+  {#if children}
+    <div class="flex-4">
+      {@render children()}
+    </div>
+  {/if}
+
+  {#if $socketStore.connected}
+    <AuthForm class="flex-4" isLoggedIn={$clientStore.logged_in} />
+  {:else}
+    <div class="flex-4 flex flex-row items-center justify-end">
+      <Button class="basis-1" onclick={submitSocketConnect}>Reconnect</Button>
+    </div>
+  {/if}
+  <!-- </div> -->
 </header>

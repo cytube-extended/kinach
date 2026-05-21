@@ -25,6 +25,7 @@
   import { authStore, login } from "./auth";
   import AuthAvatar from "./AuthAvatar.svelte";
   import { cn } from "$lib/utils";
+  import type { ClassValue } from "svelte/elements";
 
   let isSubmitting = $derived($authStore.status);
 
@@ -62,7 +63,7 @@
     try {
       $authStore.status = true;
 
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 250));
       await login(username, password);
     } catch (err: unknown) {
       // TODO: Show alert?
@@ -73,13 +74,20 @@
       $authStore.password = undefined;
     }
   };
+
+  let {
+    class: className,
+    ...restProps
+  }: {
+    class?: ClassValue;
+  } = $props();
 </script>
 
-<div class="w-full max-w-md ml-auto">
+<div class={cn("", className)} {...restProps}>
   <form onsubmit={handleSubmit}>
     <Group>
       <Field
-        orientation="responsive"
+        orientation="horizontal"
         class="flex flex-row items-center justify-end"
       >
         <AuthAvatar

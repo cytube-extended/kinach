@@ -1,12 +1,20 @@
 <script lang="ts">
   import LoginForm from "./LoginForm.svelte";
   import LogoutForm from "./LogoutForm.svelte";
+  import type { ClassValue } from "svelte/elements";
 
-  let { isLoggedIn }: { isLoggedIn: boolean } = $props();
+  let {
+    class: className,
+    isLoggedIn,
+    ...restProps
+  }: {
+    class?: ClassValue;
+    isLoggedIn: boolean;
+  } = $props();
 </script>
 
 {#if isLoggedIn}
-  <LogoutForm />
+  <LogoutForm class={className} {...restProps} />
 {:else}
-  <LoginForm />
+  <LoginForm class={className} {...restProps} />
 {/if}

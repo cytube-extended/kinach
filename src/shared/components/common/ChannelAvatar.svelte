@@ -1,21 +1,35 @@
 <script lang="ts">
   import { Badge, Fallback, Image, Root } from "$lib/components/ui/avatar";
+  import { cn } from "$lib/utils";
+  import type { ClassValue } from "svelte/elements";
 
-  interface Props {
+  let {
+    class: className,
+    imgSrc,
+    fallbackText = "Channel Logo",
+    isConnected,
+    ...restProps
+  }: {
+    class?: ClassValue;
     imgSrc: string;
     fallbackText?: string;
     isConnected?: boolean;
-  }
+  } = $props();
 
-  let { imgSrc, fallbackText = "Channel Logo", isConnected }: Props = $props();
+  let statusClass = $derived(isConnected ? "bg-green-500" : "bg-red-500");
+  let title = $derived(
+    isConnected ? "Socket: Connected" : "Socket: Disconnected",
+  );
 </script>
 
-<Root class="rounded-lg">
-  <Image src={imgSrc} alt={fallbackText} />
+<div class={cn("", className)} {...restProps}>
+  <Root class="rounded-lg">
+    <Image src={imgSrc} alt={fallbackText} />
 
-  {#if typeof isConnected === "boolean"}
-    <Badge class={isConnected ? "bg-green-500" : "bg-red-500"} />
-  {/if}
+    {#if typeof isConnected === "boolean"}
+      <Badge class={statusClass} {title} />
+    {/if}
 
-  <Fallback>{fallbackText}</Fallback>
-</Root>
+    <Fallback>{fallbackText}</Fallback>
+  </Root>
+</div>

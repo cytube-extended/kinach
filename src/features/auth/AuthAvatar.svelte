@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { fade } from "svelte/transition";
   import { HugeiconsIcon } from "@hugeicons/svelte";
   import {
     Loading03Icon,
@@ -8,36 +7,30 @@
     AnonymousIcon,
   } from "@hugeicons/core-free-icons";
 
-  interface Props {
+  let {
+    isLoading,
+    isAnon,
+    isGuest,
+  }: {
     isLoading: boolean;
     isAnon: boolean;
     isGuest: boolean;
-  }
-
-  let { isLoading, isAnon, isGuest }: Props = $props();
+  } = $props();
 </script>
 
 <div>
   {#if isLoading}
-    <span transition:fade={{ duration: 250 }}>
-      <HugeiconsIcon
-        icon={Loading03Icon}
-        class="size-5 animate-spin"
-        role="status"
-        aria-label="Loading"
-      />
-    </span>
+    <HugeiconsIcon
+      icon={Loading03Icon}
+      class="size-5 animate-spin"
+      role="status"
+      aria-label="Loading"
+    />
   {:else if isAnon}
-    <span transition:fade={{ duration: 250 }}>
-      <HugeiconsIcon icon={AnonymousIcon} class="size-5" />
-    </span>
+    <HugeiconsIcon icon={AnonymousIcon} class="size-5" />
   {:else if isGuest}
-    <span transition:fade={{ duration: 250 }}>
-      <HugeiconsIcon icon={UserIcon} class="size-5" />
-    </span>
+    <HugeiconsIcon icon={UserIcon} class="size-5" />
   {:else}
-    <span transition:fade={{ duration: 250 }}>
-      <HugeiconsIcon icon={UserCircleIcon} class="size-5" />
-    </span>
+    <HugeiconsIcon icon={UserCircleIcon} class="size-5" />
   {/if}
 </div>

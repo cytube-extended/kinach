@@ -8,9 +8,22 @@
   import ChatForm from "$features/chat/ChatForm.svelte";
   import GuestLoginForm from "$features/auth/GuestLoginForm.svelte";
   import { clientStore } from "$stores/clientStore";
+  import { cn } from "$lib/utils";
+  import type { ClassValue } from "clsx";
+
+  let {
+    class: className,
+    ...restProps
+  }: {
+    class?: ClassValue;
+  } = $props();
 </script>
 
-<PaneGroup direction="horizontal" class="w-full flex-1 border">
+<PaneGroup
+  direction="horizontal"
+  class={cn("border", className)}
+  {...restProps}
+>
   <Pane defaultSize={45} minSize={25} maxSize={50}>
     <PaneGroup direction="vertical" class="flex-1">
       <Pane defaultSize={70}>
