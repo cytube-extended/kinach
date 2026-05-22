@@ -20,22 +20,22 @@
 
 <header
   class={cn(
-    "sticky top-0 z-50 mx-auto flex h-15 w-full flex-row items-center justify-start bg-background md:bg-background/80 md:backdrop-blur-md",
+    "sticky flex w-full flex-row items-center justify-between gap-4 bg-background py-4 pr-5 pl-10 md:gap-8 md:pr-8",
     className
   )}
   {...restProps}
 >
   {#if $appStore.version}
-    <VersionBadge version={$appStore.version} />
+    <div class="fixed top-0 left-0 flex-none">
+      <VersionBadge version={$appStore.version} />
+    </div>
   {/if}
 
-  <div class="flex w-full flex-row items-center justify-between py-5 pr-6">
-    <ChannelAvatar imgSrc={logoImgSrc} isConnected={$socketStore.connected} />
+  <ChannelAvatar class="flex-none" imgSrc={logoImgSrc} isConnected={$socketStore.connected} />
 
-    {#if $socketStore.connected}
-      <AuthForm isLoggedIn={$clientStore.logged_in} />
-    {:else}
-      <Button onclick={submitSocketConnect}>Reconnect</Button>
-    {/if}
-  </div>
+  {#if $socketStore.connected}
+    <AuthForm class="w-4/5 flex-initial md:w-3/5 lg:w-2/5" isLoggedIn={$clientStore.logged_in} />
+  {:else}
+    <Button class="flex-initial" onclick={submitSocketConnect}>Reconnect</Button>
+  {/if}
 </header>

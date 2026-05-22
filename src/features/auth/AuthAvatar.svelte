@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { ClassValue } from "svelte/elements";
   import {
     Loading03Icon,
     UserCircleIcon,
@@ -7,17 +8,23 @@
   } from "@hugeicons/core-free-icons";
   import { HugeiconsIcon } from "@hugeicons/svelte";
   import { fade } from "svelte/transition";
+  import { cn } from "$lib/utils";
 
-  interface Props {
+  let {
+    class: className,
+    isLoading,
+    isAnon,
+    isGuest,
+    ...restProps
+  }: {
+    class?: ClassValue;
     isLoading: boolean;
     isAnon: boolean;
     isGuest: boolean;
-  }
-
-  let { isLoading, isAnon, isGuest }: Props = $props();
+  } = $props();
 </script>
 
-<div>
+<div class={cn("", className)} {...restProps}>
   {#if isLoading}
     <span transition:fade={{ duration: 250 }}>
       <HugeiconsIcon

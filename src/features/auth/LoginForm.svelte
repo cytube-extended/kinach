@@ -16,10 +16,11 @@
 </script>
 
 <script lang="ts">
+  import type { ClassValue } from "svelte/elements";
   import { Button } from "$lib/components/ui/button";
   import { Field, Group } from "$lib/components/ui/field";
   import { Input } from "$lib/components/ui/input";
-  import { cn } from "$lib/utils";
+  import { cn, isDesktop } from "$lib/utils";
   import { authStore, login } from "./auth";
   import AuthAvatar from "./AuthAvatar.svelte";
 
@@ -72,17 +73,26 @@
       $authStore.password = undefined;
     }
   };
+
+  let {
+    class: className,
+    ...restProps
+  }: {
+    class?: ClassValue;
+  } = $props();
 </script>
 
-<div class="ml-auto w-full max-w-md">
+<div class={cn("", className)} {...restProps}>
   <form onsubmit={handleSubmit}>
     <Group>
-      <Field orientation="responsive" class="flex flex-row items-center justify-end">
-        <AuthAvatar
-          isLoading={isSubmitting}
-          isAnon={username === "" && password === ""}
-          isGuest={password === ""}
-        />
+      <Field orientation="horizontal" class="flex flex-row items-center justify-end">
+        {#if isDesktop.current}
+          <AuthAvatar
+            isLoading={isSubmitting}
+            isAnon={username === "" && password === ""}
+            isGuest={password === ""}
+          />
+        {/if}
         <Input
           required
           type="text"

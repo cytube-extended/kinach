@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { HTMLAttributes } from "svelte/elements";
+  import type { ClassValue, HTMLAttributes } from "svelte/elements";
   import { Button } from "$lib/components/ui/button";
   import { Field, Group } from "$lib/components/ui/field";
   import { Input } from "$lib/components/ui/input";
@@ -34,10 +34,15 @@
     }
   };
 
-  let { class: className }: Props = $props();
+  let {
+    class: className,
+    ...restProps
+  }: {
+    class?: ClassValue;
+  } = $props();
 </script>
 
-<form onsubmit={handleSubmit} class={cn(className)}>
+<form onsubmit={handleSubmit} class={cn("", className)} {...restProps}>
   <Group>
     <Field orientation="horizontal" class="flex flex-row items-start justify-start gap-0">
       <Button type="submit" class="flex-2 rounded-none border-none" disabled={username === ""}>

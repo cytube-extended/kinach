@@ -1,8 +1,9 @@
 <script lang="ts">
+  import type { ClassValue } from "svelte/elements";
   import { Button } from "$lib/components/ui/button";
   import { Field, Group } from "$lib/components/ui/field";
   import { Label } from "$lib/components/ui/label";
-  import { cn } from "$lib/utils";
+  import { cn, isDesktop } from "$lib/utils";
   import { clientStore } from "$stores/clientStore";
   import { authStore, logout } from "./auth";
   import AuthAvatar from "./AuthAvatar.svelte";
@@ -32,19 +33,29 @@
       $authStore.password = undefined;
     }
   };
+
+  let {
+    class: className,
+    ...restProps
+  }: {
+    class?: ClassValue;
+  } = $props();
 </script>
 
-<div class="ml-auto w-full max-w-md">
+<div class={cn("", className)} {...restProps}>
   <form onsubmit={handleSubmit}>
     <Group>
       <Field
-        orientation="responsive"
+        orientation="horizontal"
         class="flex flex-row items-center justify-end selection:bg-primary"
       >
-        <AuthAvatar isLoading={isSubmitting} isAnon={false} isGuest={!isUser} />
-        <Label class="w-auto flex-none">
-          {$clientStore.name}
-        </Label>
+        {#if isDesktop.current}
+          <AuthAvatar isLoading={isSubmitting} isAnon={false} isGuest={!isUser} />
+          <Label class="w-auto flex-none">
+            {$clientStore.name}
+          </Label>
+        {/if}
+
         <Button
           type="submit"
           disabled={isSubmitting}
