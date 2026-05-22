@@ -1,5 +1,5 @@
 <script lang="ts" module>
-  const BODY_CLASSNAMES = "dark override-theme min-h-screen flex flex-col";
+  const BODY_CLASSNAMES = "dark min-h-screen flex flex-col";
 </script>
 
 <script lang="ts">
