@@ -31,26 +31,22 @@
   let usernameParseResult = $derived(safeParse(usernameSchema, username));
   let isValidUsername = $derived(usernameParseResult.success);
   let showUsernameError = $derived(username !== "" && !isValidUsername);
-  let usernameError = $derived.by(() => {
-    if (usernameParseResult.success) {
-      return "";
-    }
-
-    return usernameParseResult.issues.map(issue => issue.message).join(", ");
-  });
+  let usernameError = $derived(
+    usernameParseResult.success
+      ? ""
+      : usernameParseResult.issues.map(issue => issue.message).join(", ")
+  );
 
   let password = $derived($authStore.password || "");
   let disablePassword = $derived(!isValidUsername || isSubmitting);
   let passwordParseResult = $derived(safeParse(passwordSchema, password));
   let isValidPassword = $derived(passwordParseResult.success);
   let showPasswordError = $derived(password !== "" && !isValidPassword);
-  let passwordError = $derived.by(() => {
-    if (passwordParseResult.success) {
-      return "";
-    }
-
-    return passwordParseResult.issues.map(issue => issue.message).join(", ");
-  });
+  let passwordError = $derived(
+    passwordParseResult.success
+      ? ""
+      : passwordParseResult.issues.map(issue => issue.message).join(", ")
+  );
 
   let disableSubmit = $derived(
     isSubmitting || !isValidUsername || (isValidUsername && !isValidPassword)
