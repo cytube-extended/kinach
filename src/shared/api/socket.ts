@@ -7,7 +7,7 @@ export type SocketClient = typeof Socket & {
 };
 
 type SocketConnectOutputEvent = "connect";
-type SocketConnectOutputData = null;
+type SocketConnectOutputData = void;
 
 type SocketDisconnectOutputEvent = "disconnect";
 type SocketDisconnectOutputData =
@@ -19,13 +19,8 @@ type SocketDisconnectOutputData =
 type SocketDisconnectOutputDataSuccess = "io client disconnect";
 
 export const submitSocketConnect = async () =>
-  new Promise<void>((resolve) => {
-    socketClient.once<SocketConnectOutputEvent, SocketConnectOutputData>(
-      "connect",
-      () => {
-        resolve();
-      },
-    );
+  new Promise<void>(resolve => {
+    socketClient.once<SocketConnectOutputEvent, SocketConnectOutputData>("connect", resolve);
 
     socketClient.connect();
   });
@@ -34,9 +29,8 @@ export const submitSocketDisconnect = async () =>
   new Promise<void>((resolve, reject) => {
     socketClient.once<SocketDisconnectOutputEvent, SocketDisconnectOutputData>(
       "disconnect",
-      (reason) => {
-        const success: SocketDisconnectOutputDataSuccess =
-          "io client disconnect";
+      reason => {
+        const success: SocketDisconnectOutputDataSuccess = "io client disconnect";
 
         if (reason === success) {
           resolve();
@@ -45,7 +39,7 @@ export const submitSocketDisconnect = async () =>
         }
 
         reject(reason);
-      },
+      }
     );
 
     socketClient.disconnect();

@@ -18,10 +18,10 @@ const createPageStore = (pageStateOverrides?: Partial<PageState>) => {
 
   return {
     subscribe,
+
     init: (state: PageState) => set(state),
-    updateCSRF: (csrf: string) => update((state) => ({ ...state, csrf })),
-    resetCSRF: () =>
-      update((state) => ({ ...state, csrf: defaultPageState.csrf })),
+    resetCSRF: () => update(state => ({ ...state, csrf: defaultPageState.csrf })),
+    updateCSRF: (csrf: string) => update(state => ({ ...state, csrf })),
   };
 };
 

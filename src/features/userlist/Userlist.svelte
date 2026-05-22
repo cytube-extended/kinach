@@ -6,19 +6,19 @@
   const guestStyleClass = "text-gray-600";
 
   const rankToClass = (rank: number) => {
-    if (rank >= 255) {
+    if (rank >= ranks.SITERADMIN) {
       return siteAdminStyleClass;
     }
 
-    if (rank >= 3) {
+    if (rank >= ranks.ADMIN) {
       return channelAdminStyleClass;
     }
 
-    if (rank == 2) {
+    if (rank == ranks.MODERATOR) {
       return moderatorStyleClass;
     }
 
-    if (rank >= 1) {
+    if (rank >= ranks.USER) {
       return regularStyleClass;
     }
 
@@ -28,25 +28,20 @@
 
 <script lang="ts">
   import type { HTMLAttributes } from "svelte/elements";
-  import { blur } from "svelte/transition";
+  import { SpiralsIcon } from "@hugeicons/core-free-icons";
+  import { HugeiconsIcon } from "@hugeicons/svelte";
   import { flip } from "svelte/animate";
   import { quintOut } from "svelte/easing";
-  import { HugeiconsIcon } from "@hugeicons/svelte";
-  import { SpiralsIcon } from "@hugeicons/core-free-icons";
-  import { cn } from "$lib/utils";
-  import {
-    Header,
-    Media,
-    Root,
-    Title,
-  } from "$lib/components/ui/empty/index.js";
+  import { blur } from "svelte/transition";
+  import { Header, Media, Root, Title } from "$lib/components/ui/empty/index.js";
   import {
     Root as HoverCardRoot,
     Trigger as HoverCardTrigger,
     Content as HoverCardContent,
   } from "$lib/components/ui/hover-card/index.js";
-  import { userlistStore, type AddUserOutputSocketData } from "./userlist";
+  import { cn } from "$lib/utils";
   import UserCard from "./UserCard.svelte";
+  import { ranks, userlistStore, type AddUserOutputSocketData } from "./userlist";
 
   type Props = HTMLAttributes<HTMLElement>;
 
@@ -60,7 +55,7 @@
 <div class={cn(className)}>
   {#if hasUsers}
     <HoverCardRoot>
-      <ul class="overflow-auto no-scrollbar">
+      <ul class="no-scrollbar overflow-auto">
         {#each userlist as user (user.name)}
           <li
             animate:flip={{ duration: 200, easing: quintOut }}

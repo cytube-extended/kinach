@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { fade } from "svelte/transition";
-  import { HugeiconsIcon } from "@hugeicons/svelte";
   import {
     Loading03Icon,
     UserCircleIcon,
     UserIcon,
     AnonymousIcon,
   } from "@hugeicons/core-free-icons";
+  import { HugeiconsIcon } from "@hugeicons/svelte";
+  import { fade } from "svelte/transition";
 
   interface Props {
     isLoading: boolean;

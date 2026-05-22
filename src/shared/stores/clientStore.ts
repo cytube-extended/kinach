@@ -16,11 +16,11 @@ const defaultClientState: ClientState = {
   leader: false,
   logged_in: false,
   name: "",
-  rank: -1,
   profile: {
     image: "",
     text: "",
   },
+  rank: -1,
 };
 
 const createClientStore = (clientStateOverrides?: Partial<ClientState>) => {
@@ -33,20 +33,18 @@ const createClientStore = (clientStateOverrides?: Partial<ClientState>) => {
 
   return {
     subscribe,
+
     init: (state: ClientState) => set(state),
-    updateName: (name: string) => update((state) => ({ ...state, name })),
-    resetName: () =>
-      update((state) => ({ ...state, name: defaultClientState.name })),
-    updateLoggedIn: (logged_in: boolean) =>
-      update((state) => ({ ...state, logged_in })),
     resetLoggedIn: () =>
-      update((state) => ({
+      update(state => ({
         ...state,
         logged_in: defaultClientState.logged_in,
       })),
-    updateRank: (rank: number) => update((state) => ({ ...state, rank })),
-    resetRank: () =>
-      update((state) => ({ ...state, rank: defaultClientState.rank })),
+    resetName: () => update(state => ({ ...state, name: defaultClientState.name })),
+    resetRank: () => update(state => ({ ...state, rank: defaultClientState.rank })),
+    updateLoggedIn: (logged_in: boolean) => update(state => ({ ...state, logged_in })),
+    updateName: (name: string) => update(state => ({ ...state, name })),
+    updateRank: (rank: number) => update(state => ({ ...state, rank })),
   };
 };
 

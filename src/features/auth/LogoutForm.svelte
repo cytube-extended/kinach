@@ -7,6 +7,8 @@
   import { authStore, logout } from "./auth";
   import AuthAvatar from "./AuthAvatar.svelte";
 
+  const LOGOUT_DELAY_MS = 500;
+
   let isSubmitting = $derived($authStore.status);
   let isUser = $derived($clientStore.rank > 0);
 
@@ -19,7 +21,7 @@
     try {
       $authStore.status = true;
 
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, LOGOUT_DELAY_MS));
       await logout();
     } catch (err: unknown) {
       // TODO: Show alert?
@@ -32,7 +34,7 @@
   };
 </script>
 
-<div class="w-full max-w-md ml-auto">
+<div class="ml-auto w-full max-w-md">
   <form onsubmit={handleSubmit}>
     <Group>
       <Field
@@ -40,7 +42,7 @@
         class="flex flex-row items-center justify-end selection:bg-primary"
       >
         <AuthAvatar isLoading={isSubmitting} isAnon={false} isGuest={!isUser} />
-        <Label class="flex-none w-auto">
+        <Label class="w-auto flex-none">
           {$clientStore.name}
         </Label>
         <Button

@@ -1,30 +1,29 @@
 <script lang="ts" module>
-  import {
-    maxLength,
-    minLength,
-    pipe,
-    regex,
-    safeParse,
-    string,
-  } from "valibot";
+  import { maxLength, minLength, pipe, regex, safeParse, string } from "valibot";
+
+  const USERNAME_MIN_LENGTH = 1;
+  const USERNAME_MAX_LENGTH = 20;
+  const PASSWORD_MAX_LENGTH = 100;
 
   const usernameSchema = pipe(
     string(),
-    minLength(1, "Min 1 character"),
-    maxLength(20, "Max 20 characters"),
-    regex(/^[A-Za-zА-Яа-я0-9_-]+$/, "Only letters, numbers, -, or _"),
+    minLength(USERNAME_MIN_LENGTH, "Min 1 character"),
+    maxLength(USERNAME_MAX_LENGTH, "Max 20 characters"),
+    regex(/^[A-Za-zА-Яа-я0-9_-]+$/, "Only letters, numbers, -, or _")
   );
 
-  const passwordSchema = pipe(string(), maxLength(100, "Max 100 characters"));
+  const passwordSchema = pipe(string(), maxLength(PASSWORD_MAX_LENGTH, "Max 100 characters"));
 </script>
 
 <script lang="ts">
   import { Button } from "$lib/components/ui/button";
   import { Field, Group } from "$lib/components/ui/field";
   import { Input } from "$lib/components/ui/input";
+  import { cn } from "$lib/utils";
   import { authStore, login } from "./auth";
   import AuthAvatar from "./AuthAvatar.svelte";
-  import { cn } from "$lib/utils";
+
+  const LOGIN_DELAY_MS = 500;
 
   let isSubmitting = $derived($authStore.status);
 
@@ -32,25 +31,29 @@
   let usernameParseResult = $derived(safeParse(usernameSchema, username));
   let isValidUsername = $derived(usernameParseResult.success);
   let showUsernameError = $derived(username !== "" && !isValidUsername);
-  const usernameError = $derived(
-    !usernameParseResult.success
-      ? usernameParseResult.issues.map((i) => i.message).join(", ")
-      : "",
-  );
+  let usernameError = $derived.by(() => {
+    if (usernameParseResult.success) {
+      return "";
+    }
+
+    return usernameParseResult.issues.map(issue => issue.message).join(", ");
+  });
 
   let password = $derived($authStore.password || "");
   let disablePassword = $derived(!isValidUsername || isSubmitting);
   let passwordParseResult = $derived(safeParse(passwordSchema, password));
   let isValidPassword = $derived(passwordParseResult.success);
   let showPasswordError = $derived(password !== "" && !isValidPassword);
-  let passwordError = $derived(
-    !passwordParseResult.success
-      ? passwordParseResult.issues.map((i) => i.message).join(", ")
-      : "",
-  );
+  let passwordError = $derived.by(() => {
+    if (passwordParseResult.success) {
+      return "";
+    }
+
+    return passwordParseResult.issues.map(issue => issue.message).join(", ");
+  });
 
   let disableSubmit = $derived(
-    isSubmitting || !isValidUsername || (isValidUsername && !isValidPassword),
+    isSubmitting || !isValidUsername || (isValidUsername && !isValidPassword)
   );
 
   const handleSubmit = async (event: SubmitEvent) => {
@@ -62,7 +65,7 @@
     try {
       $authStore.status = true;
 
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, LOGIN_DELAY_MS));
       await login(username, password);
     } catch (err: unknown) {
       // TODO: Show alert?
@@ -75,13 +78,10 @@
   };
 </script>
 
-<div class="w-full max-w-md ml-auto">
+<div class="ml-auto w-full max-w-md">
   <form onsubmit={handleSubmit}>
     <Group>
-      <Field
-        orientation="responsive"
-        class="flex flex-row items-center justify-end"
-      >
+      <Field orientation="responsive" class="flex flex-row items-center justify-end">
         <AuthAvatar
           isLoading={isSubmitting}
           isAnon={username === "" && password === ""}

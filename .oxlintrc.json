@@ -1,0 +1,77 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [],
+  "env": {
+    "browser": true,
+    "es2022": true
+  },
+  "options": {
+    "typeAware": true,
+    "typeCheck": true,
+    "maxWarnings": 10
+  },
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "style": "warn",
+    "pedantic": "off"
+  },
+
+  "rules": {
+    "sort-imports": "off",
+    "unicorn/prefer-global-this": "off",
+    "max-statements": [
+      "warn",
+      {
+        "max": 16
+      }
+    ],
+    "sort-keys": [
+      "error",
+      "asc",
+      {
+        "allowLineSeparatedGroups": true,
+        "caseSensitive": true,
+        "natural": true,
+        "minKeys": 2
+      }
+    ],
+    "no-magic-numbers": [
+      "warn",
+      {
+        "ignore": [0, 1]
+      }
+    ],
+    "id-length": [
+      "warn",
+      {
+        "checkGeneric": false
+      }
+    ]
+  },
+
+  "overrides": [
+    {
+      "files": ["**/*.svelte"],
+      "rules": {
+        "no-inner-declarations": "off",
+        "no-self-assign": "off",
+        "prefer-const": "off",
+        "unicorn/filename-case": "off"
+      }
+    }
+  ],
+
+  "ignorePatterns": [
+    "*.json",
+    "*.css",
+
+    "dist/**",
+    "build/**",
+    "public/**",
+
+    "src/lib/components/ui/**",
+
+    "vite.config.ts"
+  ]
+}

@@ -1,12 +1,8 @@
 import { get, writable } from "svelte/store";
+import { httpGet, httpPostUrlEncodedForm } from "$api/http";
+import { socketClient, submitSocketConnect, submitSocketDisconnect } from "$api/socket";
 import { clientStore } from "$stores/clientStore";
 import { pageStore } from "$stores/pageStore";
-import { httpGet, httpPostUrlEncodedForm } from "$api/http";
-import {
-  socketClient,
-  submitSocketConnect,
-  submitSocketDisconnect,
-} from "$api/socket";
 
 export type AuthState = {
   status: boolean;
@@ -40,9 +36,7 @@ type LoginErrorOutputSocketData = {
   success: false;
   error: string;
 };
-type LoginOutputSocketData =
-  | LoginSuccessOutputSocketData
-  | LoginErrorOutputSocketData;
+type LoginOutputSocketData = LoginSuccessOutputSocketData | LoginErrorOutputSocketData;
 
 type RankOutputSocketEvent = "rank";
 type RankOutputSocketData = number;
@@ -61,47 +55,35 @@ const createAuthStore = (authStateOverrides?: Partial<AuthState>) => {
   const { subscribe, set, update } = writable<AuthState>(initialAuthState);
 
   return {
-    subscribe,
     set,
+    subscribe,
+
     init: (state: AuthState) => set(state),
-    updateStatus: (status: boolean) =>
-      update((state) => ({ ...state, status })),
-    resetStatus: () =>
-      update((state) => ({ ...state, status: defaultAuthState.status })),
-    updateUsername: (username: string) =>
-      update((state) => ({ ...state, username })),
-    resetUsername: () =>
-      update((state) => ({ ...state, username: defaultAuthState.username })),
+    resetStatus: () => update(state => ({ ...state, status: defaultAuthState.status })),
+    resetUsername: () => update(state => ({ ...state, username: defaultAuthState.username })),
+    updateStatus: (status: boolean) => update(state => ({ ...state, status })),
+    updateUsername: (username: string) => update(state => ({ ...state, username })),
   };
 };
 
-const submitSocketLogin = async (data: LoginInputSocketData): Promise<string> =>
+const submitSocketLogin = async (input: LoginInputSocketData): Promise<string> =>
   new Promise((resolve, reject) => {
-    socketClient.once<LoginOutputSocketEvent, LoginOutputSocketData>(
-      "login",
-      (data) => {
-        if (data.success) {
-          resolve(data.name);
+    socketClient.once<LoginOutputSocketEvent, LoginOutputSocketData>("login", output => {
+      if (output.success) {
+        resolve(output.name);
 
-          return;
-        }
+        return;
+      }
 
-        reject(data.error);
-      },
-    );
+      reject(output.error);
+    });
 
-    socketClient.emit<LoginInputSocketEvent, LoginInputSocketData>(
-      "login",
-      data,
-    );
+    socketClient.emit<LoginInputSocketEvent, LoginInputSocketData>("login", input);
   });
 
 const listenSocketRank = async (): Promise<number> =>
-  new Promise((resolve) => {
-    socketClient.once<RankOutputSocketEvent, RankOutputSocketData>(
-      "rank",
-      resolve,
-    );
+  new Promise(resolve => {
+    socketClient.once<RankOutputSocketEvent, RankOutputSocketData>("rank", resolve);
   });
 
 const submitHTTPLogin = async (data: LoginHTTPData) => {

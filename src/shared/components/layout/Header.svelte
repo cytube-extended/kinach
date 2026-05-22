@@ -4,24 +4,24 @@
 </script>
 
 <script lang="ts">
+  import { submitSocketConnect } from "$api/socket";
+  import ChannelAvatar from "$components/common/ChannelAvatar.svelte";
+  import VersionBadge from "$components/common/VersionBadge.svelte";
+  import AuthForm from "$features/auth/AuthForm.svelte";
   import { Button } from "$lib/components/ui/button";
   import { appStore } from "$stores/appStore";
-  import { socketStore } from "$stores/socketStore";
   import { clientStore } from "$stores/clientStore";
-  import { submitSocketConnect } from "$api/socket";
-  import VersionBadge from "$components/common/VersionBadge.svelte";
-  import ChannelAvatar from "$components/common/ChannelAvatar.svelte";
-  import AuthForm from "$features/auth/AuthForm.svelte";
+  import { socketStore } from "$stores/socketStore";
 </script>
 
 <header
-  class="sticky w-full flex flex-row items-center justify-start h-15 mx-auto top-0 z-50 bg-background md:bg-background/80 md:backdrop-blur-md"
+  class="sticky top-0 z-50 mx-auto flex h-15 w-full flex-row items-center justify-start bg-background md:bg-background/80 md:backdrop-blur-md"
 >
   {#if $appStore.version}
     <VersionBadge version={$appStore.version} />
   {/if}
 
-  <div class="w-full flex flex-row items-center justify-between pr-6 py-5">
+  <div class="flex w-full flex-row items-center justify-between py-5 pr-6">
     <ChannelAvatar imgSrc={logoImgSrc} isConnected={$socketStore.connected} />
 
     {#if $socketStore.connected}

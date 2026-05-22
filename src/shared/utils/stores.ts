@@ -13,7 +13,7 @@ import { socketStore } from "$stores/socketStore";
 const initClientStore = () => {
   clientStore.init({ ...window.CLIENT });
 
-  const unsubClient = clientStore.subscribe((state) => {
+  const unsubClient = clientStore.subscribe(state => {
     window.CLIENT = state;
   });
 
@@ -21,23 +21,14 @@ const initClientStore = () => {
 };
 
 const initPageStore = () => {
-  const csrfCol = document.getElementsByName("_csrf");
-  if (!csrfCol) {
-    throw new Error("no csrf collection found");
+  const el = document.querySelector<HTMLInputElement>('input[name="_csrf"]');
+  if (!el) {
+    throw new Error("CSRF element not found");
   }
 
-  if (csrfCol.length < 1) {
-    throw new Error("no csrf elements found");
-  }
-
-  const csrfEl = csrfCol.item(0) as HTMLInputElement;
-  if (!csrfEl) {
-    throw new Error("no csrf element found");
-  }
-
-  const csrf = csrfEl.value;
+  const csrf = el.value;
   if (!csrf) {
-    throw new Error("no csrf value found");
+    throw new Error("CSRF token not found");
   }
 
   pageStore.init({ csrf });
@@ -46,7 +37,7 @@ const initPageStore = () => {
 const initAppStore = () => {
   appStore.init({ version: window.VERSION });
 
-  const unsubAppStore = appStore.subscribe((state) => {
+  const unsubAppStore = appStore.subscribe(state => {
     window.VERSION = state.version;
   });
 
@@ -56,12 +47,8 @@ const initAppStore = () => {
 const initSocketStore = () => {
   socketStore.init(socketClient);
 
-  socketClient.on("connect", () =>
-    socketStore.updateConnected(socketClient.connected),
-  );
-  socketClient.on("disconnect", () =>
-    socketStore.updateConnected(socketClient.connected),
-  );
+  socketClient.on("connect", () => socketStore.updateConnected(socketClient.connected));
+  socketClient.on("disconnect", () => socketStore.updateConnected(socketClient.connected));
 };
 
 const initUserlistStore = () => {

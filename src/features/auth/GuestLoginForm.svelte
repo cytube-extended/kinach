@@ -1,12 +1,14 @@
 <script lang="ts">
   import type { HTMLAttributes } from "svelte/elements";
-  import { Field, Group } from "$lib/components/ui/field";
   import { Button } from "$lib/components/ui/button";
+  import { Field, Group } from "$lib/components/ui/field";
   import { Input } from "$lib/components/ui/input";
   import { cn } from "$lib/utils";
   import { authStore, login } from "./auth";
 
   type Props = HTMLAttributes<HTMLFormElement>;
+
+  const LOGIN_DELAY_MS = 500;
 
   let username = $derived($authStore.username);
   let isSubmitting = $derived($authStore.status);
@@ -20,7 +22,7 @@
     try {
       $authStore.status = true;
 
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, LOGIN_DELAY_MS));
       await login(username);
     } catch (err: unknown) {
       // TODO: Show alert?
@@ -37,15 +39,8 @@
 
 <form onsubmit={handleSubmit} class={cn(className)}>
   <Group>
-    <Field
-      orientation="horizontal"
-      class="flex flex-row items-start justify-start gap-0"
-    >
-      <Button
-        type="submit"
-        class="flex-2 rounded-none border-none"
-        disabled={username === ""}
-      >
+    <Field orientation="horizontal" class="flex flex-row items-start justify-start gap-0">
+      <Button type="submit" class="flex-2 rounded-none border-none" disabled={username === ""}>
         Guest Login
       </Button>
 

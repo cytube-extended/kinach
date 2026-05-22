@@ -2,49 +2,49 @@ import { legacyChatInfo } from "./logger";
 import { injectMainStylesheet, removeLegacyStylesheets } from "./styles";
 
 const setChannelJS = (js: string) => {
-  // Update JS in channel object
   window.CHANNEL.js = js;
 
-  // Update JS in channel editor
+  // Update JS in built-in editor field
   const CSJSText = document.querySelector<HTMLTextAreaElement>("#cs-jstext");
   if (CSJSText) {
     CSJSText.value = js;
   }
 
-  // Do not apply if user ignores channel JS
+  // Do not inject JS if user ignores channel JS
   const ignoreChannelJS = Boolean(window.USEROPTS.ignore_channeljs);
   if (ignoreChannelJS) {
     return;
   }
 
-  // Apply JS to page (create channel JS element in DOM)
+  // Inject into page
   const newChanJS = document.createElement("script");
   newChanJS.id = "chanjs";
   newChanJS.type = "text/javascript";
   newChanJS.textContent = js;
+
   document.body.append(newChanJS);
 };
 
 const setChannelCSS = (css: string) => {
-  // Update CSS in channel object
   window.CHANNEL.css = css;
 
-  // Update CSS in channel editor
+  // Update CSS in built-in editor field
   const CSCSSText = document.querySelector<HTMLTextAreaElement>("#cs-csstext");
   if (CSCSSText) {
     CSCSSText.value = css;
   }
 
-  // Do not apply if user ignores channel CSS
+  // Do not inject CSS if user ignores channel CSS
   const ignoreChannelCSS = Boolean(window.USEROPTS.ignore_channelcss);
   if (ignoreChannelCSS) {
     return;
   }
 
-  // Apply CSS to page (create channel CSS element in DOM)
+  // Inject into page
   const newChanCSS = document.createElement("style");
   newChanCSS.id = "chancss";
   newChanCSS.textContent = css;
+
   document.head.append(newChanCSS);
 };
 

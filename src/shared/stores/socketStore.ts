@@ -18,14 +18,14 @@ const createSocketStore = (socketStateOverrides?: Partial<SocketState>) => {
 
   return {
     subscribe,
+
     init: (state: SocketState) => set(state),
-    updateConnected: (connected: boolean) =>
-      update((state) => ({ ...state, connected })),
     resetConnected: () =>
-      update((state) => ({
+      update(state => ({
         ...state,
         connected: defaultSocketState.connected,
       })),
+    updateConnected: (connected: boolean) => update(state => ({ ...state, connected })),
   };
 };
 

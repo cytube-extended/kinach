@@ -9,8 +9,8 @@ export const injectLegacyThemeStylesheet = () => {
   document.head.appendChild(link);
 };
 
-export const injectMainStylesheet = async (): Promise<void> => {
-  return new Promise((resolve, reject) => {
+export const injectMainStylesheet = async (): Promise<void> =>
+  new Promise((resolve, reject) => {
     const url = new URL("dist/index.css", window.BASE_URL);
     const link = document.createElement("link");
 
@@ -19,11 +19,11 @@ export const injectMainStylesheet = async (): Promise<void> => {
     link.href = url.toString();
 
     link.onload = () => requestAnimationFrame(() => resolve());
-    link.onerror = () => requestAnimationFrame(() => reject());
+    link.onerror = error =>
+      requestAnimationFrame(() => reject(new Error(`failed to load main stylesheet: ${error}`)));
 
     document.head.appendChild(link);
   });
-};
 
 export const removeLegacyStylesheets = () => {
   const hrefs = [

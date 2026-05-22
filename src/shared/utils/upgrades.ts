@@ -44,15 +44,15 @@ const upgradeBody = () => {
 
 const addHeader = async () => {
   mount(Header, {
+    anchor: document.body.firstChild || undefined,
     target: document.body,
-    anchor: document.body.firstChild ? document.body.firstChild : undefined,
   });
 };
 
 const addMain = async () => {
   mount(Main, {
+    anchor: document.body.firstChild || undefined,
     target: document.body,
-    anchor: document.body.firstChild ? document.body.firstChild : undefined,
   });
 };
 

@@ -18,11 +18,10 @@ const createAppStore = (appStateOverrides?: Partial<AppState>) => {
 
   return {
     subscribe,
+
     init: (state: AppState) => set(state),
-    updateVersion: (version: string) =>
-      update((state) => ({ ...state, version })),
-    resetVersion: () =>
-      update((state) => ({ ...state, version: defaultAppState.version })),
+    resetVersion: () => update(state => ({ ...state, version: defaultAppState.version })),
+    updateVersion: (version: string) => update(state => ({ ...state, version })),
   };
 };
 

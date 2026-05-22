@@ -1,5 +1,5 @@
-import { initStores } from "$utils/stores";
 import { initOverrides } from "$utils/overrides";
+import { initStores } from "$utils/stores";
 import { upgradeLegacyElements } from "$utils/upgrades";
 
 export const init = async () => {

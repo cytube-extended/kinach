@@ -1,12 +1,7 @@
-const colorInfo =
-  "solid cyan; background-color: rgba(18, 18, 100, 0.1); color: cyan;";
-const colorError =
-  "solid pink; background-color: rgba(100, 18, 18, 0.1); color: pink;";
+const colorInfo = "solid cyan; background-color: rgba(18, 18, 100, 0.1); color: cyan;";
+const colorError = "solid pink; background-color: rgba(100, 18, 18, 0.1); color: pink;";
 
-const legacyChatNotification = (
-  message: string,
-  colorStyle: string,
-): HTMLElement | null => {
+const legacyChatNotification = (message: string, colorStyle: string): HTMLElement | null => {
   const msgBuf = document.getElementById("messagebuffer");
   if (!msgBuf) {
     return null;
@@ -21,7 +16,5 @@ const legacyChatNotification = (
   return chatMessage;
 };
 
-export const legacyChatInfo = (message: string) =>
-  legacyChatNotification(message, colorInfo);
-export const legacyChatError = (message: string) =>
-  legacyChatNotification(message, colorError);
+export const legacyChatInfo = (message: string) => legacyChatNotification(message, colorInfo);
+export const legacyChatError = (message: string) => legacyChatNotification(message, colorError);
