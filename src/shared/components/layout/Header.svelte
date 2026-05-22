@@ -15,7 +15,7 @@
   import { clientStore } from "$stores/clientStore";
   import { socketStore } from "$stores/socketStore";
 
-  let { children, class: className, ...restProps }: HTMLAttributes<HTMLHeadElement> = $props();
+  let { children, class: className, ...restProps }: HTMLAttributes<HTMLElement> = $props();
 </script>
 
 <header
