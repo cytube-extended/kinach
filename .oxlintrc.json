@@ -57,7 +57,8 @@
         "no-inner-declarations": "off",
         "no-self-assign": "off",
         "prefer-const": "off",
-        "unicorn/filename-case": "off"
+        "unicorn/filename-case": "off",
+        "no-ternary": "off"
       }
     }
   ],
