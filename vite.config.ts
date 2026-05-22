@@ -20,8 +20,7 @@ export default defineConfig(({ mode }) => {
         entry: [
           "./src/index.ts",
           "./src/main.ts",
-          "./src/index.css",
-          "./src/theme.css",
+          "./src/index.css"
         ],
       },
     },

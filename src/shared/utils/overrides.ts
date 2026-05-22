@@ -1,6 +1,3 @@
-import { legacyChatInfo } from "./logger";
-import { injectMainStylesheet, removeLegacyStylesheets } from "./styles";
-
 const setChannelJS = (js: string) => {
   window.CHANNEL.js = js;
 
@@ -113,19 +110,7 @@ const overrideFavicon = () => {
   document.head.append(faviconElement);
 };
 
-const overrideStyles = async () => {
-  const stylesNotification = legacyChatInfo("Loading styles...");
-
-  await injectMainStylesheet();
-  removeLegacyStylesheets();
-
-  if (stylesNotification) {
-    stylesNotification.remove();
-  }
-};
-
-export const initOverrides = async () => {
+export const initOverrides = () => {
   overrideCallbacks();
   overrideFavicon();
-  await overrideStyles();
 };
