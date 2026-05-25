@@ -5,7 +5,7 @@
   const regularStyleClass = "text-white";
   const guestStyleClass = "text-gray-600";
 
-  const rankToClass = (rank: number) => {
+  const rankToClass = (rank: number): ClassValue => {
     if (rank >= ranks.SITERADMIN) {
       return siteAdminStyleClass;
     }
@@ -27,13 +27,18 @@
 </script>
 
 <script lang="ts">
-  import type { HTMLAttributes } from "svelte/elements";
+  import type { ClassValue } from "svelte/elements";
   import { SpiralsIcon } from "@hugeicons/core-free-icons";
   import { HugeiconsIcon } from "@hugeicons/svelte";
   import { flip } from "svelte/animate";
   import { quintOut } from "svelte/easing";
   import { blur } from "svelte/transition";
-  import { Header, Media, Root, Title } from "$lib/components/ui/empty/index.js";
+  import {
+    Root as EmptyRoot,
+    Header as EmptyHeader,
+    Media as EmptyMedia,
+    Title as EmptyTitle,
+  } from "$lib/components/ui/empty/index.js";
   import {
     Root as HoverCardRoot,
     Trigger as HoverCardTrigger,
@@ -43,16 +48,14 @@
   import UserCard from "./UserCard.svelte";
   import { ranks, userlistStore, type AddUserOutputSocketData } from "./userlist";
 
-  type Props = HTMLAttributes<HTMLElement>;
-
   let userlist = $derived($userlistStore.userlist);
   let hasUsers = $derived(userlist.length > 0);
   let userTarget = $state<AddUserOutputSocketData | null>(null);
 
-  let { class: className }: Props = $props();
+  let { class: className, ...restProps }: { class?: ClassValue } = $props();
 </script>
 
-<div class={cn(className)}>
+<div class={cn("flex", className)} {...restProps}>
   {#if hasUsers}
     <HoverCardRoot>
       <ul class="no-scrollbar overflow-auto">
@@ -70,22 +73,26 @@
         {/each}
       </ul>
       {#if userTarget}
+        {@const username = userTarget.name}
+        {@const description = userTarget.profile.text}
+        {@const imgSrc = userTarget.profile.image}
+
         <HoverCardContent>
-          <UserCard user={userTarget} />
+          <UserCard {username} {description} {imgSrc} />
         </HoverCardContent>
       {/if}
     </HoverCardRoot>
   {:else}
-    <Root>
-      <Header>
-        <Media variant="icon">
+    <EmptyRoot class="flex-1">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
           <HugeiconsIcon
             icon={SpiralsIcon}
             class="size-5 motion-safe:animate-[spin_6s_linear_infinite]"
           />
-        </Media>
-        <Title class="select-none">No users</Title>
-      </Header>
-    </Root>
+        </EmptyMedia>
+        <EmptyTitle class="select-none">No users</EmptyTitle>
+      </EmptyHeader>
+    </EmptyRoot>
   {/if}
 </div>

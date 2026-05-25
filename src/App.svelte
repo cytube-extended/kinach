@@ -1,19 +1,31 @@
 <script lang="ts" module>
-  const BODY_CLASSNAMES = "dark min-h-screen flex flex-col";
+  const BODY_CLASSNAMES: ClassValue = "dark min-h-screen flex flex-col";
+
+  const imgLogoUrl = new URL("dist/logo.png", window.BASE_URL);
+  const imgLogoSrc = imgLogoUrl.toString();
 </script>
 
 <script lang="ts">
+  import type { ClassValue } from "svelte/elements";
   import { onMount } from "svelte";
   import Header from "$components/layout/Header.svelte";
   import Home from "$components/layout/Home.svelte";
+  import { appStore } from "$stores/appStore";
+  import { clientStore } from "$stores/clientStore";
+  import { socketStore } from "$stores/socketStore";
 
   onMount(() => {
     const prevClassNames = document.body.className;
-    document.body.className = BODY_CLASSNAMES;
+    document.body.className = BODY_CLASSNAMES.toString();
 
     return () => (document.body.className = prevClassNames);
   });
 </script>
 
-<Header />
-<Home />
+<Header
+  {imgLogoSrc}
+  appVersion={$appStore.version}
+  isConnected={$socketStore.connected}
+  isLoggedIn={$clientStore.logged_in}
+/>
+<Home isLoggedIn={$clientStore.logged_in} class="flex-1" />

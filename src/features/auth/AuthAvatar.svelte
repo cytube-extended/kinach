@@ -7,7 +7,6 @@
     AnonymousIcon,
   } from "@hugeicons/core-free-icons";
   import { HugeiconsIcon } from "@hugeicons/svelte";
-  import { fade } from "svelte/transition";
   import { cn } from "$lib/utils";
 
   let {
@@ -25,26 +24,20 @@
 </script>
 
 <div class={cn("", className)} {...restProps}>
-  {#if isLoading}
-    <span transition:fade={{ duration: 250 }}>
+  <span>
+    {#if isLoading}
       <HugeiconsIcon
         icon={Loading03Icon}
         class="size-5 animate-spin"
         role="status"
         aria-label="Loading"
       />
-    </span>
-  {:else if isAnon}
-    <span transition:fade={{ duration: 250 }}>
+    {:else if isAnon}
       <HugeiconsIcon icon={AnonymousIcon} class="size-5" />
-    </span>
-  {:else if isGuest}
-    <span transition:fade={{ duration: 250 }}>
+    {:else if isGuest}
       <HugeiconsIcon icon={UserIcon} class="size-5" />
-    </span>
-  {:else}
-    <span transition:fade={{ duration: 250 }}>
+    {:else}
       <HugeiconsIcon icon={UserCircleIcon} class="size-5" />
-    </span>
-  {/if}
+    {/if}
+  </span>
 </div>

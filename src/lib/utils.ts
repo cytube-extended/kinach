@@ -3,7 +3,8 @@ import { MediaQuery } from "svelte/reactivity";
 import { twMerge } from "tailwind-merge";
 
 export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs));
-export const isDesktop = new MediaQuery("min-width: 768px");
+export const md = new MediaQuery("min-width: 768px");
+export const lg = new MediaQuery("min-width: 1024px");
 
 // oxlint-disable-next-line @typescript-eslint/no-explicit-any
 export type WithoutChild<T> = T extends { child?: any } ? Omit<T, "child"> : T;

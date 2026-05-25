@@ -3,7 +3,7 @@
   import { Button } from "$lib/components/ui/button";
   import { Field, Group } from "$lib/components/ui/field";
   import { Label } from "$lib/components/ui/label";
-  import { cn, isDesktop } from "$lib/utils";
+  import { cn, lg } from "$lib/utils";
   import { clientStore } from "$stores/clientStore";
   import { authStore, logout } from "./auth";
   import AuthAvatar from "./AuthAvatar.svelte";
@@ -49,7 +49,7 @@
         orientation="horizontal"
         class="flex flex-row items-center justify-end selection:bg-primary"
       >
-        {#if isDesktop.current}
+        {#if lg.current}
           <AuthAvatar isLoading={isSubmitting} isAnon={false} isGuest={!isUser} />
           <Label class="w-auto flex-none">
             {$clientStore.name}

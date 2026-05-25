@@ -1,23 +1,35 @@
 <script lang="ts">
+  import type { ClassValue } from "svelte/elements";
   import { Root, Image, Fallback } from "$lib/components/ui/avatar/index.js";
-  import { type AddUserOutputSocketData } from "./userlist";
+  import { cn } from "$lib/utils";
 
-  let { user }: { user: AddUserOutputSocketData } = $props();
+  let {
+    username,
+    description,
+    imgSrc,
+    class: className,
+    ...restProps
+  }: {
+    username: string;
+    description?: string;
+    imgSrc?: string;
+    class?: ClassValue;
+  } = $props();
 </script>
 
-<div class="flex justify-between space-x-4">
-  {#if user.profile.image !== ""}
+<div class={cn("flex justify-between space-x-4", className)} {...restProps}>
+  {#if imgSrc !== ""}
     <Root>
-      <Image src={user.profile.image} />
+      <Image src={imgSrc} />
       <Fallback>Profile Image</Fallback>
     </Root>
   {/if}
 
   <div class="space-y-1">
-    <h4 class="text-sm font-semibold">{user.name}</h4>
+    <h4 class="text-sm font-semibold">{username}</h4>
 
-    {#if user.profile.text !== ""}
-      <p class="text-sm">{user.profile.text}</p>
+    {#if description !== ""}
+      <p class="text-sm">{description}</p>
     {/if}
   </div>
 </div>

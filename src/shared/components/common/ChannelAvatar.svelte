@@ -19,7 +19,6 @@
     isConnected?: boolean;
   } = $props();
 
-  let statusClass = $derived(isConnected ? "bg-green-500" : "bg-red-500");
   let title = $derived(isConnected ? "Socket: Connected" : "Socket: Disconnected");
 </script>
 
@@ -28,7 +27,7 @@
     <AvatarImage src={imgSrc} alt="Channel Logo" />
 
     {#if typeof isConnected === "boolean"}
-      <AvatarBadge class={statusClass} {title} />
+      <AvatarBadge {title} class={cn(isConnected ? "bg-green-500" : "bg-red-500")} />
     {/if}
 
     <AvatarFallback>Channel Logo</AvatarFallback>

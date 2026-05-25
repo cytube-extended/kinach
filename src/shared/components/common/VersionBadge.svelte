@@ -1,15 +1,17 @@
 <script lang="ts">
-  import type { HTMLAttributes } from "svelte/elements";
-  import { cn, isDesktop } from "$lib/utils";
+  import type { ClassValue } from "svelte/elements";
+  import { cn, md } from "$lib/utils";
 
   let {
-    children,
+    appVersion = "unknown",
     class: className,
-    version = "main",
     ...restProps
-  }: HTMLAttributes<HTMLDivElement> & { version?: string } = $props();
+  }: {
+    appVersion: string;
+    class?: ClassValue;
+  } = $props();
 
-  let title = $derived(isDesktop.current ? `App Version: ${version}` : "");
+  let title = $derived(md.current ? `App Version: ${appVersion}` : "");
 </script>
 
 <div class={cn("relative h-15 w-15 shrink-0 overflow-hidden", className)} {...restProps}>
@@ -17,10 +19,6 @@
     class="absolute top-[18%] left-[-75%] w-[250%] -rotate-45 bg-primary py-[0.25em] pr-[1.5em] text-center text-[0.6rem] leading-none font-bold shadow-md"
     {title}
   >
-    {version}
-
-    {#if children}
-      {children}
-    {/if}
+    {appVersion}
   </div>
 </div>

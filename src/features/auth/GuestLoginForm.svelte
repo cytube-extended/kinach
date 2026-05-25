@@ -1,12 +1,10 @@
 <script lang="ts">
-  import type { ClassValue, HTMLAttributes } from "svelte/elements";
+  import type { ClassValue } from "svelte/elements";
   import { Button } from "$lib/components/ui/button";
   import { Field, Group } from "$lib/components/ui/field";
   import { Input } from "$lib/components/ui/input";
   import { cn } from "$lib/utils";
   import { authStore, login } from "./auth";
-
-  type Props = HTMLAttributes<HTMLFormElement>;
 
   const LOGIN_DELAY_MS = 500;
 

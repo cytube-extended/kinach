@@ -1,17 +1,18 @@
 <script lang="ts">
-  import type { HTMLAttributes } from "svelte/elements";
-  import { Sent02Icon } from "@hugeicons/core-free-icons";
+  import type { ClassValue } from "svelte/elements";
+  import { Sent02Icon, CrazyIcon, Attachment02Icon } from "@hugeicons/core-free-icons";
   import { HugeiconsIcon } from "@hugeicons/svelte";
-  import { Button } from "$lib/components/ui/button";
-  import { Field, Group } from "$lib/components/ui/field";
-  import { Textarea } from "$lib/components/ui/textarea";
-  import { cn } from "$lib/utils";
-
-  type Props = HTMLAttributes<HTMLFormElement>;
+  import {
+    Root as InputGroupRoot,
+    Addon as InputGroupAddon,
+    Button as InputGroupButton,
+  } from "$lib/components/ui/input-group/index.js";
+  import { Separator } from "$lib/components/ui/separator";
+  import { cn, lg } from "$lib/utils";
 
   let message = $state("");
 
-  const handleSubmit = async (event: SubmitEvent) => {
+  const handleSubmit = (event: SubmitEvent) => {
     event.preventDefault();
 
     console.log(message);
@@ -19,23 +20,46 @@
     message = "";
   };
 
-  let { class: className }: Props = $props();
+  let { class: className, ...restProps }: { class?: ClassValue } = $props();
 </script>
 
-<form onsubmit={handleSubmit} class={cn(className, "flex flex-row")}>
-  <Group class="flex flex-1 flex-row">
-    <Field orientation="horizontal" class="flex flex-1 flex-row items-start justify-start gap-0">
-      <Textarea
-        required
-        class="h-full flex-9 resize-none rounded-none border-none"
-        autocomplete="off"
-        placeholder="Chat message"
-        bind:value={message}
-      />
+<form onsubmit={handleSubmit} class={cn("flex", className)} {...restProps}>
+  <InputGroupRoot class="flex h-full flex-1 flex-col justify-end rounded-none border-none">
+    <textarea
+      data-slot="input-group-control"
+      class="flex field-sizing-fixed h-full w-full flex-1 resize-none rounded-none border-none bg-transparent px-4 py-2 text-base ring-0 outline-none"
+      placeholder="Chat message"
+      bind:value={message}
+    ></textarea>
 
-      <Button type="submit" class="h-full flex-1 rounded-none border-none">
-        <HugeiconsIcon icon={Sent02Icon} class="size-5" role="button" aria-label="Send" />
-      </Button>
-    </Field>
-  </Group>
+    <InputGroupAddon align="block-end" class="flex flex-row justify-end">
+      <InputGroupButton size={lg.current ? "sm" : "icon-sm"} variant="outline" type="button">
+        <HugeiconsIcon icon={Attachment02Icon} class="size-5" />
+        {#if lg.current}
+          Files
+        {/if}
+      </InputGroupButton>
+
+      <InputGroupButton
+        class="ms-auto"
+        size={lg.current ? "sm" : "icon-sm"}
+        variant="outline"
+        type="button"
+      >
+        <HugeiconsIcon icon={CrazyIcon} class="size-5" />
+        {#if lg.current}
+          Emotes
+        {/if}
+      </InputGroupButton>
+
+      <Separator orientation="vertical" />
+
+      <InputGroupButton size={lg.current ? "sm" : "icon-sm"} variant="default" type="submit">
+        <HugeiconsIcon icon={Sent02Icon} class="size-5" />
+        {#if lg.current}
+          Send
+        {/if}
+      </InputGroupButton>
+    </InputGroupAddon>
+  </InputGroupRoot>
 </form>

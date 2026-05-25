@@ -20,7 +20,7 @@
   import { Button } from "$lib/components/ui/button";
   import { Field, Group } from "$lib/components/ui/field";
   import { Input } from "$lib/components/ui/input";
-  import { cn, isDesktop } from "$lib/utils";
+  import { cn, lg } from "$lib/utils";
   import { authStore, login } from "./auth";
   import AuthAvatar from "./AuthAvatar.svelte";
 
@@ -86,7 +86,7 @@
   <form onsubmit={handleSubmit}>
     <Group>
       <Field orientation="horizontal" class="flex flex-row items-center justify-end">
-        {#if isDesktop.current}
+        {#if lg.current}
           <AuthAvatar
             isLoading={isSubmitting}
             isAnon={username === "" && password === ""}
