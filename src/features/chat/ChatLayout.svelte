@@ -1,42 +1,57 @@
 <script lang="ts">
   import type { ClassValue } from "svelte/elements";
-  import { Handle, Pane, PaneGroup } from "$lib/components/ui/resizable/index.js";
+  import { portal } from "$components/common/Portal.svelte";
+  import GuestLoginForm from "$features/auth/GuestLoginForm.svelte";
+  import Userlist from "$features/userlist/Userlist.svelte";
+  import { Separator } from "$lib/components/ui/separator";
   import { cn } from "$lib/utils";
+  import ChatBody from "./ChatBody.svelte";
+  import ChatForm from "./ChatForm.svelte";
+  import ChatHeader from "./ChatHeader.svelte";
+  import MessageBuffer from "./MessageBuffer.svelte";
+
+  let leftChatPane: HTMLElement | null = $state(null);
+  let rightChatPane: HTMLElement | null = $state(null);
 
   let {
+    isLoggedIn,
     reversed,
-    leftPaneRef = $bindable<HTMLElement | null>(null),
-    rightPaneRef = $bindable<HTMLElement | null>(null),
+    handleReverse,
     class: className,
     ...restProps
   }: {
+    isLoggedIn: boolean;
     reversed: boolean;
-    leftPaneRef?: HTMLElement | null;
-    rightPaneRef?: HTMLElement | null;
+    handleReverse: () => void;
     class?: ClassValue;
   } = $props();
 </script>
 
-<PaneGroup direction="vertical" class={cn("", className)} {...restProps}>
-  <Pane collapsible={false} defaultSize={80} class="flex">
-    <PaneGroup direction="horizontal">
-      <Pane
-        bind:ref={leftPaneRef}
-        order={1}
-        defaultSize={reversed ? 20 : 80}
-        maxSize={reversed ? 30 : 100}
-        class="flex scrollbar-thumb-primary scrollbar-track-background overflow-y-auto!"
-      />
+<div class={cn("", className)} {...restProps}>
+  <ChatHeader {reversed} {handleReverse} onlineCount={0} />
 
-      <Handle withHandle />
+  <Separator />
 
-      <Pane
-        bind:ref={rightPaneRef}
-        order={2}
-        defaultSize={reversed ? 80 : 20}
-        maxSize={reversed ? 100 : 30}
-        class="flex scrollbar-thumb-primary scrollbar-track-background overflow-y-auto!"
-      />
-    </PaneGroup>
-  </Pane>
-</PaneGroup>
+  <ChatBody
+    {reversed}
+    bind:leftPaneRef={leftChatPane}
+    bind:rightPaneRef={rightChatPane}
+    class="flex-9"
+  />
+
+  {#if leftChatPane && rightChatPane}
+    {@const userlistTarget = reversed ? leftChatPane : rightChatPane}
+    {@const messageBufferTarget = reversed ? rightChatPane : leftChatPane}
+
+    <Userlist {@attach portal(userlistTarget)} class="flex-1" />
+    <MessageBuffer {@attach portal(messageBufferTarget)} class="flex-1" />
+  {/if}
+
+  <Separator />
+
+  {#if isLoggedIn}
+    <ChatForm class="flex h-full flex-3 flex-col justify-end" />
+  {:else}
+    <GuestLoginForm class="w-full flex-none" />
+  {/if}
+</div>

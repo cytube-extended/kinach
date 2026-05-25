@@ -7,13 +7,13 @@
 
   let {
     reversed,
-    onReverse,
+    handleReverse,
     onlineCount = 0,
     class: className,
     ...restProps
   }: {
     reversed: boolean;
-    onReverse: () => void;
+    handleReverse: () => void;
     onlineCount: number;
     class?: ClassValue;
   } = $props();
@@ -36,7 +36,7 @@
   <div>{onlineCount} online</div>
 
   <div class="flew-row flex items-center justify-end">
-    <Button variant="outline" type="button" size="icon-xs" onclick={onReverse}>
+    <Button variant="outline" type="button" size="icon-xs" onclick={handleReverse}>
       {#if md.current}
         <HugeiconsIcon icon={ArrowLeftRightIcon} class="size-4" />
       {:else}
