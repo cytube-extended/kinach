@@ -20,6 +20,7 @@
   "rules": {
     "sort-imports": "off",
     "unicorn/prefer-global-this": "off",
+    "capitalized-comments": "off",
     "max-statements": [
       "warn",
       {
