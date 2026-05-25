@@ -44,8 +44,8 @@
       {@attach portal(chatTarget)}
       {isLoggedIn}
       {handleReverse}
-      reversed={isDesktopReversed}
-      class="flex flex-1 flex-col"
+      {reversed}
+      class="flex w-full flex-1 flex-col"
     />
   {/if}
 </main>

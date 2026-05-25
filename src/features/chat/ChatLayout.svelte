@@ -4,7 +4,7 @@
   import GuestLoginForm from "$features/auth/GuestLoginForm.svelte";
   import Userlist from "$features/userlist/Userlist.svelte";
   import { Separator } from "$lib/components/ui/separator";
-  import { cn } from "$lib/utils";
+  import { cn, md } from "$lib/utils";
   import ChatBody from "./ChatBody.svelte";
   import ChatForm from "./ChatForm.svelte";
   import ChatHeader from "./ChatHeader.svelte";
@@ -33,15 +33,15 @@
   <Separator />
 
   <ChatBody
-    {reversed}
+    reversed={reversed && md.current}
     bind:leftPaneRef={leftChatPane}
     bind:rightPaneRef={rightChatPane}
     class="flex-9"
   />
 
   {#if leftChatPane && rightChatPane}
-    {@const userlistTarget = reversed ? leftChatPane : rightChatPane}
-    {@const messageBufferTarget = reversed ? rightChatPane : leftChatPane}
+    {@const userlistTarget = reversed && md.current ? leftChatPane : rightChatPane}
+    {@const messageBufferTarget = reversed && md.current ? rightChatPane : leftChatPane}
 
     <Userlist {@attach portal(userlistTarget)} class="flex-1" />
     <MessageBuffer {@attach portal(messageBufferTarget)} class="flex-1" />
