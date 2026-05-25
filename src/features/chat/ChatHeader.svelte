@@ -27,7 +27,7 @@
   )}
   {...restProps}
 >
-  <div class="flew-row flex items-center justify-start">
+  <div class="flex flex-row items-center justify-start">
     <Button variant="outline" type="button" size="icon-xs">
       <HugeiconsIcon icon={UserListIcon} class="size-4" />
     </Button>
@@ -35,7 +35,7 @@
 
   <div>{onlineCount} online</div>
 
-  <div class="flew-row flex items-center justify-end">
+  <div class="flex flex-row items-center justify-end">
     <Button variant="outline" type="button" size="icon-xs" onclick={handleReverse}>
       {#if md.current}
         <HugeiconsIcon icon={ArrowLeftRightIcon} class="size-4" />
