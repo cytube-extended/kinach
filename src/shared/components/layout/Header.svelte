@@ -36,7 +36,9 @@
     <VersionBadge {appVersion} />
   </div>
 
-  <ChannelAvatar class="flex-none" imgSrc={imgLogoSrc} {isConnected} />
+  <Button variant="ghost" size="icon-sm" class="flex-none" onclick={() => location.assign("/")}>
+    <ChannelAvatar imgSrc={imgLogoSrc} {isConnected} />
+  </Button>
 
   {#if isConnected}
     <AuthForm class="w-4/5 flex-initial md:w-3/5 lg:w-2/5" {isLoggedIn} />
