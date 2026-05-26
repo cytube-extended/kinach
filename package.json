@@ -11,6 +11,7 @@
     "lint:fix": "oxlint --fix",
     "format": "oxfmt",
     "format:check": "oxfmt -c .oxfmtrc.json --check",
+    "rebuild": "docker compose build && vite build --mode production",
     "build": "vite build --mode production",
     "build:dev": "vite build --mode development",
     "dev": "docker compose up -d && vite build --mode development --watch",
