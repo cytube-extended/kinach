@@ -3,8 +3,20 @@ import type { ClientState } from "$stores/clientStore";
 
 export {};
 
+interface CytubeData {
+  PL_CURRENT: number;
+}
+
+interface CytubeUtils {
+  scrollQueue: () => void;
+}
+
+interface CytubeCallbacks {
+  channelCSSJS: (data: { css?: string; js?: string }) => void;
+}
+
 declare global {
-  interface Window {
+  interface Window extends CytubeUtils, CytubeData {
     VERSION: string;
     BASE_URL: string;
     CHANNEL: {
@@ -17,8 +29,6 @@ declare global {
     };
     CLIENT: ClientState;
     socket: SocketClient;
-    Callbacks: {
-      channelCSSJS: (data: { css?: string; js?: string }) => void;
-    };
+    Callbacks: CytubeCallbacks;
   }
 }

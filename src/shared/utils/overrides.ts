@@ -99,6 +99,10 @@ const overrideCallbacks = () => {
   };
 };
 
+const overrideUtils = () => {
+  window.scrollQueue = () => {};
+};
+
 const overrideFavicon = () => {
   const url = new URL("dist/favicon.ico", window.BASE_URL);
   const faviconElement = document.createElement("link");
@@ -112,5 +116,6 @@ const overrideFavicon = () => {
 
 export const initOverrides = () => {
   overrideCallbacks();
+  overrideUtils();
   overrideFavicon();
 };

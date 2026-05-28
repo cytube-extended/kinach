@@ -1,0 +1,58 @@
+<script lang="ts">
+  import { VideoOffIcon } from "@hugeicons/core-free-icons";
+  import { HugeiconsIcon } from "@hugeicons/svelte";
+  import { get } from "svelte/store";
+  import YouTube from "$components/common/YouTube.svelte";
+  import {
+    Root as EmptyRoot,
+    Header as EmptyHeader,
+    Media as EmptyMedia,
+    Title as EmptyTitle,
+  } from "$lib/components/ui/empty/index.js";
+  import { Separator } from "$lib/components/ui/separator";
+  import { playlistStore } from "$stores/playlistStore";
+  import PlayerControls from "./PlayerControls.svelte";
+  import PlayerHeader from "./PlayerHeader.svelte";
+
+  let currentIndex = $derived(get(playlistStore).currentIndex);
+  let currentItem = $derived(get(playlistStore).playlist[currentIndex]);
+  let currentMediaTitle = $derived(currentItem?.media?.title ?? "");
+  let currentMediaId = $derived(currentItem?.media?.id ?? "");
+
+  let open = $state(true);
+
+  const handlePlayerToggle = () => (open = !open);
+
+  let {
+    reversed,
+    handleReverse,
+  }: {
+    reversed: boolean;
+    handleReverse: () => void;
+  } = $props();
+</script>
+
+<PlayerHeader {reversed} mediaTitle={currentMediaTitle} {handleReverse} />
+
+<Separator />
+
+<div class="flex-initial overflow-hidden">
+  {#if open}
+    <YouTube videoId={currentMediaId} class="aspect-video h-full w-full md:h-auto md:w-auto" />
+  {:else}
+    <EmptyRoot class="aspect-video h-full w-full md:h-auto md:w-auto">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <HugeiconsIcon icon={VideoOffIcon} class="size-5 motion-safe:animate-pulse" />
+        </EmptyMedia>
+        <EmptyTitle class="text-md font-semibold font-stretch-expanded select-none">
+          Player is hidden
+        </EmptyTitle>
+      </EmptyHeader>
+    </EmptyRoot>
+  {/if}
+</div>
+
+<Separator />
+
+<PlayerControls {open} {handlePlayerToggle} class="w-full" />

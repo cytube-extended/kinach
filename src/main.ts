@@ -75,7 +75,7 @@ const addStyles = async () => {
 };
 
 export const init = async () => {
-  const unsubStores = initStores();
+  const unsubStores = await initStores();
 
   try {
     await addStyles();

@@ -1,5 +1,10 @@
 import { socketClient } from "$api/socket";
 import {
+  requestPlaylist,
+  subscribeSocketDelete,
+  subscribeSocketQueue,
+} from "$features/playlist/playlist";
+import {
   parseLegacyUserlist,
   subscribeSocketAddUser,
   subscribeSocketUserLeave,
@@ -8,6 +13,7 @@ import {
 import { appStore } from "$stores/appStore";
 import { clientStore } from "$stores/clientStore";
 import { pageStore } from "$stores/pageStore";
+import { playlistStore } from "$stores/playlistStore";
 import { socketStore } from "$stores/socketStore";
 
 const initClientStore = () => {
@@ -60,16 +66,45 @@ const initUserlistStore = () => {
   subscribeSocketUserLeave(({ name }) => userlistStore.removeUser(name));
 };
 
-export const initStores = () => {
+const initPlaylistStore = async () => {
+  const RETRY_DELAY = 60_000;
+
+  try {
+    const initialPlaylist = await requestPlaylist();
+    const initialIndex = window.PL_CURRENT;
+
+    playlistStore.init({ currentIndex: initialIndex, playlist: initialPlaylist });
+
+    subscribeSocketQueue(({ after, item }) => playlistStore.addPlaylistItem(item, after));
+    subscribeSocketDelete(({ uid }) => playlistStore.removePlaylistItem(uid));
+
+    const unsubPlaylistStore = playlistStore.subscribe(state => {
+      window.PL_CURRENT = state.currentIndex;
+    });
+
+    return unsubPlaylistStore;
+  } catch (error) {
+    const errMsg = `Failed to get initial playlist: ${error}. Retrying in 60 seconds.`;
+    console.warn(errMsg);
+    alert(errMsg);
+    await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+
+    return await initPlaylistStore();
+  }
+};
+
+export const initStores = async () => {
   const unsubClient = initClientStore();
   const unsubAppStore = initAppStore();
   initPageStore();
   initSocketStore();
   initUserlistStore();
+  const unsubPlaylistStore = await initPlaylistStore();
 
   const unsubAll = () => {
     unsubClient();
     unsubAppStore();
+    unsubPlaylistStore();
   };
 
   return unsubAll;
