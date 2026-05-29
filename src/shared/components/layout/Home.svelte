@@ -45,9 +45,7 @@
 
       <Separator />
 
-      <PlaylistLayout />
-
-      <Separator />
+      <PlaylistLayout class="h-6 max-h-6 min-h-6" />
     </div>
 
     <ChatLayout
