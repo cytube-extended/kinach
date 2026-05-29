@@ -15,12 +15,13 @@
   import PlayerControls from "./PlayerControls.svelte";
   import PlayerHeader from "./PlayerHeader.svelte";
 
+  let open = $state(true);
   let currentIndex = $derived(get(playlistStore).currentIndex);
   let currentItem = $derived(get(playlistStore).playlist[currentIndex]);
   let currentMediaTitle = $derived(currentItem?.media?.title ?? "");
   let currentMediaId = $derived(currentItem?.media?.id ?? "");
-
-  let open = $state(true);
+  let total = $derived(get(playlistStore).playlist.length);
+  let current = $derived(get(playlistStore).playlist.indexOf(currentItem) + 1);
 
   const handlePlayerToggle = () => (open = !open);
 
@@ -66,4 +67,4 @@
 
 <Separator />
 
-<PlayerControls {open} {handlePlayerToggle} class="w-full" />
+<PlayerControls {current} {total} {open} {handlePlayerToggle} class="h-7 max-h-7 min-h-7 w-full" />

@@ -6,11 +6,15 @@
   import { cn } from "$lib/utils";
 
   let {
+    current,
+    total,
     open,
     handlePlayerToggle,
     class: className,
     ...restProps
   }: {
+    current: number;
+    total: number;
     open: boolean;
     handlePlayerToggle: () => void;
     class?: ClassValue;
@@ -23,7 +27,7 @@
 >
   <div class="flex flex-1 flex-row items-center justify-start"></div>
 
-  <div class="flex-auto"></div>
+  <div class="flex-auto text-center">{current} / {total} items</div>
 
   <div class="flex flex-1 flex-row items-center justify-end">
     <Button variant="outline" type="button" size="icon-xs" onclick={handlePlayerToggle}>
