@@ -20,6 +20,9 @@
   let currentItem = $derived(get(playlistStore).playlist[currentIndex]);
   let currentMediaTitle = $derived(currentItem?.media?.title ?? "");
   let currentMediaId = $derived(currentItem?.media?.id ?? "");
+  let currentMediaLink = $derived(
+    currentItem.media.type === "yt" ? `https://youtu.be/${currentItem.media.id}` : ""
+  );
   let total = $derived(get(playlistStore).playlist.length);
   let current = $derived(get(playlistStore).playlist.indexOf(currentItem) + 1);
 
@@ -34,7 +37,12 @@
   } = $props();
 </script>
 
-<PlayerHeader {reversed} mediaTitle={currentMediaTitle} {handleReverse} />
+<PlayerHeader
+  {reversed}
+  mediaLink={currentMediaLink}
+  mediaTitle={currentMediaTitle}
+  {handleReverse}
+/>
 
 <Separator />
 

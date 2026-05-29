@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { ClassValue } from "svelte/elements";
   import {
-    CopyIcon,
+    CopyLinkIcon,
     ArrowLeftFromLineIcon,
     ArrowRightFromLineIcon,
     ArrowDownFromLineIcon,
@@ -14,17 +14,19 @@
   let {
     reversed,
     handleReverse,
+    mediaLink,
     mediaTitle,
     class: className,
     ...restProps
   }: {
     reversed: boolean;
     handleReverse: () => void;
+    mediaLink?: string;
     mediaTitle?: string;
     class?: ClassValue;
   } = $props();
 
-  const handleCopy = () => navigator.clipboard.writeText(mediaTitle ?? "");
+  const handleCopyLink = () => navigator.clipboard.writeText(mediaLink ?? "");
 </script>
 
 <div
@@ -35,7 +37,12 @@
   )}
   {...restProps}
 >
-  <div class="flex flex-1 flex-row items-center justify-start">
+  <div
+    class={cn(
+      "flex flex-1 flex-row items-center",
+      reversed ? "justify-start" : "justify-start md:justify-end"
+    )}
+  >
     <Button variant="outline" type="button" size="icon-xs" onclick={handleReverse}>
       {#if reversed}
         {#if md.current}
@@ -53,15 +60,22 @@
 
   <p class="flex-auto truncate" title={mediaTitle}>{mediaTitle}</p>
 
-  <div class="flex flex-1 flex-row items-center justify-end">
-    <Button
-      variant="outline"
-      type="button"
-      size="icon-xs"
-      title="Copy video title"
-      onclick={handleCopy}
-    >
-      <HugeiconsIcon icon={CopyIcon} class="size-4" />
-    </Button>
+  <div
+    class={cn(
+      "flex flex-1 flex-row items-center",
+      reversed ? "justify-end" : "justify-end md:justify-start"
+    )}
+  >
+    {#if mediaLink !== ""}
+      <Button
+        variant="outline"
+        type="button"
+        size="icon-xs"
+        title="Copy video link"
+        onclick={handleCopyLink}
+      >
+        <HugeiconsIcon icon={CopyLinkIcon} class="size-4" />
+      </Button>
+    {/if}
   </div>
 </div>
