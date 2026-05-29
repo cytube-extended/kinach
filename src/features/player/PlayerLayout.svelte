@@ -2,7 +2,7 @@
   import { VideoOffIcon } from "@hugeicons/core-free-icons";
   import { HugeiconsIcon } from "@hugeicons/svelte";
   import { get } from "svelte/store";
-  import YouTube from "$components/common/YouTube.svelte";
+  import { youtubePlayer } from "$components/common/YouTube.svelte";
   import {
     Root as EmptyRoot,
     Header as EmptyHeader,
@@ -38,7 +38,15 @@
 
 <div class="flex-initial overflow-hidden">
   {#if open}
-    <YouTube videoId={currentMediaId} class="aspect-video h-full w-full md:h-auto md:w-auto" />
+    <div class="flex aspect-video h-full w-full md:h-auto md:w-auto">
+      <div
+        class="aspect-video h-full w-full flex-initial overflow-hidden md:h-auto md:w-auto"
+        {@attach youtubePlayer({
+          videoId: currentMediaId,
+          playerVars: { autoplay: 1, controls: 1 },
+        })}
+      ></div>
+    </div>
   {:else}
     <EmptyRoot class="aspect-video h-full w-full md:h-auto md:w-auto">
       <EmptyHeader>
