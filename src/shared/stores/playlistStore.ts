@@ -2,12 +2,12 @@ import { writable } from "svelte/store";
 import type { Playlist, PlaylistItem } from "$features/playlist/playlist";
 
 export type PlaylistState = {
-  currentIndex: number;
+  currentUid: number;
   playlist: Playlist;
 };
 
 const defaultPlaylistState: PlaylistState = {
-  currentIndex: -1,
+  currentUid: -1,
   playlist: [],
 };
 
@@ -28,7 +28,7 @@ const createPlaylistStore = (playlistStateOverrides?: Partial<PlaylistState>) =>
     removePlaylistItem: (index: number) =>
       update(state => ({ ...state, playlist: [...state.playlist].splice(index, 1) })),
     resetPlaylist: () => set(defaultPlaylistState),
-    setCurrent: (index: number) => update(state => ({ ...state, currentIndex: index })),
+    setCurrent: (uid: number) => update(state => ({ ...state, currentUid: uid })),
     setPlaylist: (playlist: Playlist) => update(state => ({ ...state, playlist })),
   };
 };

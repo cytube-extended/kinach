@@ -16,8 +16,8 @@
   import PlayerHeader from "./PlayerHeader.svelte";
 
   let open = $state(true);
-  let currentIndex = $derived(get(playlistStore).currentIndex);
-  let currentItem = $derived(get(playlistStore).playlist[currentIndex]);
+  let currentUid = $derived(get(playlistStore).currentUid);
+  let currentItem = $derived(get(playlistStore).playlist[currentUid]);
   let currentMediaTitle = $derived(currentItem?.media?.title ?? "");
   let currentMediaId = $derived(currentItem?.media?.id ?? "");
   let currentMediaLink = $derived(

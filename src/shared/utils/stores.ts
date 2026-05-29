@@ -71,15 +71,15 @@ const initPlaylistStore = async () => {
 
   try {
     const initialPlaylist = await requestPlaylist();
-    const initialIndex = window.PL_CURRENT;
+    const initialUid = window.PL_CURRENT;
 
-    playlistStore.init({ currentIndex: initialIndex, playlist: initialPlaylist });
+    playlistStore.init({ currentUid: initialUid, playlist: initialPlaylist });
 
     subscribeSocketQueue(({ after, item }) => playlistStore.addPlaylistItem(item, after));
     subscribeSocketDelete(({ uid }) => playlistStore.removePlaylistItem(uid));
 
     const unsubPlaylistStore = playlistStore.subscribe(state => {
-      window.PL_CURRENT = state.currentIndex;
+      window.PL_CURRENT = state.currentUid;
     });
 
     return unsubPlaylistStore;
