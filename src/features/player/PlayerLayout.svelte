@@ -3,6 +3,7 @@
   import { HugeiconsIcon } from "@hugeicons/svelte";
   import { get } from "svelte/store";
   import { youtubePlayer } from "$components/common/YouTube.svelte";
+  import { Button } from "$lib/components/ui/button";
   import {
     Root as EmptyRoot,
     Header as EmptyHeader,
@@ -51,7 +52,9 @@
     <EmptyRoot class="aspect-video h-full w-full md:h-auto md:w-auto">
       <EmptyHeader>
         <EmptyMedia variant="icon">
-          <HugeiconsIcon icon={VideoOffIcon} class="size-5 motion-safe:animate-pulse" />
+          <Button variant="ghost" type="button" size="icon-xs" onclick={handlePlayerToggle}>
+            <HugeiconsIcon icon={VideoOffIcon} class="size-5 motion-safe:animate-pulse" />
+          </Button>
         </EmptyMedia>
         <EmptyTitle class="text-md font-semibold font-stretch-expanded select-none">
           Player is hidden
