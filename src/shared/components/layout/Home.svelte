@@ -31,8 +31,8 @@
     bind:secondaryPaneRef
     mainClass="flex"
     secondaryClass="flex"
-    defaultMainSize={md.current ? 36 : 25}
-    defaultSecondarySize={md.current ? 64 : 75}
+    defaultMainSize={md.current ? 36 : 45}
+    defaultSecondarySize={md.current ? 64 : 55}
     class="flex-1"
   />
 
