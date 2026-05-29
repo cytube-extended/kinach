@@ -39,6 +39,21 @@ type DeleteOutputSocketData = {
   uid: number;
 };
 
+type VoteskipInputSocketEvent = "voteskip";
+type VoteskipInputSocketData = void;
+
+type VoteskipOutputSocketEvent = "voteskip";
+type VoteskipOutputSocketData = { count: number; need: number };
+
+type SetCurrentOutputSocketEvent = "setCurrent";
+type SetCurrentOutputSocketData = number;
+
+type ChangeMediaOutputSocketEvent = "changeMedia";
+type ChangeMediaOutputSocketData = PlaylistMedia & {
+  currentTime: number;
+  paused: boolean;
+};
+
 export const requestPlaylist = async () =>
   new Promise<Playlist>((resolve, reject) => {
     socketClient.once<PlaylistOutputSocketEvent, PlaylistSuccessOutputSocketData>(
@@ -58,3 +73,27 @@ export const subscribeSocketQueue = (subscribtion: (data: QueueOutputSocketData)
 
 export const subscribeSocketDelete = (subscribtion: (data: DeleteOutputSocketData) => void) =>
   socketClient.on<DeleteOutputSocketEvent, DeleteOutputSocketData>("delete", subscribtion);
+
+export const subscribeSetCurrent = (subscribtion: (data: SetCurrentOutputSocketData) => void) =>
+  socketClient.on<SetCurrentOutputSocketEvent, SetCurrentOutputSocketData>(
+    "setCurrent",
+    subscribtion
+  );
+export const unsubscribeSetCurrent = (subscribtion: (data: SetCurrentOutputSocketData) => void) =>
+  socketClient.off<SetCurrentOutputSocketEvent, typeof subscribtion>("setCurrent", subscribtion);
+
+export const subscribeChangeMedia = (subscribtion: (data: ChangeMediaOutputSocketData) => void) =>
+  socketClient.on<ChangeMediaOutputSocketEvent, ChangeMediaOutputSocketData>(
+    "changeMedia",
+    subscribtion
+  );
+export const unsubscribeChangeMedia = (subscribtion: (data: ChangeMediaOutputSocketData) => void) =>
+  socketClient.off<ChangeMediaOutputSocketEvent, typeof subscribtion>("changeMedia", subscribtion);
+
+export const subscribeVoteskip = (subscribtion: (data: VoteskipOutputSocketData) => void) =>
+  socketClient.on<VoteskipOutputSocketEvent, VoteskipOutputSocketData>("voteskip", subscribtion);
+export const unsubscribeVoteskip = (subscribtion: (data: VoteskipOutputSocketData) => void) =>
+  socketClient.off<VoteskipOutputSocketEvent, typeof subscribtion>("voteskip", subscribtion);
+
+export const voteskip = () =>
+  socketClient.emit<VoteskipInputSocketEvent, VoteskipInputSocketData>("voteskip");

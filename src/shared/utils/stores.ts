@@ -1,8 +1,13 @@
 import { socketClient } from "$api/socket";
 import {
   requestPlaylist,
+  subscribeChangeMedia,
+  subscribeSetCurrent,
   subscribeSocketDelete,
   subscribeSocketQueue,
+  subscribeVoteskip,
+  unsubscribeChangeMedia,
+  unsubscribeVoteskip,
 } from "$features/playlist/playlist";
 import {
   parseLegacyUserlist,
@@ -15,6 +20,7 @@ import { clientStore } from "$stores/clientStore";
 import { pageStore } from "$stores/pageStore";
 import { playlistStore } from "$stores/playlistStore";
 import { socketStore } from "$stores/socketStore";
+import { voteskipStore } from "$stores/voteskipStore";
 
 const initClientStore = () => {
   clientStore.init({ ...window.CLIENT });
@@ -77,6 +83,7 @@ const initPlaylistStore = async () => {
 
     subscribeSocketQueue(({ after, item }) => playlistStore.addPlaylistItem(item, after));
     subscribeSocketDelete(({ uid }) => playlistStore.removePlaylistItem(uid));
+    subscribeSetCurrent(playlistStore.setCurrent);
 
     const unsubPlaylistStore = playlistStore.subscribe(state => {
       window.PL_CURRENT = state.currentUid;
@@ -93,6 +100,30 @@ const initPlaylistStore = async () => {
   }
 };
 
+const initVoteskipStore = () => {
+  const initialCount = 0;
+  const initialNeed = 0;
+
+  voteskipStore.init({ count: initialCount, need: initialNeed });
+
+  const handleSetCount = () => voteskipStore.setCount(0);
+  const handleSetVoteskip = ({ count, need }: { count: number; need: number }) =>
+    voteskipStore.setVoteskip(count, need);
+
+  subscribeChangeMedia(handleSetCount);
+  subscribeVoteskip(handleSetVoteskip);
+
+  const unsubChangeMedia = () => unsubscribeChangeMedia(handleSetCount);
+  const unsubVoteskip = () => unsubscribeVoteskip(handleSetVoteskip);
+
+  const unsub = () => {
+    unsubChangeMedia();
+    unsubVoteskip();
+  };
+
+  return unsub;
+};
+
 export const initStores = async () => {
   const unsubClient = initClientStore();
   const unsubAppStore = initAppStore();
@@ -100,11 +131,13 @@ export const initStores = async () => {
   initSocketStore();
   initUserlistStore();
   const unsubPlaylistStore = await initPlaylistStore();
+  const unsubVoteskipStore = initVoteskipStore();
 
   const unsubAll = () => {
     unsubClient();
     unsubAppStore();
     unsubPlaylistStore();
+    unsubVoteskipStore();
   };
 
   return unsubAll;

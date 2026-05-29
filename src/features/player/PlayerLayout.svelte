@@ -1,7 +1,6 @@
 <script lang="ts">
   import { VideoOffIcon } from "@hugeicons/core-free-icons";
   import { HugeiconsIcon } from "@hugeicons/svelte";
-  import { get } from "svelte/store";
   import { youtubePlayer } from "$components/common/YouTube.svelte";
   import { Button } from "$lib/components/ui/button";
   import {
@@ -16,15 +15,15 @@
   import PlayerHeader from "./PlayerHeader.svelte";
 
   let open = $state(true);
-  let currentUid = $derived(get(playlistStore).currentUid);
-  let currentItem = $derived(get(playlistStore).playlist[currentUid]);
+  let currentUid = $derived($playlistStore.currentUid);
+  let currentItem = $derived($playlistStore.playlist[currentUid]);
   let currentMediaTitle = $derived(currentItem?.media?.title ?? "");
   let currentMediaId = $derived(currentItem?.media?.id ?? "");
   let currentMediaLink = $derived(
     currentItem.media.type === "yt" ? `https://youtu.be/${currentItem.media.id}` : ""
   );
-  let total = $derived(get(playlistStore).playlist.length);
-  let current = $derived(get(playlistStore).playlist.indexOf(currentItem) + 1);
+  let total = $derived($playlistStore.playlist.length);
+  let current = $derived($playlistStore.playlist.indexOf(currentItem) + 1);
 
   const handlePlayerToggle = () => (open = !open);
 

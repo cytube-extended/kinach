@@ -1,9 +1,10 @@
 import type { Socket } from "socket.io-client";
 
 export type SocketClient = typeof Socket & {
-  emit: <E, D>(event: E, data?: D) => void;
-  on: <E, D>(event: E, response?: (data: D) => void) => void;
-  once: <E, D>(event: E, response?: (data: D) => void) => void;
+  emit: <E extends string, D>(event: E, data?: D) => SocketIOClient.Emitter;
+  on: <E extends string, D>(event: E, response?: (data: D) => void) => SocketIOClient.Emitter;
+  off: <E extends string, F extends Function>(event: E, fn?: F) => SocketIOClient.Emitter;
+  once: <E extends string, D>(event: E, response?: (data: D) => void) => SocketIOClient.Emitter;
 };
 
 type SocketConnectOutputEvent = "connect";
