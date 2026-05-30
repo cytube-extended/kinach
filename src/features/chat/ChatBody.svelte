@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { ClassValue } from "svelte/elements";
   import { Handle, Pane, PaneGroup } from "$lib/components/ui/resizable/index.js";
-  import { cn } from "$lib/utils";
+  import { cn, md } from "$lib/utils";
 
   let {
     reversed,
@@ -23,8 +23,8 @@
       <Pane
         bind:ref={leftPaneRef}
         order={1}
-        defaultSize={reversed ? 20 : 80}
-        maxSize={reversed ? 30 : 100}
+        defaultSize={reversed && md.current ? 20 : 80}
+        maxSize={reversed && md.current ? 30 : 100}
         class="flex scrollbar-thumb-primary scrollbar-track-background overflow-y-auto!"
       />
 
@@ -33,8 +33,8 @@
       <Pane
         bind:ref={rightPaneRef}
         order={2}
-        defaultSize={reversed ? 80 : 20}
-        maxSize={reversed ? 100 : 30}
+        defaultSize={reversed && md.current ? 80 : 20}
+        maxSize={reversed && md.current ? 100 : 30}
         class="flex scrollbar-thumb-primary scrollbar-track-background overflow-y-auto!"
       />
     </PaneGroup>

@@ -31,7 +31,7 @@
 
 <div
   class={cn(
-    "flex h-8 items-center justify-between gap-4 overflow-hidden p-1",
+    "flex items-center justify-between overflow-hidden",
     reversed ? "flex-row" : "flew-row md:flex-row-reverse",
     className
   )}
@@ -58,7 +58,12 @@
     </Button>
   </div>
 
-  <p class="flex-auto truncate" title={mediaTitle}>{mediaTitle}</p>
+  <p
+    class="flex-auto truncate text-sm font-stretch-ultra-condensed md:text-base md:font-stretch-normal"
+    title={mediaTitle}
+  >
+    {mediaTitle}
+  </p>
 
   <div
     class={cn(

@@ -6,7 +6,7 @@
     Image as AvatarImage,
     Root as AvatarRoot,
   } from "$lib/components/ui/avatar";
-  import { cn } from "$lib/utils";
+  import { cn, md } from "$lib/utils";
 
   let {
     class: className,
@@ -23,7 +23,7 @@
 </script>
 
 <div class={cn("", className)} {...restProps}>
-  <AvatarRoot class="rounded-lg">
+  <AvatarRoot size={md.current ? "default" : "sm"} class="rounded-lg">
     <AvatarImage src={imgSrc} alt="Channel Logo" />
 
     {#if typeof isConnected === "boolean"}

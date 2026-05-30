@@ -64,7 +64,10 @@
             animate:flip={{ duration: 200, easing: quintOut }}
             transition:blur={{ duration: 200 }}
             onmouseenter={() => (userTarget = user)}
-            class={cn(rankToClass(user.rank), "font-bold")}
+            class={cn(
+              "text-sm font-bold font-stretch-condensed md:text-base md:font-extrabold md:font-stretch-normal",
+              rankToClass(user.rank)
+            )}
           >
             <HoverCardTrigger>
               {user.name}

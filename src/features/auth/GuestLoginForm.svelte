@@ -3,10 +3,10 @@
   import { Button } from "$lib/components/ui/button";
   import { Field, Group } from "$lib/components/ui/field";
   import { Input } from "$lib/components/ui/input";
-  import { cn } from "$lib/utils";
+  import { cn, md } from "$lib/utils";
   import { authStore, login } from "./auth";
 
-  const LOGIN_DELAY_MS = 500;
+  const LOGIN_ANIMATION_DELAY_MS = 500;
 
   let username = $derived($authStore.username);
   let isSubmitting = $derived($authStore.status);
@@ -20,7 +20,10 @@
     try {
       $authStore.status = true;
 
-      await new Promise(resolve => setTimeout(resolve, LOGIN_DELAY_MS));
+      if (md.current) {
+        await new Promise(resolve => setTimeout(resolve, LOGIN_ANIMATION_DELAY_MS));
+      }
+
       await login(username);
     } catch (err: unknown) {
       // TODO: Show alert?
@@ -49,7 +52,7 @@
 
       <Input
         required
-        class="flex-8 rounded-none border-none"
+        class="flex-8 rounded-none border-none text-sm font-stretch-condensed md:text-base md:font-stretch-normal"
         type="text"
         autocomplete="name"
         placeholder="Username"

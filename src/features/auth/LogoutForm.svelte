@@ -1,14 +1,16 @@
 <script lang="ts">
   import type { ClassValue } from "svelte/elements";
+  import { Logout02Icon } from "@hugeicons/core-free-icons";
+  import { HugeiconsIcon } from "@hugeicons/svelte";
   import { Button } from "$lib/components/ui/button";
   import { Field, Group } from "$lib/components/ui/field";
   import { Label } from "$lib/components/ui/label";
-  import { cn, lg } from "$lib/utils";
+  import { cn, lg, md } from "$lib/utils";
   import { clientStore } from "$stores/clientStore";
   import { authStore, logout } from "./auth";
   import AuthAvatar from "./AuthAvatar.svelte";
 
-  const LOGOUT_DELAY_MS = 500;
+  const LOGOUT_ANIMATION_DELAY_MS = 500;
 
   let isSubmitting = $derived($authStore.status);
   let isUser = $derived($clientStore.rank > 0);
@@ -22,7 +24,10 @@
     try {
       $authStore.status = true;
 
-      await new Promise(resolve => setTimeout(resolve, LOGOUT_DELAY_MS));
+      if (md.current) {
+        await new Promise(resolve => setTimeout(resolve, LOGOUT_ANIMATION_DELAY_MS));
+      }
+
       await logout();
     } catch (err: unknown) {
       // TODO: Show alert?
@@ -58,12 +63,18 @@
 
         <Button
           type="submit"
+          variant="outline"
           disabled={isSubmitting}
+          size={md.current ? "default" : "icon-sm"}
           class={cn({
             "md:cursor-not-allowed": isSubmitting,
           })}
         >
-          Logout
+          {#if md.current}
+            Logout
+          {:else}
+            <HugeiconsIcon icon={Logout02Icon} class="size-4" />
+          {/if}
         </Button>
       </Field>
     </Group>

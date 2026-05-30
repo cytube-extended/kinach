@@ -27,18 +27,22 @@
   } = $props();
 </script>
 
-<div class={cn("", className)} {...restProps}>
-  <ChatHeader {reversed} {handleReverse} onlineCount={0} />
+<div class={cn("overflow-hidden", className)} {...restProps}>
+  <ChatHeader
+    {reversed}
+    {handleReverse}
+    onlineCount={0}
+    class="h-7 max-h-7 min-h-7 w-full gap-1 p-0.5 md:h-8 md:max-h-8 md:min-h-8 md:gap-1.5 md:p-1"
+  />
 
   <Separator />
 
   <ChatBody
-    reversed={reversed && md.current}
+    {reversed}
     bind:leftPaneRef={leftChatPane}
     bind:rightPaneRef={rightChatPane}
-    class="flex-9"
+    class="flex-16"
   />
-
   {#if leftChatPane && rightChatPane}
     {@const userlistTarget = reversed && md.current ? leftChatPane : rightChatPane}
     {@const messageBufferTarget = reversed && md.current ? rightChatPane : leftChatPane}

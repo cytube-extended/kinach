@@ -31,8 +31,8 @@
     bind:secondaryPaneRef
     mainClass="flex"
     secondaryClass="flex"
-    defaultMainSize={md.current ? 36 : 45}
-    defaultSecondarySize={md.current ? 64 : 55}
+    defaultMainSize={md.current ? 36 : 50}
+    defaultSecondarySize={md.current ? 64 : 50}
     class="flex-1"
   />
 
@@ -45,7 +45,7 @@
 
       <Separator />
 
-      <PlaylistLayout class="h-6 max-h-6 min-h-6" />
+      <PlaylistLayout class="h-4 max-h-4 min-h-4 md:h-6 md:max-h-6 md:min-h-6" />
     </div>
 
     <ChatLayout

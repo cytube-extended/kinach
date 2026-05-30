@@ -5,7 +5,7 @@
   import VersionBadge from "$components/common/VersionBadge.svelte";
   import AuthForm from "$features/auth/AuthForm.svelte";
   import { Button } from "$lib/components/ui/button";
-  import { cn } from "$lib/utils";
+  import { cn, md } from "$lib/utils";
 
   const handleReconnect = submitSocketConnect;
 
@@ -27,7 +27,7 @@
 
 <header
   class={cn(
-    "sticky top-0 flex w-full flex-row items-center justify-between gap-4 bg-background py-4 pr-5 pl-10 md:gap-8 md:pr-8",
+    "sticky top-0 flex w-full flex-row items-center justify-between gap-1.5 bg-background py-2 pr-2 pl-6 md:gap-3 md:py-4 md:pr-8 md:pl-10",
     className
   )}
   {...restProps}
@@ -41,8 +41,10 @@
   </Button>
 
   {#if isConnected}
-    <AuthForm class="w-4/5 flex-initial md:w-3/5 lg:w-2/5" {isLoggedIn} />
+    <AuthForm class="w-full flex-initial md:w-3/5 lg:w-2/5" {isLoggedIn} />
   {:else}
-    <Button class="flex-initial" onclick={handleReconnect}>Reconnect</Button>
+    <Button size={md.current ? "default" : "sm"} onclick={handleReconnect} class="flex-initial">
+      Reconnect
+    </Button>
   {/if}
 </header>

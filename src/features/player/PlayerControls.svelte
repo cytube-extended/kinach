@@ -42,14 +42,14 @@
 </script>
 
 <div
-  class={cn("flex h-8 flex-row items-center justify-between gap-4 overflow-hidden p-1", className)}
+  class={cn("flex flex-row items-center justify-between overflow-hidden", className)}
   {...restProps}
 >
   <div class="flex flex-1 flex-row items-center justify-start"></div>
 
   <div class="flex-auto text-center">{current} / {total} items</div>
 
-  <div class="flex flex-1 flex-row items-center justify-end gap-2">
+  <div class="flex flex-1 flex-row items-center justify-end gap-1 md:gap-1.5">
     <Button variant="outline" type="button" size="icon-xs" onclick={handlePlayerToggle}>
       {#if open}
         <HugeiconsIcon icon={UnavailableIcon} class="size-4" />

@@ -17,14 +17,16 @@
 
 <script lang="ts">
   import type { ClassValue } from "svelte/elements";
+  import { Login02Icon } from "@hugeicons/core-free-icons";
+  import { HugeiconsIcon } from "@hugeicons/svelte";
   import { Button } from "$lib/components/ui/button";
   import { Field, Group } from "$lib/components/ui/field";
   import { Input } from "$lib/components/ui/input";
-  import { cn, lg } from "$lib/utils";
+  import { cn, lg, md } from "$lib/utils";
   import { authStore, login } from "./auth";
   import AuthAvatar from "./AuthAvatar.svelte";
 
-  const LOGIN_DELAY_MS = 500;
+  const LOGIN_ANIMATION_DELAY_MS = 500;
 
   let isSubmitting = $derived($authStore.status);
 
@@ -62,7 +64,10 @@
     try {
       $authStore.status = true;
 
-      await new Promise(resolve => setTimeout(resolve, LOGIN_DELAY_MS));
+      if (md.current) {
+        await new Promise(resolve => setTimeout(resolve, LOGIN_ANIMATION_DELAY_MS));
+      }
+
       await login(username, password);
     } catch (err: unknown) {
       // TODO: Show alert?
@@ -85,7 +90,10 @@
 <div class={cn("", className)} {...restProps}>
   <form onsubmit={handleSubmit}>
     <Group>
-      <Field orientation="horizontal" class="flex flex-row items-center justify-end">
+      <Field
+        orientation="horizontal"
+        class="flex flex-row items-center justify-end gap-1 md:gap-1.5"
+      >
         {#if lg.current}
           <AuthAvatar
             isLoading={isSubmitting}
@@ -103,6 +111,7 @@
           title={showUsernameError ? usernameError : ""}
           disabled={isSubmitting}
           class={cn({
+            "h-7 px-2.5 text-[0.8rem]": !md.current,
             "md:cursor-not-allowed": isSubmitting,
           })}
         />
@@ -116,17 +125,23 @@
           title={showPasswordError ? passwordError : ""}
           disabled={disablePassword}
           class={cn({
+            "h-7 px-2.5 text-[0.8rem]": !md.current,
             "md:cursor-not-allowed": disablePassword,
           })}
         />
         <Button
           type="submit"
           disabled={disableSubmit}
+          size={md.current ? "default" : "icon-sm"}
           class={cn({
             "md:cursor-not-allowed": disableSubmit,
           })}
         >
-          Login
+          {#if md.current}
+            Login
+          {:else}
+            <HugeiconsIcon icon={Login02Icon} class="size-4" />
+          {/if}
         </Button>
       </Field>
     </Group>

@@ -27,7 +27,7 @@
 
 <div
   class={cn(
-    "flex h-8 flex-none items-center justify-between overflow-hidden p-1",
+    "flex flex-none items-center justify-between overflow-hidden",
     reversed ? "flex-row-reverse md:flex-row" : "flex-row-reverse",
     className
   )}
