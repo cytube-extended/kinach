@@ -18,6 +18,18 @@
 
   let message = $state("");
 
+  const handleKeydown = (event: KeyboardEvent) => {
+    if (event.key !== "Enter") {
+      return;
+    }
+
+    event.preventDefault();
+
+    console.log(message);
+
+    message = "";
+  };
+
   const handleSubmit = (event: SubmitEvent) => {
     event.preventDefault();
 
@@ -33,6 +45,7 @@
   <InputGroupRoot class="flex-1 rounded-none border-none">
     <InputGroupTextarea
       bind:value={message}
+      onkeydown={handleKeydown}
       maxlength={MAX_CHAT_MESSAGE_LENGTH}
       placeholder="Chat message"
       class="max-h-48 text-base font-stretch-ultra-condensed md:text-sm md:font-stretch-normal"
