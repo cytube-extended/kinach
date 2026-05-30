@@ -37,10 +37,10 @@
   />
 
   {#if mainPaneRef && secondaryPaneRef}
-    {@const playerTarget = reversed ? secondaryPaneRef : mainPaneRef}
+    {@const mediaTarget = reversed ? secondaryPaneRef : mainPaneRef}
     {@const chatTarget = reversed ? mainPaneRef : secondaryPaneRef}
 
-    <div {@attach portal(playerTarget)} class="flex w-full flex-1 flex-col">
+    <div {@attach portal(mediaTarget)} class="flex w-full flex-1 flex-col">
       <PlayerLayout {reversed} {handleReverse} />
 
       <Separator />
