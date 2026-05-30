@@ -1,3 +1,7 @@
+<script lang="ts" module>
+  const MAX_CHAT_MESSAGE_LENGTH = 320;
+</script>
+
 <script lang="ts">
   import type { ClassValue } from "svelte/elements";
   import { Sent02Icon, CrazyIcon, Attachment02Icon } from "@hugeicons/core-free-icons";
@@ -7,6 +11,7 @@
     Addon as InputGroupAddon,
     Button as InputGroupButton,
     Textarea as InputGroupTextarea,
+    Text as InputGroupText,
   } from "$lib/components/ui/input-group/index.js";
   import { Separator } from "$lib/components/ui/separator";
   import { cn, md } from "$lib/utils";
@@ -28,6 +33,7 @@
   <InputGroupRoot class="flex-1 rounded-none border-none">
     <InputGroupTextarea
       bind:value={message}
+      maxlength={MAX_CHAT_MESSAGE_LENGTH}
       placeholder="Chat message"
       class="max-h-48 text-base font-stretch-ultra-condensed md:text-sm md:font-stretch-normal"
     />
@@ -36,6 +42,14 @@
       <InputGroupButton type="button" variant="outline" size={md.current ? "icon-sm" : "icon-xs"}>
         <HugeiconsIcon icon={Attachment02Icon} class="size-4 md:size-5" />
       </InputGroupButton>
+
+      <Separator orientation="vertical" />
+
+      <InputGroupText>
+        {@const current = MAX_CHAT_MESSAGE_LENGTH - message.length}
+
+        {current} / {MAX_CHAT_MESSAGE_LENGTH}
+      </InputGroupText>
 
       <InputGroupButton
         type="button"
