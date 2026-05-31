@@ -61,9 +61,9 @@
       <Separator orientation="vertical" />
 
       <InputGroupText>
-        {@const current = MAX_CHAT_MESSAGE_LENGTH - message.length}
-        {@const isWarning = current < MAX_CHAT_MESSAGE_LENGTH * 0.25}
-        {@const isMax = current === 0}
+        {const current = $derived(MAX_CHAT_MESSAGE_LENGTH - message.length)}
+        {const isWarning = $derived(current < MAX_CHAT_MESSAGE_LENGTH * 0.25)}
+        {const isMax = $derived(current === 0)}
 
         <span
           class="transition-colors duration-1000 data-[is-warning=true]:font-bold data-[is-warning=true]:text-amber-400 data-[is-warning=true]:data-[is-max=true]:font-extrabold data-[is-warning=true]:data-[is-max=true]:text-destructive"

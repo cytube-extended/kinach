@@ -76,9 +76,9 @@
         {/each}
       </ul>
       {#if userTarget}
-        {@const username = userTarget.name}
-        {@const description = userTarget.profile.text}
-        {@const imgSrc = userTarget.profile.image}
+        {const username = $derived(userTarget.name)}
+        {const description = $derived(userTarget.profile.text)}
+        {const imgSrc = $derived(userTarget.profile.image)}
 
         <HoverCardContent>
           <UserCard {username} {description} {imgSrc} />

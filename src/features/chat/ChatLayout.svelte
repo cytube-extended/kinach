@@ -44,8 +44,8 @@
     class="flex-16"
   />
   {#if leftChatPane && rightChatPane}
-    {@const userlistTarget = reversed && md.current ? leftChatPane : rightChatPane}
-    {@const messageBufferTarget = reversed && md.current ? rightChatPane : leftChatPane}
+    {const userlistTarget = $derived(reversed && md.current ? leftChatPane : rightChatPane)}
+    {const messageBufferTarget = $derived(reversed && md.current ? rightChatPane : leftChatPane)}
 
     <Userlist {@attach portal(userlistTarget)} class="flex-1" />
     <MessageBuffer {@attach portal(messageBufferTarget)} class="flex-1" />

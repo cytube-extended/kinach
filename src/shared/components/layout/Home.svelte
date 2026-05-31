@@ -37,8 +37,8 @@
   />
 
   {#if mainPaneRef && secondaryPaneRef}
-    {@const mediaTarget = reversed ? secondaryPaneRef : mainPaneRef}
-    {@const chatTarget = reversed ? mainPaneRef : secondaryPaneRef}
+    {const mediaTarget = $derived(reversed ? secondaryPaneRef : mainPaneRef)}
+    {const chatTarget = $derived(reversed ? mainPaneRef : secondaryPaneRef)}
 
     <div {@attach portal(mediaTarget)} class="flex w-full flex-1 flex-col">
       <PlayerLayout {reversed} {handleReverse} />
