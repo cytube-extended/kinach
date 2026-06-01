@@ -72,7 +72,7 @@
             variant="ghost"
             type="button"
             size="lg"
-            class="text-lg font-semibold font-stretch-expanded select-none"
+            class="text-md font-semibold font-stretch-expanded select-none md:text-lg"
           >
             Player is hidden
           </Button>
