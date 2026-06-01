@@ -65,8 +65,17 @@
             <HugeiconsIcon icon={VideoOffIcon} class="size-5 motion-safe:animate-pulse" />
           </Button>
         </EmptyMedia>
-        <EmptyTitle class="text-md font-semibold font-stretch-expanded select-none">
-          Player is hidden
+        <EmptyTitle>
+          <Button
+            onclick={handlePlayerToggle}
+            title="Show player"
+            variant="ghost"
+            type="button"
+            size="lg"
+            class="text-lg font-semibold font-stretch-expanded select-none"
+          >
+            Player is hidden
+          </Button>
         </EmptyTitle>
       </EmptyHeader>
     </EmptyRoot>
