@@ -50,7 +50,7 @@
       onkeydown={handleKeydown}
       maxlength={MAX_CHAT_MESSAGE_LENGTH}
       placeholder="Chat message"
-      class="max-h-48 text-base font-stretch-ultra-condensed md:text-sm md:font-stretch-normal"
+      class="max-h-48 min-h-12 text-base font-stretch-ultra-condensed scrollbar-thumb-primary scrollbar-track-background md:text-sm md:font-stretch-normal"
     />
 
     <InputGroupAddon align="block-end" class="flex flex-row justify-end">
