@@ -12,8 +12,10 @@
   } = $props();
 </script>
 
-<div class={cn("", className)} {...restProps}>
-  {#each $playlistStore.playlist as playlistItem (playlistItem.uid)}
-    <PlaylistItem title={playlistItem.media.title} />
+<div class={cn("pt-1", className)} {...restProps}>
+  {#each $playlistStore.playlist as playlistItem, index (playlistItem.uid)}
+    {const title = playlistItem.media.title}
+
+    <PlaylistItem {title} />
   {/each}
 </div>

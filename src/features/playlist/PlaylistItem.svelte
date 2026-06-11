@@ -13,7 +13,7 @@
 </script>
 
 <div
-  class={cn("flex h-4 flex-row items-center justify-start border-b px-1 md:h-7 md:p-1 ", className)}
+  class={cn("flex h-6 flex-row items-center justify-start border-b px-1 py-3", className)}
   {...restProps}
 >
   <p class="truncate text-sm font-stretch-ultra-condensed md:text-base md:font-stretch-normal">

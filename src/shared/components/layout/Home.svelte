@@ -50,8 +50,8 @@
 <main class={cn("flex flex-col border-t", className)} {...restProps}>
   <ResizableCytubeFluidLayout
     direction={md.current ? "horizontal" : "vertical"}
-    defaultMainSize={md.current ? 36 : 50}
-    defaultSecondarySize={md.current ? 64 : 50}
+    defaultMainSize={md.current ? 36 : 45}
+    defaultSecondarySize={md.current ? 64 : 55}
     bind:mainPane
     bind:secondaryPane
     bind:mainPaneRef
@@ -70,7 +70,7 @@
 
       <Separator />
 
-      <PlaylistLayout class="h-4 max-h-4 min-h-4 md:h-6 md:max-h-6 md:min-h-6" />
+      <PlaylistLayout class="h-7 max-h-7 min-h-7" />
     </div>
 
     <ChatLayout
