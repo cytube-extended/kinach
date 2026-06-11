@@ -11,6 +11,7 @@
   import Button from "$lib/components/ui/button/button.svelte";
   import { cn, md } from "$lib/utils";
   import { voteskipStore } from "$stores/voteskipStore";
+  import MediaQueueForm from "./MediaQueueForm.svelte";
 
   let skipped = $state(false);
 
@@ -52,7 +53,9 @@
   class={cn("flex flex-row items-center justify-between overflow-hidden", className)}
   {...restProps}
 >
-  <div class="flex flex-1 flex-row items-center justify-start">
+  <div class="flex flex-1 flex-row items-center justify-start gap-1.5">
+    <MediaQueueForm />
+
     {#if !md.current}
       <Button variant="outline" type="button" size="icon-xs" onclick={handlePlaylistToggle}>
         <HugeiconsIcon icon={Playlist01Icon} class="size-4" />
