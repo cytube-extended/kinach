@@ -29,9 +29,11 @@
 
   let {
     reversed,
+    handlePlaylistToggle,
     handleReverse,
   }: {
     reversed: boolean;
+    handlePlaylistToggle: () => void;
     handleReverse: () => void;
   } = $props();
 </script>
@@ -88,6 +90,7 @@
   {current}
   {total}
   {open}
+  {handlePlaylistToggle}
   {handlePlayerToggle}
   class="h-7 max-h-7 min-h-7 w-full gap-1 p-0.5 md:h-8 md:max-h-8 md:min-h-8 md:gap-1.5 md:p-1"
 />

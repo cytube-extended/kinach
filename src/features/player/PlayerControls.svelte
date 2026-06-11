@@ -1,10 +1,15 @@
 <script lang="ts">
   import type { ClassValue } from "svelte/elements";
-  import { UnavailableIcon, Film02Icon, NextIcon } from "@hugeicons/core-free-icons";
+  import {
+    UnavailableIcon,
+    Film02Icon,
+    NextIcon,
+    Playlist01Icon,
+  } from "@hugeicons/core-free-icons";
   import { HugeiconsIcon } from "@hugeicons/svelte";
   import { voteskip } from "$features/playlist/playlist";
   import Button from "$lib/components/ui/button/button.svelte";
-  import { cn } from "$lib/utils";
+  import { cn, md } from "$lib/utils";
   import { voteskipStore } from "$stores/voteskipStore";
 
   let skipped = $state(false);
@@ -23,6 +28,7 @@
     current,
     total,
     open,
+    handlePlaylistToggle,
     handlePlayerToggle,
     class: className,
     ...restProps
@@ -30,6 +36,7 @@
     current: number;
     total: number;
     open: boolean;
+    handlePlaylistToggle: () => void;
     handlePlayerToggle: () => void;
     class?: ClassValue;
   } = $props();
@@ -45,7 +52,13 @@
   class={cn("flex flex-row items-center justify-between overflow-hidden", className)}
   {...restProps}
 >
-  <div class="flex flex-1 flex-row items-center justify-start"></div>
+  <div class="flex flex-1 flex-row items-center justify-start">
+    {#if !md.current}
+      <Button variant="outline" type="button" size="icon-xs" onclick={handlePlaylistToggle}>
+        <HugeiconsIcon icon={Playlist01Icon} class="size-4" />
+      </Button>
+    {/if}
+  </div>
 
   <div class="flex-auto text-center">{current} / {total} items</div>
 

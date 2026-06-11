@@ -12,6 +12,8 @@
     direction,
     defaultMainSize = DEFAULT_PANE_SIZE,
     defaultSecondarySize = DEFAULT_PANE_SIZE,
+    mainPane = $bindable<Pane | null>(null),
+    secondaryPane = $bindable<Pane | null>(null),
     mainPaneRef = $bindable<HTMLElement | null>(null),
     secondaryPaneRef = $bindable<HTMLElement | null>(null),
     mainClass: mainClassName,
@@ -22,6 +24,8 @@
     direction: "horizontal" | "vertical";
     defaultMainSize: number;
     defaultSecondarySize: number;
+    mainPane: Pane | null;
+    secondaryPane: Pane | null;
     mainPaneRef?: HTMLElement | null;
     secondaryPaneRef?: HTMLElement | null;
     mainClass?: ClassValue;
@@ -31,6 +35,7 @@
 
 <PaneGroup {direction} class={cn("", className)} {...restProps}>
   <Pane
+    bind:this={mainPane}
     bind:ref={mainPaneRef}
     defaultSize={defaultMainSize}
     order={1}
@@ -41,6 +46,7 @@
   <Handle withHandle />
 
   <Pane
+    bind:this={secondaryPane}
     bind:ref={secondaryPaneRef}
     defaultSize={defaultSecondarySize}
     order={2}
