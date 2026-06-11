@@ -3,8 +3,6 @@
   import { portal } from "$components/common/Portal.svelte";
   import ChatLayout from "$features/chat/ChatLayout.svelte";
   import PlayerLayout from "$features/player/PlayerLayout.svelte";
-  import PlaylistLayout from "$features/playlist/PlaylistLayout.svelte";
-  import { Separator } from "$lib/components/ui/separator";
   import { Pane } from "$lib/components/ui/resizable/index.js";
   import { cn, md } from "$lib/utils";
   import ResizableCytubeFluidLayout from "./ResizableCytubeFluidLayout.svelte";
@@ -35,7 +33,7 @@
       return;
     }
     secondaryPane.collapse();
-  }
+  };
 
   let {
     isLoggedIn,
@@ -65,13 +63,13 @@
     {const mediaTarget = $derived(reversed ? secondaryPaneRef : mainPaneRef)}
     {const chatTarget = $derived(reversed ? mainPaneRef : secondaryPaneRef)}
 
-    <div {@attach portal(mediaTarget)} class="flex w-full flex-1 flex-col">
-      <PlayerLayout {reversed} {handlePlaylistToggle} {handleReverse} />
-
-      <Separator />
-
-      <PlaylistLayout class="h-7 max-h-7 min-h-7" />
-    </div>
+    <PlayerLayout
+      {@attach portal(mediaTarget)}
+      {reversed}
+      {handlePlaylistToggle}
+      {handleReverse}
+      class="flex w-full flex-1 flex-col"
+    />
 
     <ChatLayout
       {@attach portal(chatTarget)}

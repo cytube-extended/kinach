@@ -1,5 +1,5 @@
 import { writable } from "svelte/store";
-import type { Playlist, PlaylistItem } from "$features/playlist/playlist";
+import type { Playlist, PlaylistItem } from "$features/player/playlist";
 
 export type PlaylistState = {
   currentUid: number;

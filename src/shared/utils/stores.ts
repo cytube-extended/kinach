@@ -8,7 +8,7 @@ import {
   subscribeVoteskip,
   unsubscribeChangeMedia,
   unsubscribeVoteskip,
-} from "$features/playlist/playlist";
+} from "$features/player/playlist";
 import {
   parseLegacyUserlist,
   subscribeSocketAddUser,

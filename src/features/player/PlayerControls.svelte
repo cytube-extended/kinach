@@ -7,11 +7,11 @@
     Playlist01Icon,
   } from "@hugeicons/core-free-icons";
   import { HugeiconsIcon } from "@hugeicons/svelte";
-  import { voteskip } from "$features/playlist/playlist";
   import Button from "$lib/components/ui/button/button.svelte";
   import { cn, md } from "$lib/utils";
   import { voteskipStore } from "$stores/voteskipStore";
   import MediaQueueForm from "./MediaQueueForm.svelte";
+  import { voteskip } from "./playlist";
 
   let skipped = $state(false);
 
