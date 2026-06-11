@@ -2,13 +2,13 @@
   import type { ClassValue } from "svelte/elements";
   import { portal } from "$components/common/Portal.svelte";
   import GuestLoginForm from "$features/auth/GuestLoginForm.svelte";
-  import Userlist from "$features/userlist/Userlist.svelte";
   import { Separator } from "$lib/components/ui/separator";
   import { cn, md } from "$lib/utils";
   import ChatBody from "./ChatBody.svelte";
   import ChatForm from "./ChatForm.svelte";
   import ChatHeader from "./ChatHeader.svelte";
   import MessageBuffer from "./MessageBuffer.svelte";
+  import Userlist from "./Userlist.svelte";
 
   let leftChatPane: HTMLElement | null = $state(null);
   let rightChatPane: HTMLElement | null = $state(null);

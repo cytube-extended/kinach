@@ -1,5 +1,11 @@
 import { socketClient } from "$api/socket";
 import {
+  parseLegacyUserlist,
+  subscribeSocketAddUser,
+  subscribeSocketUserLeave,
+  userlistStore,
+} from "$features/chat/userlist";
+import {
   requestPlaylist,
   subscribeChangeMedia,
   subscribeSetCurrent,
@@ -9,12 +15,6 @@ import {
   unsubscribeChangeMedia,
   unsubscribeVoteskip,
 } from "$features/player/playlist";
-import {
-  parseLegacyUserlist,
-  subscribeSocketAddUser,
-  subscribeSocketUserLeave,
-  userlistStore,
-} from "$features/userlist/userlist";
 import { appStore } from "$stores/appStore";
 import { clientStore } from "$stores/clientStore";
 import { pageStore } from "$stores/pageStore";
