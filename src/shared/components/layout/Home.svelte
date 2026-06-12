@@ -11,7 +11,7 @@
   import { cn, md } from "$lib/utils";
   import ResizableCytubeFluidLayout from "./ResizableCytubeFluidLayout.svelte";
 
-  let reversed = $derived(md.current);
+  let reversed = $state(md.current);
   let mainPane: Pane | null = $state(null);
   let secondaryPane: Pane | null = $state(null);
   let mainPaneRef: HTMLElement | null = $state(null);
