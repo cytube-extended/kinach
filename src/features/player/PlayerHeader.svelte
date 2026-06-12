@@ -2,10 +2,10 @@
   import type { ClassValue } from "svelte/elements";
   import {
     CopyLinkIcon,
-    ArrowLeftFromLineIcon,
-    ArrowRightFromLineIcon,
-    ArrowDownFromLineIcon,
-    ArrowUp03Icon,
+    ArrowBigRightDashIcon,
+    ArrowBigLeftDashIcon,
+    ArrowBigDownDashIcon,
+    ArrowBigUpDashIcon,
   } from "@hugeicons/core-free-icons";
   import { HugeiconsIcon } from "@hugeicons/svelte";
   import Button from "$lib/components/ui/button/button.svelte";
@@ -51,14 +51,14 @@
     >
       {#if reversed}
         {#if md.current}
-          <HugeiconsIcon icon={ArrowLeftFromLineIcon} class="size-4 md:size-5" />
+          <HugeiconsIcon icon={ArrowBigLeftDashIcon} class="size-4 md:size-5" />
         {:else}
-          <HugeiconsIcon icon={ArrowUp03Icon} class="size-4 md:size-5" />
+          <HugeiconsIcon icon={ArrowBigUpDashIcon} class="size-4 md:size-5" />
         {/if}
       {:else if md.current}
-        <HugeiconsIcon icon={ArrowRightFromLineIcon} class="size-4 md:size-5" />
+        <HugeiconsIcon icon={ArrowBigRightDashIcon} class="size-4 md:size-5" />
       {:else}
-        <HugeiconsIcon icon={ArrowDownFromLineIcon} class="size-4 md:size-5" />
+        <HugeiconsIcon icon={ArrowBigDownDashIcon} class="size-4 md:size-5" />
       {/if}
     </Button>
   </div>
