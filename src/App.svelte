@@ -4,7 +4,6 @@
 </script>
 
 <script lang="ts">
-  import type { ClassValue } from "svelte/elements";
   import { onMount } from "svelte";
   import Header from "$components/layout/Header.svelte";
   import Home from "$components/layout/Home.svelte";
