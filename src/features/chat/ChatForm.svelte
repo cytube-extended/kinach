@@ -50,11 +50,11 @@
       onkeydown={handleKeydown}
       maxlength={MAX_CHAT_MESSAGE_LENGTH}
       placeholder="Chat message"
-      class="max-h-48 min-h-12 scrollbar-thumb-primary scrollbar-track-background text-base font-stretch-ultra-condensed md:text-sm md:font-stretch-normal"
+      class="max-h-48 min-h-12 scrollbar-thumb-primary scrollbar-track-background px-4 text-sm font-stretch-ultra-condensed antialiased md:text-base md:font-stretch-normal md:subpixel-antialiased"
     />
 
     <InputGroupAddon align="block-end" class="flex flex-row justify-end">
-      <InputGroupButton type="button" variant="outline" size={md.current ? "icon-sm" : "icon-xs"}>
+      <InputGroupButton type="button" variant="ghost" size={md.current ? "icon-sm" : "icon-xs"}>
         <HugeiconsIcon icon={Attachment02Icon} class="size-4 md:size-5" />
       </InputGroupButton>
 
@@ -66,7 +66,7 @@
         {const isMax = $derived(current === 0)}
 
         <span
-          class="transition-colors duration-1000 data-[is-warning=true]:font-bold data-[is-warning=true]:text-amber-400 data-[is-warning=true]:data-[is-max=true]:font-extrabold data-[is-warning=true]:data-[is-max=true]:text-destructive"
+          class="text-xs font-stretch-ultra-condensed antialiased transition-colors duration-1000 data-[is-warning=true]:font-bold data-[is-warning=true]:text-amber-400 data-[is-warning=true]:data-[is-max=true]:font-extrabold data-[is-warning=true]:data-[is-max=true]:text-destructive md:text-sm md:font-stretch-normal md:subpixel-antialiased"
           data-is-warning={isWarning}
           data-is-max={isMax}
         >
@@ -87,12 +87,16 @@
             <p>{current}</p>
           {/if}
         </span>
-        / {MAX_CHAT_MESSAGE_LENGTH}
+        <span
+          class="text-xs font-stretch-ultra-condensed antialiased md:text-sm md:font-stretch-normal md:subpixel-antialiased"
+        >
+          / {MAX_CHAT_MESSAGE_LENGTH}
+        </span>
       </InputGroupText>
 
       <InputGroupButton
         type="button"
-        variant="outline"
+        variant="ghost"
         class="ms-auto"
         size={md.current ? "icon-sm" : "icon-xs"}
       >
@@ -101,7 +105,7 @@
 
       <Separator orientation="vertical" />
 
-      <InputGroupButton type="submit" variant="default" size={md.current ? "icon-sm" : "icon-xs"}>
+      <InputGroupButton type="submit" variant="ghost" size={md.current ? "icon-sm" : "icon-xs"}>
         <HugeiconsIcon icon={Sent02Icon} class="size-4 md:size-5" />
       </InputGroupButton>
     </InputGroupAddon>

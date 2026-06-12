@@ -12,7 +12,9 @@
 
 <div class={cn("", className)} {...restProps}>
   {#each { length: 100 }, index}
-    <div class="text-sm font-stretch-condensed md:text-base md:font-stretch-normal">
+    <div
+      class="text-sm font-stretch-condensed antialiased md:text-base md:font-stretch-normal md:subpixel-antialiased"
+    >
       {index} Lorem ipsum, dolor sit amet consectetur adipisicing elit. Praesentium, vitae nihil labore
       nesciunt eius tenetur nostrum exercitationem reiciendis, illum minima, doloribus distinctio aspernatur.
       Veniam sint a, explicabo dolore harum ducimus?

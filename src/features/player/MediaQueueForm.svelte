@@ -38,8 +38,11 @@
 
 {#if md.current}
   <DialogRoot bind:open>
-    <DialogTrigger type="button" class={buttonVariants({ variant: "outline", size: "icon-xs" })}>
-      <HugeiconsIcon icon={PlusSignIcon} class="size-4" />
+    <DialogTrigger
+      type="button"
+      class={buttonVariants({ variant: "ghost", size: md.current ? "icon-sm" : "icon-xs" })}
+    >
+      <HugeiconsIcon icon={PlusSignIcon} class="size-4 md:size-5" />
     </DialogTrigger>
 
     <DialogContent>
@@ -67,7 +70,7 @@
               variant="outline"
               class="flex-1 data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-white data-[state=on]:*:[svg]:stroke-white"
             >
-              <HugeiconsIcon icon={PinIcon} class="size-4" />
+              <HugeiconsIcon icon={PinIcon} class="size-4 md:size-5" />
               Pin
             </Toggle>
 
@@ -80,8 +83,11 @@
   </DialogRoot>
 {:else}
   <DrawerRoot bind:open>
-    <DrawerTrigger type="button" class={buttonVariants({ variant: "outline", size: "icon-xs" })}>
-      <HugeiconsIcon icon={PlusSignIcon} class="size-4" />
+    <DrawerTrigger
+      type="button"
+      class={buttonVariants({ variant: "ghost", size: md.current ? "icon-sm" : "icon-xs" })}
+    >
+      <HugeiconsIcon icon={PlusSignIcon} class="size-4 md:size-5" />
     </DrawerTrigger>
 
     <DrawerContent>
@@ -108,7 +114,7 @@
             variant="outline"
             class="data-[state=on]:bg-transparent data-[state=on]:*:[svg]:fill-white data-[state=on]:*:[svg]:stroke-white"
           >
-            <HugeiconsIcon icon={PinIcon} class="size-4" />
+            <HugeiconsIcon icon={PinIcon} class="size-4 md:size-5" />
             Pin
           </Toggle>
 

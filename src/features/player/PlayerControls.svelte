@@ -53,38 +53,58 @@
   class={cn("flex flex-row items-center justify-between overflow-hidden", className)}
   {...restProps}
 >
-  <div class="flex flex-1 flex-row items-center justify-start gap-1.5">
+  <div class="flex flex-1 flex-row items-center justify-start gap-1.5 md:gap-2">
     <MediaQueueForm />
 
     {#if !md.current}
-      <Button variant="outline" type="button" size="icon-xs" onclick={togglePlaylist}>
-        <HugeiconsIcon icon={Playlist01Icon} class="size-4" />
+      <Button
+        variant="ghost"
+        type="button"
+        size={md.current ? "icon-sm" : "icon-xs"}
+        onclick={togglePlaylist}
+      >
+        <HugeiconsIcon icon={Playlist01Icon} class="size-4 md:size-5" />
       </Button>
     {/if}
   </div>
 
-  <div class="flex-auto text-center">{current} / {total} items</div>
+  <div
+    class="flex-auto truncate text-center text-sm font-stretch-ultra-condensed antialiased md:text-base md:font-stretch-normal md:subpixel-antialiased"
+  >
+    {current} / {total} items
+  </div>
 
-  <div class="flex flex-1 flex-row items-center justify-end gap-1 md:gap-1.5">
-    <Button variant="outline" type="button" size="icon-xs" onclick={togglePlayer}>
+  <div class="flex flex-1 flex-row items-center justify-end gap-1.5 md:gap-2">
+    <Button
+      variant="ghost"
+      type="button"
+      size={md.current ? "icon-sm" : "icon-xs"}
+      onclick={togglePlayer}
+    >
       {#if open}
-        <HugeiconsIcon icon={UnavailableIcon} class="size-4" />
+        <HugeiconsIcon icon={UnavailableIcon} class="size-4 md:size-5" />
       {:else}
-        <HugeiconsIcon icon={Film02Icon} class="size-4" />
+        <HugeiconsIcon icon={Film02Icon} class="size-4 md:size-5" />
       {/if}
     </Button>
 
     <Button
-      variant="outline"
+      variant="ghost"
       type="button"
-      size={$voteskipStore.count > 0 ? "xs" : "icon-xs"}
+      size={$voteskipStore.count > 0
+        ? md.current
+          ? "sm"
+          : "xs"
+        : md.current
+          ? "icon-sm"
+          : "icon-xs"}
       onclick={handleVoteskip}
       disabled={skipped}
     >
       {#if $voteskipStore.count > 0}
         {$voteskipStore.count} / {$voteskipStore.need}
       {/if}
-      <HugeiconsIcon icon={NextIcon} class="size-4" />
+      <HugeiconsIcon icon={NextIcon} class="size-4 md:size-5" />
     </Button>
   </div>
 </div>

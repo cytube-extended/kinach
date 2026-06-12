@@ -34,25 +34,34 @@
   {...restProps}
 >
   <div class="flex flex-row items-center justify-start">
-    <Button variant="outline" type="button" size="icon-xs">
-      <HugeiconsIcon icon={UserListIcon} class="size-4" />
+    <Button variant="ghost" type="button" size={md.current ? "icon-sm" : "icon-xs"}>
+      <HugeiconsIcon icon={UserListIcon} class="size-4 md:size-5" />
     </Button>
   </div>
 
-  <p class="truncate">{onlineCount} online</p>
+  <p
+    class="flex-auto truncate text-center text-sm font-stretch-ultra-condensed antialiased md:text-base md:font-stretch-normal md:subpixel-antialiased"
+  >
+    {onlineCount} online
+  </p>
 
   <div class="flex flex-row items-center justify-end">
-    <Button variant="outline" type="button" size="icon-xs" onclick={reverseLayout}>
+    <Button
+      variant="ghost"
+      type="button"
+      size={md.current ? "icon-sm" : "icon-xs"}
+      onclick={reverseLayout}
+    >
       {#if reversed}
         {#if md.current}
-          <HugeiconsIcon icon={ArrowRightFromLineIcon} class="size-4" />
+          <HugeiconsIcon icon={ArrowRightFromLineIcon} class="size-4 md:size-5" />
         {:else}
-          <HugeiconsIcon icon={ArrowDownFromLineIcon} class="size-4" />
+          <HugeiconsIcon icon={ArrowDownFromLineIcon} class="size-4 md:size-5" />
         {/if}
       {:else if md.current}
-        <HugeiconsIcon icon={ArrowLeftFromLineIcon} class="size-4" />
+        <HugeiconsIcon icon={ArrowLeftFromLineIcon} class="size-4 md:size-5" />
       {:else}
-        <HugeiconsIcon icon={ArrowUp03Icon} class="size-4" />
+        <HugeiconsIcon icon={ArrowUp03Icon} class="size-4 md:size-5" />
       {/if}
     </Button>
   </div>

@@ -52,7 +52,7 @@
 
       <Input
         required
-        class="flex-8 rounded-none border-none text-sm font-stretch-condensed md:text-base md:font-stretch-normal"
+        class="flex-8 rounded-none border-none text-sm"
         type="text"
         autocomplete="name"
         placeholder="Username"

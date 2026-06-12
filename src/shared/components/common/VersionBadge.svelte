@@ -16,7 +16,7 @@
 
 <div class={cn("relative h-15 w-15 shrink-0 overflow-hidden", className)} {...restProps}>
   <div
-    class="absolute top-[18%] -left-full w-[250%] -rotate-45 bg-primary py-[0.25em] text-center text-[0.5rem] leading-none font-bold shadow-md md:left-[-75%] md:pr-6 md:text-[0.6rem]"
+    class="absolute top-[18%] -left-full w-[250%] -rotate-45 bg-primary py-[0.25em] text-center text-[0.5rem] leading-none font-bold antialiased shadow-md md:left-[-75%] md:pr-6 md:text-[0.6rem] md:subpixel-antialiased"
     {title}
   >
     {appVersion}

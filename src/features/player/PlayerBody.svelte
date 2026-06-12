@@ -43,7 +43,7 @@
   {reverseLayout}
   mediaLink={currentMediaLink}
   mediaTitle={currentMediaTitle}
-  class="h-8 max-h-8 min-h-8 w-full gap-1.5 p-1"
+  class="h-8 max-h-8 min-h-8 w-full gap-1.5 p-1 md:h-10 md:max-h-10 md:min-h-10 md:w-full md:gap-2 md:p-2"
 />
 
 <Separator />
@@ -92,5 +92,5 @@
   {open}
   {togglePlaylist}
   {togglePlayer}
-  class="h-8 max-h-8 min-h-8 w-full gap-1.5 p-1"
+  class="h-8 max-h-8 min-h-8 w-full gap-1.5 p-1 md:h-10 md:max-h-10 md:min-h-10 md:w-full md:gap-2 md:p-2"
 />

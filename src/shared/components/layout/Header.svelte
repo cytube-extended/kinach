@@ -27,7 +27,7 @@
 
 <header
   class={cn(
-    "sticky top-0 flex w-full flex-row items-center justify-between gap-1.5 bg-background py-2 pr-1.5 pl-6 md:gap-3 md:py-4 md:pr-8 md:pl-10",
+    "sticky top-0 flex w-full flex-row items-center justify-between gap-1.5 bg-background py-2 pr-1.5 pl-6 md:gap-3 md:py-4 md:pr-2 md:pl-10",
     className
   )}
   {...restProps}

@@ -65,7 +65,7 @@
             transition:blur={{ duration: 200 }}
             onmouseenter={() => (userTarget = user)}
             class={cn(
-              "text-sm font-bold font-stretch-condensed md:text-base md:font-extrabold md:font-stretch-normal",
+              "text-sm font-bold font-stretch-condensed antialiased md:text-base md:font-extrabold md:font-stretch-normal md:subpixel-antialiased",
               rankToClass(user.rank)
             )}
           >
