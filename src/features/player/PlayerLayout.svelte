@@ -3,8 +3,8 @@
   import { Separator } from "$lib/components/ui/separator";
   import { cn } from "$lib/utils";
   import { playlistStore } from "$stores/playlistStore";
+  import MediaControls from "./MediaControls.svelte";
   import PlayerBody from "./PlayerBody.svelte";
-  import PlayerControls from "./PlayerControls.svelte";
   import PlayerHeader from "./PlayerHeader.svelte";
   import PlaylistLayout from "./PlaylistLayout.svelte";
 
@@ -50,7 +50,7 @@
 
   <Separator />
 
-  <PlayerControls
+  <MediaControls
     {current}
     {total}
     {open}
