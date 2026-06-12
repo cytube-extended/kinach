@@ -11,10 +11,12 @@
   let open = $state(true);
   let currentUid = $derived($playlistStore.currentUid);
   let currentItem = $derived($playlistStore.playlist[currentUid]);
-  let currentMediaTitle = $derived(currentItem?.media?.title ?? "");
-  let currentMediaId = $derived(currentItem?.media?.id ?? "");
-  let currentMediaLink = $derived(
-    currentItem.media.type === "yt" ? `https://youtu.be/${currentItem.media.id}` : ""
+  let currentMediaTitle = $derived(currentItem.media.title ?? "");
+  let currentMediaId = $derived(currentItem.media.id ?? "");
+  let isYT = $derived(currentItem.media.type === "yt");
+  let currentMediaLink = $derived(isYT ? `https://youtu.be/${currentItem.media.id}` : "");
+  let youtubeThumbnailURL = $derived(
+    isYT ? `https://img.youtube.com/vi/${currentItem.media.id}/maxresdefault.jpg` : ""
   );
   let total = $derived($playlistStore.playlist.length);
   let current = $derived($playlistStore.playlist.indexOf(currentItem) + 1);
@@ -39,6 +41,7 @@
   <PlayerHeader
     {reversed}
     {reverseLayout}
+    {youtubeThumbnailURL}
     mediaLink={currentMediaLink}
     mediaTitle={currentMediaTitle}
     class="h-8 max-h-8 min-h-8 w-full gap-1.5 p-1 md:h-10 md:max-h-10 md:min-h-10 md:w-full md:gap-2 md:p-2"

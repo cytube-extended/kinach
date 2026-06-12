@@ -1,5 +1,17 @@
 <script lang="ts" module>
   const COPY_ANIMATION_DURATION = 1000;
+
+  const handleCopy = async (maybeString?: string) => {
+    if (!maybeString) {
+      return;
+    }
+
+    if (maybeString === "") {
+      return;
+    }
+
+    await navigator.clipboard.writeText(maybeString);
+  };
 </script>
 
 <script lang="ts">
@@ -12,17 +24,20 @@
     ArrowBigUpDashIcon,
     CopyIcon,
     CheckIcon,
+    Album02Icon,
   } from "@hugeicons/core-free-icons";
   import { HugeiconsIcon } from "@hugeicons/svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import { cn, md } from "$lib/utils";
 
-  let titleCopied = $state(false);
+  let thumbCopied = $state(false);
   let linkCopied = $state(false);
+  let titleCopied = $state(false);
 
   let {
     reversed,
     reverseLayout,
+    youtubeThumbnailURL,
     mediaLink,
     mediaTitle,
     class: className,
@@ -30,39 +45,31 @@
   }: {
     reversed: boolean;
     reverseLayout: () => void;
+    youtubeThumbnailURL?: string;
     mediaLink?: string;
     mediaTitle?: string;
     class?: ClassValue;
   } = $props();
 
-  const handleCopyTitle = async () => {
-    if (!mediaTitle) {
-      return;
-    }
+  const handleCopyThumbnail = async () => {
+    await handleCopy(youtubeThumbnailURL);
 
-    if (mediaTitle === "") {
-      return;
-    }
-
-    await navigator.clipboard.writeText(mediaTitle);
-    titleCopied = true;
-
-    setTimeout(() => (titleCopied = false), COPY_ANIMATION_DURATION);
+    thumbCopied = true;
+    setTimeout(() => (thumbCopied = false), COPY_ANIMATION_DURATION);
   };
 
   const handleCopyLink = async () => {
-    if (!mediaLink) {
-      return;
-    }
+    await handleCopy(mediaLink);
 
-    if (mediaLink === "") {
-      return;
-    }
-
-    await navigator.clipboard.writeText(mediaLink);
     linkCopied = true;
-
     setTimeout(() => (linkCopied = false), COPY_ANIMATION_DURATION);
+  };
+
+  const handleCopyTitle = async () => {
+    await handleCopy(mediaTitle);
+
+    titleCopied = true;
+    setTimeout(() => (titleCopied = false), COPY_ANIMATION_DURATION);
   };
 </script>
 
@@ -113,18 +120,18 @@
       reversed ? "justify-end" : "justify-end md:justify-start"
     )}
   >
-    {#if mediaTitle !== ""}
+    {#if mediaLink !== ""}
       <Button
         variant="ghost"
         type="button"
         size={md.current ? "icon-sm" : "icon-xs"}
-        title="Copy video title"
-        onclick={handleCopyTitle}
+        title="Copy youtube video thumbnail URL"
+        onclick={handleCopyThumbnail}
       >
-        {#if titleCopied}
+        {#if thumbCopied}
           <HugeiconsIcon icon={CheckIcon} class="size-4 text-green-500 md:size-5" />
         {:else}
-          <HugeiconsIcon icon={CopyIcon} class="size-4 md:size-5" />
+          <HugeiconsIcon icon={Album02Icon} class="size-4 md:size-5" />
         {/if}
       </Button>
     {/if}
@@ -141,6 +148,22 @@
           <HugeiconsIcon icon={CheckIcon} class="size-4 text-green-500 md:size-5" />
         {:else}
           <HugeiconsIcon icon={CopyLinkIcon} class="size-4 md:size-5" />
+        {/if}
+      </Button>
+    {/if}
+
+    {#if mediaTitle !== ""}
+      <Button
+        variant="ghost"
+        type="button"
+        size={md.current ? "icon-sm" : "icon-xs"}
+        title="Copy video title"
+        onclick={handleCopyTitle}
+      >
+        {#if titleCopied}
+          <HugeiconsIcon icon={CheckIcon} class="size-4 text-green-500 md:size-5" />
+        {:else}
+          <HugeiconsIcon icon={CopyIcon} class="size-4 md:size-5" />
         {/if}
       </Button>
     {/if}
