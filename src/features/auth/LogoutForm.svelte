@@ -65,7 +65,7 @@
           type="submit"
           variant="outline"
           disabled={isSubmitting}
-          size={md.current ? "default" : "icon-sm"}
+          size={md.current ? "default" : "icon-xs"}
           class={cn({
             "md:cursor-not-allowed": isSubmitting,
           })}

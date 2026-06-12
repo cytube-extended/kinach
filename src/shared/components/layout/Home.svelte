@@ -43,8 +43,8 @@
 <main class={cn("flex flex-col border-t", className)} {...restProps}>
   <ResizableCytubeFluidLayout
     direction={md.current ? "horizontal" : "vertical"}
-    defaultMainSize={md.current ? 36 : 45}
-    defaultSecondarySize={md.current ? 64 : 55}
+    defaultMainSize={md.current ? 36 : 48.5}
+    defaultSecondarySize={md.current ? 64 : 51.5}
     bind:mainPane
     bind:secondaryPane
     bind:mainPaneRef

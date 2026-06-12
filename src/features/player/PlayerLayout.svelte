@@ -24,5 +24,5 @@
 
   <Separator />
 
-  <PlaylistLayout class="h-7 max-h-7 min-h-7" />
+  <PlaylistLayout class="h-7 max-h-7 min-h-7 md:h-8 md:max-h-8 md:min-h-8" />
 </div>
