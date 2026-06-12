@@ -1,3 +1,7 @@
+<script lang="ts" module>
+  const COPY_ANIMATION_DURATION = 1000;
+</script>
+
 <script lang="ts">
   import type { ClassValue } from "svelte/elements";
   import {
@@ -6,10 +10,15 @@
     ArrowBigLeftDashIcon,
     ArrowBigDownDashIcon,
     ArrowBigUpDashIcon,
+    CopyIcon,
+    CheckIcon,
   } from "@hugeicons/core-free-icons";
   import { HugeiconsIcon } from "@hugeicons/svelte";
   import Button from "$lib/components/ui/button/button.svelte";
   import { cn, md } from "$lib/utils";
+
+  let titleCopied = $state(false);
+  let linkCopied = $state(false);
 
   let {
     reversed,
@@ -26,7 +35,35 @@
     class?: ClassValue;
   } = $props();
 
-  const handleCopyLink = () => navigator.clipboard.writeText(mediaLink ?? "");
+  const handleCopyTitle = async () => {
+    if (!mediaTitle) {
+      return;
+    }
+
+    if (mediaTitle === "") {
+      return;
+    }
+
+    await navigator.clipboard.writeText(mediaTitle);
+    titleCopied = true;
+
+    setTimeout(() => (titleCopied = false), COPY_ANIMATION_DURATION);
+  };
+
+  const handleCopyLink = async () => {
+    if (!mediaLink) {
+      return;
+    }
+
+    if (mediaLink === "") {
+      return;
+    }
+
+    await navigator.clipboard.writeText(mediaLink);
+    linkCopied = true;
+
+    setTimeout(() => (linkCopied = false), COPY_ANIMATION_DURATION);
+  };
 </script>
 
 <div
@@ -76,6 +113,24 @@
       reversed ? "justify-end" : "justify-end md:justify-start"
     )}
   >
+    {#if mediaTitle !== ""}
+      <Button
+        variant="ghost"
+        type="button"
+        size={md.current ? "icon-sm" : "icon-xs"}
+        title="Copy video title"
+        onclick={handleCopyTitle}
+      >
+        {#key titleCopied}
+          {#if titleCopied}
+            <HugeiconsIcon icon={CheckIcon} class="size-4 text-green-500 md:size-5" />
+          {:else}
+            <HugeiconsIcon icon={CopyIcon} class="size-4 md:size-5" />
+          {/if}
+        {/key}
+      </Button>
+    {/if}
+
     {#if mediaLink !== ""}
       <Button
         variant="ghost"
@@ -84,7 +139,13 @@
         title="Copy video link"
         onclick={handleCopyLink}
       >
-        <HugeiconsIcon icon={CopyLinkIcon} class="size-4 md:size-5" />
+        {#key linkCopied}
+          {#if linkCopied}
+            <HugeiconsIcon icon={CheckIcon} class="size-4 text-green-500 md:size-5" />
+          {:else}
+            <HugeiconsIcon icon={CopyLinkIcon} class="size-4 md:size-5" />
+          {/if}
+        {/key}
       </Button>
     {/if}
   </div>
