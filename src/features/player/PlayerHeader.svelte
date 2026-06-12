@@ -121,13 +121,11 @@
         title="Copy video title"
         onclick={handleCopyTitle}
       >
-        {#key titleCopied}
-          {#if titleCopied}
-            <HugeiconsIcon icon={CheckIcon} class="size-4 text-green-500 md:size-5" />
-          {:else}
-            <HugeiconsIcon icon={CopyIcon} class="size-4 md:size-5" />
-          {/if}
-        {/key}
+        {#if titleCopied}
+          <HugeiconsIcon icon={CheckIcon} class="size-4 text-green-500 md:size-5" />
+        {:else}
+          <HugeiconsIcon icon={CopyIcon} class="size-4 md:size-5" />
+        {/if}
       </Button>
     {/if}
 
@@ -139,13 +137,11 @@
         title="Copy video link"
         onclick={handleCopyLink}
       >
-        {#key linkCopied}
-          {#if linkCopied}
-            <HugeiconsIcon icon={CheckIcon} class="size-4 text-green-500 md:size-5" />
-          {:else}
-            <HugeiconsIcon icon={CopyLinkIcon} class="size-4 md:size-5" />
-          {/if}
-        {/key}
+        {#if linkCopied}
+          <HugeiconsIcon icon={CheckIcon} class="size-4 text-green-500 md:size-5" />
+        {:else}
+          <HugeiconsIcon icon={CopyLinkIcon} class="size-4 md:size-5" />
+        {/if}
       </Button>
     {/if}
   </div>
