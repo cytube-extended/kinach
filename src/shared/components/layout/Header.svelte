@@ -43,7 +43,12 @@
   {#if isConnected}
     <AuthForm class="w-full flex-initial md:w-3/5 lg:w-2/5" {isLoggedIn} />
   {:else}
-    <Button size={md.current ? "default" : "sm"} onclick={handleReconnect} class="flex-initial">
+    <Button
+      variant="destructive"
+      size={md.current ? "default" : "sm"}
+      onclick={handleReconnect}
+      class="flex-initial"
+    >
       Reconnect
     </Button>
   {/if}
