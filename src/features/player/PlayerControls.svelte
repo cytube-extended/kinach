@@ -29,16 +29,16 @@
     current,
     total,
     open,
-    handlePlaylistToggle,
-    handlePlayerToggle,
+    togglePlaylist,
+    togglePlayer,
     class: className,
     ...restProps
   }: {
     current: number;
     total: number;
     open: boolean;
-    handlePlaylistToggle: () => void;
-    handlePlayerToggle: () => void;
+    togglePlaylist: () => void;
+    togglePlayer: () => void;
     class?: ClassValue;
   } = $props();
 
@@ -57,7 +57,7 @@
     <MediaQueueForm />
 
     {#if !md.current}
-      <Button variant="outline" type="button" size="icon-xs" onclick={handlePlaylistToggle}>
+      <Button variant="outline" type="button" size="icon-xs" onclick={togglePlaylist}>
         <HugeiconsIcon icon={Playlist01Icon} class="size-4" />
       </Button>
     {/if}
@@ -66,7 +66,7 @@
   <div class="flex-auto text-center">{current} / {total} items</div>
 
   <div class="flex flex-1 flex-row items-center justify-end gap-1 md:gap-1.5">
-    <Button variant="outline" type="button" size="icon-xs" onclick={handlePlayerToggle}>
+    <Button variant="outline" type="button" size="icon-xs" onclick={togglePlayer}>
       {#if open}
         <HugeiconsIcon icon={UnavailableIcon} class="size-4" />
       {:else}

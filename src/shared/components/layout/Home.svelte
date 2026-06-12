@@ -1,3 +1,7 @@
+<script lang="ts" module>
+  const togglePane = (pane: Pane) => (pane.isCollapsed() ? pane.expand() : pane.collapse());
+</script>
+
 <script lang="ts">
   import type { ClassValue } from "svelte/elements";
   import { portal } from "$components/common/Portal.svelte";
@@ -13,26 +17,17 @@
   let mainPaneRef: HTMLElement | null = $state(null);
   let secondaryPaneRef: HTMLElement | null = $state(null);
 
-  const handleReverse = () => (reversed = !reversed);
-  const handlePlaylistToggle = () => {
+  const reverseLayout = () => (reversed = !reversed);
+  const togglePlaylist = () => {
     if (!mainPane || !secondaryPane) {
       return;
     }
 
     if (reversed) {
-      if (mainPane.isCollapsed()) {
-        mainPane.expand();
-        return;
-      }
-      mainPane.collapse();
-      return;
+      togglePane(mainPane);
+    } else {
+      togglePane(secondaryPane);
     }
-
-    if (secondaryPane.isCollapsed()) {
-      secondaryPane.expand();
-      return;
-    }
-    secondaryPane.collapse();
   };
 
   let {
@@ -60,21 +55,18 @@
   />
 
   {#if mainPaneRef && secondaryPaneRef}
-    {const mediaTarget = $derived(reversed ? secondaryPaneRef : mainPaneRef)}
-    {const chatTarget = $derived(reversed ? mainPaneRef : secondaryPaneRef)}
-
     <PlayerLayout
-      {@attach portal(mediaTarget)}
+      {@attach portal(reversed ? secondaryPaneRef : mainPaneRef)}
       {reversed}
-      {handlePlaylistToggle}
-      {handleReverse}
+      {togglePlaylist}
+      {reverseLayout}
       class="flex w-full flex-1 flex-col"
     />
 
     <ChatLayout
-      {@attach portal(chatTarget)}
+      {@attach portal(reversed ? mainPaneRef : secondaryPaneRef)}
       {isLoggedIn}
-      {handleReverse}
+      {reverseLayout}
       {reversed}
       class="flex w-full flex-1 flex-col"
     />

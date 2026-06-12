@@ -13,13 +13,13 @@
 
   let {
     reversed,
-    handleReverse,
+    reverseLayout,
     onlineCount = 0,
     class: className,
     ...restProps
   }: {
     reversed: boolean;
-    handleReverse: () => void;
+    reverseLayout: () => void;
     onlineCount: number;
     class?: ClassValue;
   } = $props();
@@ -42,7 +42,7 @@
   <p class="truncate">{onlineCount} online</p>
 
   <div class="flex flex-row items-center justify-end">
-    <Button variant="outline" type="button" size="icon-xs" onclick={handleReverse}>
+    <Button variant="outline" type="button" size="icon-xs" onclick={reverseLayout}>
       {#if reversed}
         {#if md.current}
           <HugeiconsIcon icon={ArrowRightFromLineIcon} class="size-4" />

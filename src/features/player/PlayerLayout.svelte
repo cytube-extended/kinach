@@ -7,20 +7,20 @@
 
   let {
     reversed,
-    handlePlaylistToggle,
-    handleReverse,
+    togglePlaylist,
+    reverseLayout,
     class: className,
     ...restProps
   }: {
     reversed: boolean;
-    handlePlaylistToggle: () => void;
-    handleReverse: () => void;
+    togglePlaylist: () => void;
+    reverseLayout: () => void;
     class?: ClassValue;
   } = $props();
 </script>
 
 <div class={cn("", className)} {...restProps}>
-  <PlayerBody {reversed} {handlePlaylistToggle} {handleReverse} />
+  <PlayerBody {reversed} {togglePlaylist} {reverseLayout} />
 
   <Separator />
 

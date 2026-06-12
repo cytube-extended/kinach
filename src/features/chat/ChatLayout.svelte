@@ -16,13 +16,13 @@
   let {
     isLoggedIn,
     reversed,
-    handleReverse,
+    reverseLayout,
     class: className,
     ...restProps
   }: {
     isLoggedIn: boolean;
     reversed: boolean;
-    handleReverse: () => void;
+    reverseLayout: () => void;
     class?: ClassValue;
   } = $props();
 </script>
@@ -30,7 +30,7 @@
 <div class={cn("overflow-hidden", className)} {...restProps}>
   <ChatHeader
     {reversed}
-    {handleReverse}
+    {reverseLayout}
     onlineCount={0}
     class="h-7 max-h-7 min-h-7 w-full gap-1 p-0.5 md:h-8 md:max-h-8 md:min-h-8 md:gap-1.5 md:p-1"
   />

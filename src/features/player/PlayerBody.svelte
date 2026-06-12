@@ -25,22 +25,22 @@
   let total = $derived($playlistStore.playlist.length);
   let current = $derived($playlistStore.playlist.indexOf(currentItem) + 1);
 
-  const handlePlayerToggle = () => (open = !open);
+  const togglePlayer = () => (open = !open);
 
   let {
     reversed,
-    handlePlaylistToggle,
-    handleReverse,
+    togglePlaylist,
+    reverseLayout,
   }: {
     reversed: boolean;
-    handlePlaylistToggle: () => void;
-    handleReverse: () => void;
+    togglePlaylist: () => void;
+    reverseLayout: () => void;
   } = $props();
 </script>
 
 <PlayerHeader
   {reversed}
-  {handleReverse}
+  {reverseLayout}
   mediaLink={currentMediaLink}
   mediaTitle={currentMediaTitle}
   class="h-7 max-h-7 min-h-7 w-full gap-1 p-0.5 md:h-8 md:max-h-8 md:min-h-8 md:gap-1.5 md:p-1"
@@ -63,13 +63,13 @@
     <EmptyRoot class="aspect-video h-full w-full md:h-auto md:w-auto">
       <EmptyHeader>
         <EmptyMedia variant="icon">
-          <Button variant="ghost" type="button" size="icon-xs" onclick={handlePlayerToggle}>
+          <Button variant="ghost" type="button" size="icon-xs" onclick={togglePlayer}>
             <HugeiconsIcon icon={VideoOffIcon} class="size-5 motion-safe:animate-pulse" />
           </Button>
         </EmptyMedia>
         <EmptyTitle>
           <Button
-            onclick={handlePlayerToggle}
+            onclick={togglePlayer}
             title="Show player"
             variant="ghost"
             type="button"
@@ -90,7 +90,7 @@
   {current}
   {total}
   {open}
-  {handlePlaylistToggle}
-  {handlePlayerToggle}
+  {togglePlaylist}
+  {togglePlayer}
   class="h-7 max-h-7 min-h-7 w-full gap-1 p-0.5 md:h-8 md:max-h-8 md:min-h-8 md:gap-1.5 md:p-1"
 />

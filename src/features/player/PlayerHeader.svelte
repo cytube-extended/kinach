@@ -13,14 +13,14 @@
 
   let {
     reversed,
-    handleReverse,
+    reverseLayout,
     mediaLink,
     mediaTitle,
     class: className,
     ...restProps
   }: {
     reversed: boolean;
-    handleReverse: () => void;
+    reverseLayout: () => void;
     mediaLink?: string;
     mediaTitle?: string;
     class?: ClassValue;
@@ -43,7 +43,7 @@
       reversed ? "justify-start" : "justify-start md:justify-end"
     )}
   >
-    <Button variant="outline" type="button" size="icon-xs" onclick={handleReverse}>
+    <Button variant="outline" type="button" size="icon-xs" onclick={reverseLayout}>
       {#if reversed}
         {#if md.current}
           <HugeiconsIcon icon={ArrowLeftFromLineIcon} class="size-4" />
