@@ -52,7 +52,7 @@
     <Group>
       <Field
         orientation="horizontal"
-        class="flex flex-row items-center justify-end selection:bg-primary"
+        class="flex flex-row items-center justify-end gap-1.5 selection:bg-primary md:gap-2"
       >
         {#if lg.current}
           <AuthAvatar isLoading={isSubmitting} isAnon={false} isGuest={!isUser} />
@@ -63,7 +63,7 @@
 
         <Button
           type="submit"
-          variant="outline"
+          variant={md.current ? "outline" : "ghost"}
           disabled={isSubmitting}
           size={md.current ? "default" : "icon-xs"}
           class={cn({

@@ -46,7 +46,12 @@
 <form onsubmit={handleSubmit} class={cn("", className)} {...restProps}>
   <Group>
     <Field orientation="horizontal" class="flex flex-row items-start justify-start gap-0">
-      <Button type="submit" class="flex-2 rounded-none border-none" disabled={username === ""}>
+      <Button
+        variant="ghost"
+        type="submit"
+        class="flex-2 rounded-none border-none"
+        disabled={username === ""}
+      >
         Guest Login
       </Button>
 

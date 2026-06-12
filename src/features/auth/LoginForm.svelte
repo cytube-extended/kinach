@@ -92,7 +92,7 @@
     <Group>
       <Field
         orientation="horizontal"
-        class="flex flex-row items-center justify-end gap-1 md:gap-1.5"
+        class="flex flex-row items-center justify-end gap-1.5 md:gap-2"
       >
         {#if lg.current}
           <AuthAvatar
@@ -132,6 +132,7 @@
         <Button
           type="submit"
           disabled={disableSubmit}
+          variant={md.current ? "outline" : "ghost"}
           size={md.current ? "default" : "icon-sm"}
           class={cn({
             "md:cursor-not-allowed": disableSubmit,
