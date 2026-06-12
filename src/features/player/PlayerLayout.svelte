@@ -2,8 +2,24 @@
   import type { ClassValue } from "svelte/elements";
   import { Separator } from "$lib/components/ui/separator";
   import { cn } from "$lib/utils";
+  import { playlistStore } from "$stores/playlistStore";
   import PlayerBody from "./PlayerBody.svelte";
+  import PlayerControls from "./PlayerControls.svelte";
+  import PlayerHeader from "./PlayerHeader.svelte";
   import PlaylistLayout from "./PlaylistLayout.svelte";
+
+  let open = $state(true);
+  let currentUid = $derived($playlistStore.currentUid);
+  let currentItem = $derived($playlistStore.playlist[currentUid]);
+  let currentMediaTitle = $derived(currentItem?.media?.title ?? "");
+  let currentMediaId = $derived(currentItem?.media?.id ?? "");
+  let currentMediaLink = $derived(
+    currentItem.media.type === "yt" ? `https://youtu.be/${currentItem.media.id}` : ""
+  );
+  let total = $derived($playlistStore.playlist.length);
+  let current = $derived($playlistStore.playlist.indexOf(currentItem) + 1);
+
+  const togglePlayer = () => (open = !open);
 
   let {
     reversed,
@@ -20,7 +36,28 @@
 </script>
 
 <div class={cn("", className)} {...restProps}>
-  <PlayerBody {reversed} {togglePlaylist} {reverseLayout} />
+  <PlayerHeader
+    {reversed}
+    {reverseLayout}
+    mediaLink={currentMediaLink}
+    mediaTitle={currentMediaTitle}
+    class="h-8 max-h-8 min-h-8 w-full gap-1.5 p-1 md:h-10 md:max-h-10 md:min-h-10 md:w-full md:gap-2 md:p-2"
+  />
+
+  <Separator />
+
+  <PlayerBody {currentMediaId} {open} {togglePlayer} />
+
+  <Separator />
+
+  <PlayerControls
+    {current}
+    {total}
+    {open}
+    {togglePlaylist}
+    {togglePlayer}
+    class="h-8 max-h-8 min-h-8 w-full gap-1.5 p-1 md:h-10 md:max-h-10 md:min-h-10 md:w-full md:gap-2 md:p-2"
+  />
 
   <Separator />
 
