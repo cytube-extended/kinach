@@ -1,6 +1,4 @@
 <script lang="ts" module>
-  const BODY_CLASSNAMES: ClassValue = "dark min-h-screen flex flex-col";
-
   const imgLogoUrl = new URL("dist/logo.png", window.BASE_URL);
   const imgLogoSrc = imgLogoUrl.toString();
 </script>
@@ -16,7 +14,7 @@
 
   onMount(() => {
     const prevClassNames = document.body.className;
-    document.body.className = BODY_CLASSNAMES.toString();
+    document.body.className = "dark min-h-screen flex flex-col";
 
     return () => (document.body.className = prevClassNames);
   });
