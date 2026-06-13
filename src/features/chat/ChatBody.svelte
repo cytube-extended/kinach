@@ -5,12 +5,16 @@
 
   let {
     reversed,
+    leftPane = $bindable<Pane | null>(null),
+    rightPane = $bindable<Pane | null>(null),
     leftPaneRef = $bindable<HTMLElement | null>(null),
     rightPaneRef = $bindable<HTMLElement | null>(null),
     class: className,
     ...restProps
   }: {
     reversed: boolean;
+    leftPane: Pane | null;
+    rightPane: Pane | null;
     leftPaneRef?: HTMLElement | null;
     rightPaneRef?: HTMLElement | null;
     class?: ClassValue;
@@ -21,6 +25,8 @@
   <Pane collapsible={false} defaultSize={80} class="flex">
     <PaneGroup direction="horizontal">
       <Pane
+        collapsible
+        bind:this={leftPane}
         bind:ref={leftPaneRef}
         order={1}
         defaultSize={reversed && md.current ? 20 : 80}
@@ -31,6 +37,8 @@
       <Handle withHandle />
 
       <Pane
+        collapsible
+        bind:this={rightPane}
         bind:ref={rightPaneRef}
         order={2}
         defaultSize={reversed && md.current ? 80 : 20}

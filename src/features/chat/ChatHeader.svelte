@@ -14,12 +14,14 @@
   let {
     reversed,
     reverseLayout,
+    toggleUserlist,
     onlineCount = 0,
     class: className,
     ...restProps
   }: {
     reversed: boolean;
     reverseLayout: () => void;
+    toggleUserlist: () => void;
     onlineCount: number;
     class?: ClassValue;
   } = $props();
@@ -34,7 +36,12 @@
   {...restProps}
 >
   <div class="flex flex-row items-center justify-start">
-    <Button variant="ghost" type="button" size={md.current ? "icon-sm" : "icon-xs"}>
+    <Button
+      variant="ghost"
+      type="button"
+      size={md.current ? "icon-sm" : "icon-xs"}
+      onclick={toggleUserlist}
+    >
       <HugeiconsIcon icon={UserListIcon} class="size-4 md:size-5" />
     </Button>
   </div>

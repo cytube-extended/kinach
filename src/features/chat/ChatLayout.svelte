@@ -1,5 +1,10 @@
+<script lang="ts" module>
+  const togglePane = (pane: Pane) => (pane.isCollapsed() ? pane.expand() : pane.collapse());
+</script>
+
 <script lang="ts">
   import type { ClassValue } from "svelte/elements";
+  import type { Pane } from "$lib/components/ui/resizable/index.js";
   import { portal } from "$components/common/Portal.svelte";
   import GuestLoginForm from "$features/auth/GuestLoginForm.svelte";
   import { Separator } from "$lib/components/ui/separator";
@@ -10,8 +15,22 @@
   import MessageBuffer from "./MessageBuffer.svelte";
   import Userlist from "./Userlist.svelte";
 
-  let leftChatPane: HTMLElement | null = $state(null);
-  let rightChatPane: HTMLElement | null = $state(null);
+  let leftPane: Pane | null = $state(null);
+  let rightPane: Pane | null = $state(null);
+  let leftPaneRef: HTMLElement | null = $state(null);
+  let rightPaneRef: HTMLElement | null = $state(null);
+
+  const toggleUserlist = () => {
+    if (!leftPane || !rightPane) {
+      return;
+    }
+
+    if (reversed && md.current) {
+      togglePane(leftPane);
+    } else {
+      togglePane(rightPane);
+    }
+  };
 
   let {
     isLoggedIn,
@@ -31,6 +50,7 @@
   <ChatHeader
     {reversed}
     {reverseLayout}
+    {toggleUserlist}
     onlineCount={0}
     class="h-8 max-h-8 min-h-8 w-full gap-1.5 p-1 md:h-10 md:max-h-10 md:min-h-10 md:w-full md:gap-2 md:p-2"
   />
@@ -39,16 +59,22 @@
 
   <ChatBody
     {reversed}
-    bind:leftPaneRef={leftChatPane}
-    bind:rightPaneRef={rightChatPane}
+    bind:leftPane
+    bind:rightPane
+    bind:leftPaneRef
+    bind:rightPaneRef
     class="flex-16"
   />
-  {#if leftChatPane && rightChatPane}
-    {const userlistTarget = $derived(reversed && md.current ? leftChatPane : rightChatPane)}
-    {const messageBufferTarget = $derived(reversed && md.current ? rightChatPane : leftChatPane)}
+  {#if leftPaneRef && rightPaneRef}
+    <Userlist
+      {@attach portal(reversed && md.current ? leftPaneRef : rightPaneRef)}
+      class="flex-1"
+    />
 
-    <Userlist {@attach portal(userlistTarget)} class="flex-1" />
-    <MessageBuffer {@attach portal(messageBufferTarget)} class="flex-1" />
+    <MessageBuffer
+      {@attach portal(reversed && md.current ? rightPaneRef : leftPaneRef)}
+      class="flex-1"
+    />
   {/if}
 
   <Separator />
