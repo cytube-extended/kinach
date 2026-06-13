@@ -28,12 +28,6 @@ type PlaylistOutputSocketData = {
   msg: "Get Playlist URLs is limited to 1 usage every 60 seconds.  Please try again later.";
 };
 
-type QueueOutputSocketEvent = "queue";
-export type QueueOutputSocketData = {
-  after: number;
-  item: PlaylistItem;
-};
-
 type DeleteOutputSocketEvent = "delete";
 type DeleteOutputSocketData = {
   uid: number;
@@ -52,6 +46,27 @@ type ChangeMediaOutputSocketEvent = "changeMedia";
 type ChangeMediaOutputSocketData = PlaylistMedia & {
   currentTime: number;
   paused: boolean;
+};
+
+type QueueInputSocketEvent = "queue";
+type QueueInputSocketData = {
+  id: string;
+  type: "yt";
+  pos: "end" | "next";
+  temp: boolean;
+};
+
+type QueueOutputSocketEvent = "queue";
+type QueueOutputSocketData = {
+  item: PlaylistItem;
+  after: number | "prepend" | "append";
+};
+
+type QueueOutputErrorEvent = "queueFail";
+type QueueOutputErrorData = {
+  msg: string;
+  link: string;
+  id: string;
 };
 
 export const requestPlaylist = async () =>
@@ -97,3 +112,44 @@ export const unsubscribeVoteskip = (subscribtion: (data: VoteskipOutputSocketDat
 
 export const voteskip = () =>
   socketClient.emit<VoteskipInputSocketEvent, VoteskipInputSocketData>("voteskip");
+
+export const queue = async (input: QueueInputSocketData) =>
+  new Promise<QueueOutputSocketData>((resolve, reject) => {
+    socketClient.once<QueueOutputSocketEvent, QueueOutputSocketData>("queue", resolve);
+    socketClient.once<QueueOutputErrorEvent, QueueOutputErrorData>("queueFail", reject);
+    socketClient.emit<QueueInputSocketEvent, QueueInputSocketData>("queue", input);
+  });
+
+// Input
+// ["queue", { id: "kR9be_KhqvE", type: "yt", pos: "end", temp: true }];
+
+// Output
+// [
+//   "queue",
+//   {
+//     item: {
+//       media: {
+//         id: "kR9be_KhqvE",
+//         title: "ロシア語単語小テスト 【本に関する言葉5】Контрольная работа　 #vtuber #風見カプラ",
+//         seconds: 4246,
+//         duration: "01:10:46",
+//         type: "yt",
+//         meta: {},
+//       },
+//       uid: 0,
+//       temp: true,
+//       queueby: "basevich",
+//     },
+//     after: "prepend",
+//   },
+// ];
+
+// Fail
+// [
+//   ("queueFail",
+//   {
+//     msg: "Video does not exist or is private",
+//     link: "http://youtu.be/kR9be_Khqv",
+//     id: "kR9be_Khqv",
+//   }),
+// ];
