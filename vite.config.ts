@@ -30,6 +30,7 @@ export default defineConfig(({ mode }) => {
         $lib: path.resolve("./src/lib"),
         $api: path.resolve("./src/shared/api"),
         $components: path.resolve("./src/shared/components"),
+        $services: path.resolve("./src/shared/services"),
         $stores: path.resolve("./src/shared/stores"),
         $utils: path.resolve("./src/shared/utils"),
       },

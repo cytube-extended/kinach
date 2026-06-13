@@ -21,6 +21,8 @@
       "$api/*": ["./src/shared/api/*"],
       "$components": ["./src/shared/components"],
       "$components/*": ["./src/shared/components/*"],
+      "$services": ["./src/shared/services"],
+      "$services/*": ["./src/shared/services/*"],
       "$stores": ["./src/shared/stores"],
       "$stores/*": ["./src/shared/stores/*"],
       "$utils": ["./src/shared/utils"],
