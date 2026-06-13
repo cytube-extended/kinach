@@ -4,10 +4,10 @@
 
 <script lang="ts">
   import type { ClassValue } from "svelte/elements";
+  import type { Pane } from "$lib/components/ui/resizable/index.js";
   import { portal } from "$components/common/Portal.svelte";
   import ChatLayout from "$features/chat/ChatLayout.svelte";
   import PlayerLayout from "$features/player/PlayerLayout.svelte";
-  import { Pane } from "$lib/components/ui/resizable/index.js";
   import { cn, md } from "$lib/utils";
   import ResizableCytubeFluidLayout from "./ResizableCytubeFluidLayout.svelte";
 
