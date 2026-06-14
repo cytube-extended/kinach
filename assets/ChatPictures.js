@@ -211,153 +211,39 @@ const fileAreaError = msg => {
   fileAreaChangeColor('error-col');
 };
 
-const uploadBinaryData = blob => {
-  var reader = new FileReader();
-  const fileSize = blob.size;
-  
-  // Handle file loaded state
-  reader.onload = function (e) {
-    // Convert file to base64
-    const base64Raw = e.target.result;
-    const base64Clean = base64Raw.substr(
-      base64Raw.indexOf(',') + 1,
-      base64Raw.length,
-    );
-
-    // Get base64 metadata
-    const base64Metadata = base64Raw.split(';')[0].toLowerCase();
-    // Get file type (image, video, audio)
-    const fileType = base64Metadata.split('/')[0].split(':')[1];
-    // Get file extension (png, webm, mp3)
-    const ext = base64Metadata.split('/')[1].split('+')[0]; // Last split fixes svg+xml
-
-    let provider = '';
-
-    // Handle file type
-    if (fileType === 'image') {
-      // Supported extensions regex
-      const regexImage = /^(jpg|jpeg|gif|png|apng|tiff|webp)$/;
-
-      // Check if supported
-      const isSupported = regexImage.test(ext);
-
-      if (!isSupported) {
-        fileAreaError('Данный формат картинок не поддерживается.');
-        return;
-      } else {
-        provider = 'imgbb';
-	$('#imgPreview').attr('src', base64Raw);
-      }
-    } else if (fileType === 'video') {
-      // TODO: Handle video
-      fileAreaError('Заугрзка видео не поддерживаются.');
-      return;
-      
-      // // Supported extensions regex
-      // const regexVideo = /^(webm|mp4)$/;
-
-      // // Check if supported
-      // const isSupported = regexVideo.test(ext);
-
-      // if (!isSupported) {
-      //   fileAreaError('Данный формат видео не поддерживается.');
-      //   return;
-      // } else {
-      //   provider = 'catbox';
-      // }
-    }
-    // Handle audio?
-    else {
-      // If not video nor image throw error
-      fileAreaError('Не удалось распознать тип файла');
-      return;
-    }
-
-    if (provider === '') {
-      fileAreaError('Не удалось установить провайдера');
-      return;
-    }
-
-    // Reset progress bar
-    const prBar = resetProgressBar();
-
-    // Get provider endpoint
-    const reqSettings = {
-      type: 'POST',
-      xhr: function () {
-        const xhr = new window.XMLHttpRequest();
-        xhr.upload.addEventListener(
-          'progress',
-          function (evt) {
-            if (evt.lengthComputable) {
-              const percentComplete = evt.loaded / evt.total;
-
-              prBar.style.width = percentComplete * 100 + '%';
-            }
-          },
-          false,
-        );
-        return xhr;
-      },
-      beforeSend: function () {
-        $('#fileArea').removeClass('default-col');
-        $('#fileArea').addClass('progress-col');
-
-        $('#imagePanel').css({ cursor: 'wait' });
-      },
-      error: () => {
-        fileAreaError('Произошла ошибка при загрузке файла.');
-        return;
-      },
-      complete: () => {
-        $('#imagePanel').css({ cursor: 'auto' });
-      },
-    };
-
-    switch (provider) {
-      case 'imgbb':
-        reqSettings.url = 'https://api.imgbb.com/1/upload';
-        reqSettings.data = {
-          key: '82ce2e50a90378b7a7c249f6561fa5c6',
-          image: base64Clean,
-        };
-        reqSettings.success = res => {
-          fileAreaChangeColor('success-col');
-          finishUpload(prBar);
-
-          $('#chatline').val(
-            `${$('#chatline').val()} ${res.data.url.substring(0)} `,
-          );
-        };
-
-        break;
-      // Error
-      default:
-        alert('Не удалось распознать провайдера.');
-        return;
-    }
-
-    // Send ajax
-    $.ajax(reqSettings);
-  };
-
-  // Read file
-  reader.readAsDataURL(blob);
-};
-
 // Handle selected file
-$('#imgUploadArea').on('change', function () {
+$('#imgUploadArea').on('change', async function () {
   const file = this.files[0];
-  const fileSize = file.size;
+  const formData = new FormData();
+  formData.append("file", file);
 
-  // File size > 200mb
-  if (fileSize > 2e8) {
-    fileAreaError('Слишком большой файл.');
-  } else {
-    uploadBinaryData(file);
+  $('#fileArea').removeClass('default-col');
+  $('#fileArea').addClass('progress-col');
+  $('#imagePanel').css({ cursor: 'wait' });
+  const prBar = resetProgressBar();
+
+  try {
+    const response = await fetch('https://upload.basevich.workers.dev/upload', {
+      method: "POST",
+      body: formData,
+    });
+
+    const result = await response.text();
+
+    fileAreaChangeColor('success-col');
+    finishUpload(prBar);
+
+    const currentChatline = $('#chatline').val();
+    const newChatline = `${currentChatline} ${result} `;
+
+    $('#chatline').val(newChatline);
+  } catch (error) {
+    const errStr = error.toString();
+
+    fileAreaError(errStr);
   }
 
-  // Clear file area value
+  $('#imagePanel').css({ cursor: 'auto' });
   $('#imgUploadArea').val('');
 });
 
