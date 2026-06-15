@@ -285,12 +285,12 @@ const uploadUrl = async (url) => {
   const videoExts = ['.mp4', '.webm', '.mov', '.avi', '.mkv', '.flv', '.wmv', '.m4v', '.3gp', '.ogv', '.mpeg', '.mpg']
   const ext = url.toLowerCase().split('.').pop();
   
-  const isImg = imgExts.some(imgExt => ext === imgExt);
+  const isImg = imgExts.includes(ext);
   if (isImg) {
     $('#imgPreview').attr('src', url);
   }
   
-  const isVideo = videoExts.some(videoExt => ext === videoExt);
+  const isVideo = videoExts.includes(ext);
   if (isVideo) {
     $('#videoPreview').attr('src', url);
     $('#videoPreview').show();
