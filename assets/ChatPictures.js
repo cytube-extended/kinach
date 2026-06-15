@@ -373,72 +373,6 @@ $('#imgUploadArea').on('change', async function () {
   $('#imgUploadArea').val('');
 });
 
-// Upload image link
-const uploadLinkData = link => {
-  // Trim image link
-  imgLink = link.trim();
-
-  // Reset progress bar
-  const prBar = resetProgressBar();
-
-  // Create ajax settings
-  let ajaxSettings = {
-    xhr: function () {
-      const xhr = new window.XMLHttpRequest();
-      // Uploading progress
-      xhr.upload.addEventListener(
-        'progress',
-        function (e) {
-          if (e.lengthComputable) {
-            prBar.style.width = `${(e.loaded / e.total) * 100}%`;
-          }
-        },
-        false,
-      );
-      return xhr;
-    },
-    beforeSend: function () {
-      $('#imagePanel').css({ cursor: 'wait' });
-    },
-    complete: function () {
-      $('#imagePanel').css({ cursor: 'default' });
-    },
-    success: function (response) {
-      response = jQuery.parseJSON(response);
-      let newImgLink = response.data.link;
-
-      $('#imgPreview').attr('src', newImgLink);
-      $('#chatline').val(`${$('#chatline').val()} ${newImgLink} `);
-
-      finishUpload(prBar);
-    },
-    error: function () {
-      alert('Ошибка.');
-    },
-  };
-
-  // Create form data
-  const formData = new FormData();
-  formData.append('image', imgLink);
-  
-  ajaxSettings = {
-    ...ajaxSettings,
-    url: 'https://api.imgur.com/3/image',
-    method: 'POST',
-    timeout: 5000,
-    headers: {
-      Authorization: 'Client-ID 711a7fc76bd63f3',
-    },
-    processData: false,
-    mimeType: 'multipart/form-data',
-    contentType: false,
-    data: formData,
-  };
-
-  // Submit
-  $.ajax(ajaxSettings);
-};
-
 // Upload pasted link
 $('#imgLinkBtn').click(async function () {
   const input = $('#imgUploadLink').val();
@@ -482,29 +416,93 @@ $("#imgUploadLink").on("keydown", async function (e) {
 });
 
 // Upload via image paste
-$('#imgUploadLink').bind('paste', function (event) {
-  const items = (event.clipboardData || event.originalEvent.clipboardData)
-    .items;
-  for (item of items) {
-    if (item) {
-      const { kind, type } = item;
-      if (kind === 'file' && type.match('^image/')) {
-        // Check if pasted content contains HTML
-        if (items.length == 2) {
-          const remoteItem = items['0'];
-          remoteItem.getAsString(s => {
-            // Get image src
-            const img = $(s)['2'];
-            const link = $(img).attr('src');
-            // Upload as URL link
-            uploadLinkData(link);
-          });
-        } else {
-          // Upload as binary file
-          const blob = item.getAsFile();
-          uploadBinaryData(blob);
-        }
+$('#imgUploadLink').bind('paste', async function (event) {  
+  const evCbData = event.clipboardData;
+  const ogEvCbData = event.originalEvent.clipboardData;
+  const cbData = evCbData || ogEvCbData;
+  if (!cbData) {
+    return;
+  }
+  
+  const { items, files } = cbData;
+  if (!items || !files) {
+    return;
+  }
+  
+  const noItems = items.length < 1;
+  const noFiles = files.length < 1;
+  const isSingleFile = files.length === 1;
+  if (noItems || noFiles || !isSingleFile) {
+    return;
+  }
+
+  const [file] = files;
+  const { type } = file;
+  const isSingleFilePaste = items.length === 1 && isSingleFile;
+  const isHtmlImagePaste = items.length === 2 && isSingleFile;
+  const isHtmlPngImagePaste = isHtmlImagePaste && type === 'image/png';
+  const asFile = isSingleFilePaste || !isHtmlPngImagePaste;
+
+  $('#imgUploadLink').val('');
+
+  // Handle single image file paste and non-PNG HTML image paste and upload as a File
+  if (asFile) {
+    try {
+      await uploadFile(file);
+    } catch (error) {
+      fileAreaError(error.toString());
+    }
+  
+    $('#imagePanel').css({ cursor: 'auto' });
+    $('#imgUploadArea').val('');
+
+    return;
+  } 
+
+  // Handle HTML (fake) PNG (GIF) and regular HTML PNG image paste
+  if (isHtmlPngImagePaste) {
+    for (const item of items) {
+      const { kind } = item;
+      const isFile = kind === 'file';
+      if (isFile) {
+        continue;
       }
+      
+      item.getAsString(async cbStringContent => {
+        const gifHtmlImgSrcRegex = new RegExp(/<img\s+src=["'](?<src>[^"']+\.gif)["']/);
+        const match = cbStringContent.match(gifHtmlImgSrcRegex);
+        
+        // Handle regular PNG image paste as upload as a File
+        if (!match) {
+          try {
+            await uploadFile(file);
+          } catch (error) {
+            fileAreaError(error.toString());
+          }
+        
+          $('#imagePanel').css({ cursor: 'auto' });
+          $('#imgUploadArea').val('');
+      
+          return;
+        }
+
+        // Handle GIF image paste and upload as an URL
+        const src = match.groups.src;
+        if (!src || src === '') {
+          return;
+        }
+
+        const url = src.trim();
+
+        try {
+          await uploadUrl(url);
+        } catch (error) {
+          fileAreaError(error.toString());
+        }
+      
+        // Reset UI to the default state
+        $('#imagePanel').css({ cursor: 'auto' });
+      })
     }
   }
 });
