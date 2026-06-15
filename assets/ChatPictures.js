@@ -166,6 +166,7 @@ $(`
 						</div>
 						<br>
 						<img src="" id="imgPreview" style="max-width:80%; max-height=60%;"/>
+						<video src="" id="videoPreview" style="max-width:80%; max-height=60%; display: none;"/>
 					</div>
 					
 				</div>
@@ -186,6 +187,10 @@ var imgClearFields = function () {
   $('#imgUploadLink').val('');
   // Clear preview image
   $('#imgPreview').attr('src', '');
+  // Clear preview video
+  $('#videoPreview').attr('src', '');
+  // Hide video preview
+  $('#videoPreview').hide();  
   // Reset cursor
   $('#imagePanel').css({ cursor: 'auto' });
 };
@@ -226,8 +231,16 @@ $('#imgUploadArea').on('change', async function () {
 
     // Create preview image
     const blob = new Blob([file], { type: file.type });
-    const imgPreviewURL = URL.createObjectURL(blob);
-    $('#imgPreview').attr('src', imgPreviewURL);
+    const previewSrc = URL.createObjectURL(blob);
+    
+    const isImg = file.type.startsWith('image/');
+    const isVideo = file.type.startsWith('video/');
+    if (isImg) {
+      $('#imgPreview').attr('src', previewSrc);
+    } else if (isVideo) {
+      $('#videoPreview').attr('src', previewSrc);
+      $('#videoPreview').show();
+    }
     
     const formData = new FormData();
     formData.append("file", file);
@@ -257,7 +270,7 @@ $('#imgUploadArea').on('change', async function () {
     $('#chatline').val(newChatline);
 
     // Clear preview image blob (resources)
-    URL.revokeObjectURL(imgPreviewURL);
+    URL.revokeObjectURL(previewSrc);
   } catch (error) {
     const errStr = error.toString();
 
