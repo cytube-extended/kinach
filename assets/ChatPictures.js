@@ -469,7 +469,7 @@ $('#imgUploadLink').bind('paste', async function (event) {
       }
       
       item.getAsString(async cbStringContent => {
-        const gifHtmlImgSrcRegex = new RegExp(/<img\s+src=["'](?<src>[^"']+\.gif)["']/);
+        const gifHtmlImgSrcRegex = new RegExp(/<img[^>]*\s+src=["'](?<src>[^"']+\.gif)["']/);
         const match = cbStringContent.match(gifHtmlImgSrcRegex);
         
         // Handle regular PNG image paste as upload as a File
