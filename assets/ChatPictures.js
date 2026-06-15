@@ -223,6 +223,10 @@ $('#imgUploadArea').on('change', async function () {
     if (!file) {
       throw new Error('No file selected');
     }
+
+    const blob = new Blob([file], { type: file.type });
+    const imgPreviewURL = URL.createObjectURL(blob);
+    $('#imgPreview').attr('src', imgPreviewURL);
     
     const formData = new FormData();
     formData.append("file", file);
@@ -246,6 +250,8 @@ $('#imgUploadArea').on('change', async function () {
     const newChatline = `${currentChatline} ${result} `;
 
     $('#chatline').val(newChatline);
+
+    URL.revokeObjectURL(imgPreviewURL);
   } catch (error) {
     const errStr = error.toString();
 
