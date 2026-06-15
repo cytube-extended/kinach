@@ -214,50 +214,58 @@ const fileAreaError = msg => {
 // Handle selected file
 $('#imgUploadArea').on('change', async function () {
   try {
+    // Validate that at least one file is selected
     if (this.files.length < 1) {
       throw new Error('No file selected');
     }
-    
-    const file = this.files[0];
 
+    const file = this.files[0];
     if (!file) {
       throw new Error('No file selected');
     }
 
+    // Create preview image
     const blob = new Blob([file], { type: file.type });
     const imgPreviewURL = URL.createObjectURL(blob);
     $('#imgPreview').attr('src', imgPreviewURL);
     
     const formData = new FormData();
     formData.append("file", file);
-  
+
+    // Update UI to the progress state
     $('#fileArea').removeClass('default-col');
     $('#fileArea').addClass('progress-col');
     $('#imagePanel').css({ cursor: 'wait' });
     const prBar = resetProgressBar();
-  
+
+    // Upload the file
     const response = await fetch('https://upload.basevich.workers.dev/upload', {
       method: "POST",
       body: formData,
     });
 
+    // Read file link from the response
     const result = await response.text();
 
+    // Update UI to the success state
     fileAreaChangeColor('success-col');
     finishUpload(prBar);
 
+    // Update chatline with the uploaded file link
     const currentChatline = $('#chatline').val();
     const newChatline = `${currentChatline} ${result} `;
-
     $('#chatline').val(newChatline);
 
+    // Clear preview image blob (resources)
     URL.revokeObjectURL(imgPreviewURL);
   } catch (error) {
     const errStr = error.toString();
 
+    // Update UI to the error state
     fileAreaError(errStr);
   }
 
+  // Reset UI to the default state
   $('#imagePanel').css({ cursor: 'auto' });
   $('#imgUploadArea').val('');
 });
