@@ -229,7 +229,7 @@ $('#imgUploadArea').on('change', async function () {
       throw new Error('No file selected');
     }
 
-    // Create preview image
+    // Create preview source
     const blob = new Blob([file], { type: file.type });
     const previewSrc = URL.createObjectURL(blob);
     
@@ -269,7 +269,7 @@ $('#imgUploadArea').on('change', async function () {
     const newChatline = `${currentChatline} ${result} `;
     $('#chatline').val(newChatline);
 
-    // Clear preview image blob (resources)
+    // Clear preview blob (free resources)
     URL.revokeObjectURL(previewSrc);
   } catch (error) {
     const errStr = error.toString();
