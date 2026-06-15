@@ -216,20 +216,38 @@ const fileAreaError = msg => {
   fileAreaChangeColor('error-col');
 };
 
+const getRemoteContentType = async (url) => {
+  const response = await fetch(url, { method: 'HEAD' });
+
+  if (!response.ok) {
+    throw new Error(`Failed to get url content type: ${response.statusText}`);
+  }
+
+  const contentType = response.headers.get('content-type');
+  if (!contentType) {
+    throw new Error('Content-Type header is not present');
+  }
+  
+  return contentType;
+}
+
 const uploadFile = async (file) => {
   // Create preview source
   const blob = new Blob([file], { type: file.type });
   const previewSrc = URL.createObjectURL(blob);
   
   const isImg = file.type.startsWith('image/');
-  const isVideo = file.type.startsWith('video/');
   if (isImg) {
     $('#imgPreview').attr('src', previewSrc);
-  } else if (isVideo) {
+  }
+  
+  const isVideo = file.type.startsWith('video/');
+  if (isVideo) {
     $('#videoPreview').attr('src', previewSrc);
     $('#videoPreview').show();
   }
-  
+
+  // Create form data
   const formData = new FormData();
   formData.append("file", file);
 
@@ -259,6 +277,74 @@ const uploadFile = async (file) => {
 
   // Clear preview blob (free resources)
   URL.revokeObjectURL(previewSrc);
+}
+
+const uploadUrl = async (url) => {
+  // Create preview source
+  const imgExts = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.bmp', '.ico', '.tiff', '.tif', '.avif', '.heic', '.heif']
+  const videoExts = ['.mp4', '.webm', '.mov', '.avi', '.mkv', '.flv', '.wmv', '.m4v', '.3gp', '.ogv', '.mpeg', '.mpg']
+  const ext = url.toLowerCase().split('.').pop();
+  
+  const isImg = imgExts.some(imgExt => ext === imgExt);
+  if (isImg) {
+    $('#imgPreview').attr('src', url);
+  }
+  
+  const isVideo = videoExts.some(videoExt => ext === videoExt);
+  if (isVideo) {
+    $('#videoPreview').attr('src', url);
+    $('#videoPreview').show();
+  }
+
+  const isUnknownExt = !isImg && !isVideo;
+  if (isUnknownExt) {
+    console.warn("failed to determine URL file extension");
+    
+    try {
+      const contentType = await getRemoteContentType(url);
+      
+      const isImg = contentType.startsWith('image/');
+      if (isImg) {
+        $('#imgPreview').attr('src', url);
+      }
+      
+      const isVideo = contentType.startsWith('video/');
+      if (isVideo) {
+        $('#videoPreview').attr('src', url);
+        $('#videoPreview').show();
+      }
+    } catch {
+      console.warn("failed to determine URL remote content type");
+    }
+  }
+
+  // Create form data
+  const formData = new FormData();
+  formData.append("url", url);
+
+  // Update UI to the progress state
+  $('#fileArea').removeClass('default-col');
+  $('#fileArea').addClass('progress-col');
+  $('#imagePanel').css({ cursor: 'wait' });
+  const prBar = resetProgressBar();
+  
+  // Upload the URL
+  const response = await fetch('https://upload.basevich.workers.dev/url', {
+    method: "POST",
+    body: formData,
+  });
+
+  // Read file link from the response
+  const result = await response.text();
+
+  // Update UI to the success state
+  fileAreaChangeColor('success-col');
+  finishUpload(prBar);
+
+  // Update chatline with the uploaded file link
+  const currentChatline = $('#chatline').val();
+  const newChatline = `${currentChatline} ${result} `;
+  $('#chatline').val(newChatline);
 }
 
 // Handle selected file
@@ -354,11 +440,21 @@ const uploadLinkData = link => {
 };
 
 // Upload pasted link
-$('#imgLinkBtn').click(function () {
-  const link = $('#imgUploadLink').val();
-  uploadLinkData(link);
+$('#imgLinkBtn').click(async function () {
+  const input = $('#imgUploadLink').val();
+  const url = input.trim();
+  
+  try {
+    await uploadUrl(url);
+  } catch (error) {
+    const errStr = error.toString();
 
-  // Reset link input
+    // Update UI to the error state
+    fileAreaError(errStr);
+  }
+
+  // Reset UI to the default state
+  $('#imagePanel').css({ cursor: 'auto' });
   $('#imgUploadLink').val('');
 });
 
