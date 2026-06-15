@@ -281,8 +281,8 @@ const uploadFile = async (file) => {
 
 const uploadUrl = async (url) => {
   // Create preview source
-  const imgExts = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.bmp', '.ico', '.tiff', '.tif', '.avif', '.heic', '.heif']
-  const videoExts = ['.mp4', '.webm', '.mov', '.avi', '.mkv', '.flv', '.wmv', '.m4v', '.3gp', '.ogv', '.mpeg', '.mpg']
+  const imgExts = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico', 'tiff', 'tif', 'avif', 'heic', 'heif']
+  const videoExts = ['mp4', 'webm', 'mov', 'avi', 'mkv', 'flv', 'wmv', 'm4v', '3gp', 'ogv', 'mpeg', 'mpg']
   const ext = url.toLowerCase().split('.').pop();
   
   const isImg = imgExts.includes(ext);
