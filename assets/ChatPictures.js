@@ -329,7 +329,7 @@ const uploadUrl = async (url) => {
   const prBar = resetProgressBar();
   
   // Upload the URL
-  const response = await fetch('https://upload.basevich.workers.dev/url', {
+  const response = await fetch('https://upload.basevich.workers.dev/fetch', {
     method: "POST",
     body: formData,
   });
