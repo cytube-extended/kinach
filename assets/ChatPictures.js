@@ -458,6 +458,29 @@ $('#imgLinkBtn').click(async function () {
   $('#imgUploadLink').val('');
 });
 
+$("#imgUploadLink").on("keydown", async function (e) {
+  if (e.which !== 13) {
+    return;
+  }
+
+  const input = e.target.value
+  const url = input.trim();
+
+  $('#imgUploadLink').val('');
+  
+  try {
+    await uploadUrl(url);
+  } catch (error) {
+    const errStr = error.toString();
+
+    // Update UI to the error state
+    fileAreaError(errStr);
+  }
+
+  // Reset UI to the default state
+  $('#imagePanel').css({ cursor: 'auto' });
+});
+
 // Upload via image paste
 $('#imgUploadLink').bind('paste', function (event) {
   const items = (event.clipboardData || event.originalEvent.clipboardData)
