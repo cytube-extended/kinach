@@ -213,16 +213,25 @@ const fileAreaError = msg => {
 
 // Handle selected file
 $('#imgUploadArea').on('change', async function () {
-  const file = this.files[0];
-  const formData = new FormData();
-  formData.append("file", file);
-
-  $('#fileArea').removeClass('default-col');
-  $('#fileArea').addClass('progress-col');
-  $('#imagePanel').css({ cursor: 'wait' });
-  const prBar = resetProgressBar();
-
   try {
+    if (this.files.length < 1) {
+      throw new Error('No file selected');
+    }
+    
+    const file = this.files[0];
+
+    if (!file) {
+      throw new Error('No file selected');
+    }
+    
+    const formData = new FormData();
+    formData.append("file", file);
+  
+    $('#fileArea').removeClass('default-col');
+    $('#fileArea').addClass('progress-col');
+    $('#imagePanel').css({ cursor: 'wait' });
+    const prBar = resetProgressBar();
+  
     const response = await fetch('https://upload.basevich.workers.dev/upload', {
       method: "POST",
       body: formData,
