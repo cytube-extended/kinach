@@ -252,7 +252,7 @@ $('#imgUploadArea').on('change', async function () {
     const prBar = resetProgressBar();
 
     // Upload the file
-    const response = await fetch('https://upload.basevich.workers.dev/upload', {
+    const response = await fetch('https://upload.basevich.workers.dev/blob', {
       method: "POST",
       body: formData,
     });
