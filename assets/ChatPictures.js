@@ -321,6 +321,7 @@ const uploadUrl = async (url) => {
   // Create form data
   const formData = new FormData();
   formData.append("url", url);
+  formData.append("fetch", true)
 
   // Update UI to the progress state
   $('#fileArea').removeClass('default-col');
@@ -329,7 +330,7 @@ const uploadUrl = async (url) => {
   const prBar = resetProgressBar();
   
   // Upload the URL
-  const response = await fetch('https://upload.basevich.workers.dev/fetch', {
+  const response = await fetch('https://upload.basevich.workers.dev/url', {
     method: "POST",
     body: formData,
   });
