@@ -6,7 +6,7 @@ if ($('#uploadbtn').length == 0)
 
 // CSS
 $(`<style>`).appendTo('head').text(`
-.file-upload-service {
+#file-upload-service {
   position: relative;
   width: 76px;
   height: 38px;
