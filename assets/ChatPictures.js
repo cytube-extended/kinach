@@ -6,6 +6,16 @@ if ($('#uploadbtn').length == 0)
 
 // CSS
 $(`<style>`).appendTo('head').text(`
+.file-upload-service {
+  position: relative;
+  width: 76px;
+  height: 38px;
+  margin: 0;
+  top: 0;
+  float: left;
+  background-color: rgb(0, 0, 10, 0.5);
+}
+  
 .img-link-input {
 	width: calc(100% - 38px);
 	margin-right: 38px;
@@ -135,6 +145,12 @@ $(`
 
 			<br>
 
+			<div class="c-wrap">
+				<select id="file-upload-service">
+					<option selected value="catbox" title="Catbox">Catbox</option>
+					<option value="imgbb" title="ImgBB">ImgBB</option>
+				</select>
+			</div>
 			<input class="form-control img-link-input not-contained" type="text" id="imgUploadLink" placeholder="URL / Ctrl+V">
 			<div class="c-wrap">
 				<span id="imgLinkBtn" class="btn btn-md btn-info upload-img-link-btn" title="Загрузить картинку в чат">
@@ -231,6 +247,13 @@ const getRemoteContentType = async (url) => {
   return contentType;
 }
 
+const getUploadService = () => {
+  const selectedService = document.getElementById('file-upload-service');
+  const service = selectedService.value;
+
+  return service;
+}
+
 const uploadFile = async (file) => {
   // Create preview source
   const blob = new Blob([file], { type: file.type });
@@ -250,6 +273,10 @@ const uploadFile = async (file) => {
   // Create form data
   const formData = new FormData();
   formData.append("file", file);
+
+  // Attach upload service name
+  const service = getUploadService();
+  formData.append("service", service);
 
   // Update UI to the progress state
   $('#fileArea').removeClass('default-col');
@@ -321,7 +348,10 @@ const uploadUrl = async (url) => {
   // Create form data
   const formData = new FormData();
   formData.append("url", url);
-  formData.append("fetch", true)
+
+  // Attach upload service name
+  const service = getUploadService();
+  formData.append("service", service);
 
   // Update UI to the progress state
   $('#fileArea').removeClass('default-col');
