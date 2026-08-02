@@ -17,8 +17,8 @@ $(`<style>`).appendTo('head').text(`
 }
   
 .img-link-input {
-	width: calc(100% - 38px);
-	margin-right: 38px;
+	width: calc(100% - 114px);
+	margin-right: 114px;
 }
 
 .upload-img-link-btn {
