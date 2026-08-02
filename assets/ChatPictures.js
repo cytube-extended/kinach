@@ -13,6 +13,7 @@ $(`<style>`).appendTo('head').text(`
   margin: 0;
   top: 0;
   float: left;
+  border: 0;
   background-color: rgb(0, 0, 10, 0.5);
 }
   
