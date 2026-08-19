@@ -258,7 +258,7 @@ const getUploadService = () => {
 
 const fetchWithRetries = async (
   payload,
-  endpoint = 'https://upload.basevich.workers.dev/blob',
+  endpoint,
   retries = 3,
   delay = 1_000,
 ) => {
@@ -320,7 +320,7 @@ const uploadFile = async (file) => {
 
   try {
     // Upload the file
-    const result = await fetchWithRetries(formData);
+    const result = await fetchWithRetries(formData, 'https://upload.basevich.workers.dev/blob');
 
     // Update chatline with the uploaded result (url)
     const currentChatline = $('#chatline').val();
@@ -392,7 +392,7 @@ const uploadUrl = async (url) => {
   const prBar = resetProgressBar();
 
   try {
-    const result = await fetchWithRetries(formData);
+    const result = await fetchWithRetries(formData, 'https://upload.basevich.workers.dev/url');
 
     // Update chatline with the uploaded result (url)
     const currentChatline = $('#chatline').val();
