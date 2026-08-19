@@ -256,6 +256,38 @@ const getUploadService = () => {
   return service;
 }
 
+const fetchWithRetries = async (
+  payload,
+  endpoint = 'https://upload.basevich.workers.dev/blob',
+  retries = 3,
+  delay = 1_000,
+) => {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        body: payload,
+      });
+
+      const result = await response.text();
+
+      if (!response.ok) {
+        throw new Error(result);
+      }
+
+      return result;
+    } catch (error) {
+      if (attempt === retries) {
+        throw error; // Give up after final attempt
+      }
+
+      console.warn(`Upload attempt ${attempt} failed, retrying...`, error.message);
+
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+}
+
 const uploadFile = async (file) => {
   // Create preview source
   const blob = new Blob([file], { type: file.type });
@@ -286,26 +318,24 @@ const uploadFile = async (file) => {
   $('#imagePanel').css({ cursor: 'wait' });
   const prBar = resetProgressBar();
 
-  // Upload the file
-  const response = await fetch('https://upload.basevich.workers.dev/blob', {
-    method: "POST",
-    body: formData,
-  });
+  try {
+    // Upload the file
+    const result = await fetchWithRetries(formData);
 
-  // Read file link from the response
-  const result = await response.text();
+    // Update chatline with the uploaded result (url)
+    const currentChatline = $('#chatline').val();
+    const newChatline = `${currentChatline} ${result} `;
+    $('#chatline').val(newChatline);
+      
+    fileAreaChangeColor('success-col');
+  } catch { 
+    fileAreaChangeColor('error-col');
+  } finally {
+    finishUpload(prBar);
 
-  // Update UI to the success state
-  fileAreaChangeColor('success-col');
-  finishUpload(prBar);
-
-  // Update chatline with the uploaded file link
-  const currentChatline = $('#chatline').val();
-  const newChatline = `${currentChatline} ${result} `;
-  $('#chatline').val(newChatline);
-
-  // Clear preview blob (free resources)
-  URL.revokeObjectURL(previewSrc);
+    // Clear preview blob (free resources)
+    URL.revokeObjectURL(previewSrc);
+  }
 }
 
 const uploadUrl = async (url) => {
@@ -360,24 +390,21 @@ const uploadUrl = async (url) => {
   $('#fileArea').addClass('progress-col');
   $('#imagePanel').css({ cursor: 'wait' });
   const prBar = resetProgressBar();
-  
-  // Upload the URL
-  const response = await fetch('https://upload.basevich.workers.dev/url', {
-    method: "POST",
-    body: formData,
-  });
 
-  // Read file link from the response
-  const result = await response.text();
+  try {
+    const result = await fetchWithRetries(formData);
 
-  // Update UI to the success state
-  fileAreaChangeColor('success-col');
-  finishUpload(prBar);
+    // Update chatline with the uploaded result (url)
+    const currentChatline = $('#chatline').val();
+    const newChatline = `${currentChatline} ${result} `;
+    $('#chatline').val(newChatline);
 
-  // Update chatline with the uploaded file link
-  const currentChatline = $('#chatline').val();
-  const newChatline = `${currentChatline} ${result} `;
-  $('#chatline').val(newChatline);
+    fileAreaChangeColor('success-col');
+  } catch { 
+    fileAreaChangeColor('error-col');
+  } finally {
+    finishUpload(prBar);
+  }
 }
 
 // Handle selected file
