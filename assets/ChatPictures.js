@@ -148,9 +148,9 @@ $(`
 
 			<div class="c-wrap">
 				<select id="file-upload-service">
-					<option selected value="catbox" title="Catbox">Catbox</option>
+					<option selected value="imgbb" title="ImgBB">ImgBB</option>
+					<option value="catbox" title="Catbox">Catbox</option>
 					<option value="litterbox" title="Litterbox">Litterbox</option>
-					<option value="imgbb" title="ImgBB">ImgBB</option>
 				</select>
 			</div>
 			<input class="form-control img-link-input not-contained" type="text" id="imgUploadLink" placeholder="URL / Ctrl+V">
